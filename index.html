@@ -238,6 +238,55 @@
 
     </div>
 
+
+    <!-- ==================== FLOATING CHAT POP-UP DI POJOK KANAN BAWAH ==================== -->
+    <div id="floating-chat-wrapper" class="fixed bottom-5 right-5 z-50 hidden">
+        <!-- Tombol Pelampung (Floating Button) -->
+        <button id="chat-toggle-btn" onclick="toggleChatPopup()" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition transform hover:scale-110 relative">
+            <span class="text-2xl">💬</span>
+            <span id="chat-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">New</span>
+        </button>
+
+        <!-- Kotak Jendela Pop-up Chat (Posisi di Kanan) -->
+        <div id="chat-popup-box" class="absolute bottom-16 right-0 w-80 sm:w-96 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 flex flex-col h-[480px] hidden overflow-hidden transition-all duration-300">
+            <!-- Header Chat -->
+            <div class="bg-blue-600 text-white p-3.5 flex justify-between items-center shadow">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">💬</span>
+                    <h3 class="font-bold text-sm">Chat Keluarga Realtime</h3>
+                </div>
+                <button onclick="toggleChatPopup()" class="text-white hover:text-gray-200 font-bold text-lg px-2">✕</button>
+            </div>
+
+            <!-- Area Tampil Pesan -->
+            <div id="chat-container" class="flex-1 p-3 overflow-y-auto space-y-3 bg-gray-50 dark:bg-slate-900/60 text-sm">
+                <p class="text-center text-xs text-gray-400 animate-pulse">Memuat percakapan...</p>
+            </div>
+
+            <!-- Input & Kirim Foto/Pesan -->
+            <div class="p-3 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
+                <!-- Preview Gambar yang Dipilih -->
+                <div id="image-preview-container" class="hidden mb-2 relative w-max">
+                    <img id="image-preview" src="" alt="Preview" class="h-16 rounded border border-gray-300 dark:border-slate-600 object-cover">
+                    <button onclick="batalKirimFoto()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- Tombol Upload Gambar -->
+                    <label for="chat-file-input" class="cursor-pointer bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 p-2 rounded-lg transition text-sm flex items-center justify-center" title="Kirim Foto">
+                        📷
+                    </label>
+                    <input type="file" id="chat-file-input" accept="image/*" onchange="previewFile(event)" class="hidden">
+
+                    <input type="text" id="chat-input" onkeypress="handleChatKeyPress(event)" placeholder="Ketik pesan..." class="flex-1 p-2 border dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-slate-700 dark:text-white text-xs">
+                    
+                    <button onclick="kirimPesanChat()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-2 rounded-lg transition text-xs shadow">Kirim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -261,6 +310,7 @@
 
         let isEditMode = false;
         let idEditSekarang = '';
+        let base64ImageToSend = '';
 
         // ==================== PENGATURAN TEMA (DEFAULT DARK) ====================
         function toggleTheme() {
@@ -303,7 +353,6 @@
                 themeText.innerText = 'Light Mode';
             }
             
-            // Panggil Berita Watcher Guru
             fetchWatcherGuruNews();
         });
 
@@ -389,15 +438,18 @@
             if (user) {
                 loginSection.classList.add('hidden');
                 dashboardSection.classList.remove('hidden');
+                document.getElementById('floating-chat-wrapper').classList.remove('hidden');
                 document.getElementById('user-email').innerText = user.email;
                 document.getElementById('user-initial').innerText = user.email.charAt(0).toUpperCase();
 
                 muatDataTransaksi();
                 muatDataTabungan();
                 muatDataCrypto();
+                muatDataChat(); 
             } else {
                 loginSection.classList.remove('hidden');
                 dashboardSection.classList.add('hidden');
+                document.getElementById('floating-chat-wrapper').classList.add('hidden');
             }
         });
 
@@ -429,7 +481,7 @@
                 loader.classList.add('hidden');
                 const errorText = document.getElementById('login-error');
                 errorText.innerText = "Gagal login: Cek kembali email & password.";
-                errorText.classList.add('hidden');
+                errorText.classList.remove('hidden');
             });
         }
         function logout() { auth.signOut(); }
@@ -863,6 +915,150 @@
                     badgeEl.innerText = "Total PnL: Rp 0 (0%)";
                     badgeEl.className = "bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow";
                 }
+            });
+        }
+
+        // ==================== FUNGSI CHAT POP-UP DI KANAN & KIRIM FOTO ====================
+        function toggleChatPopup() {
+            const popup = document.getElementById('chat-popup-box');
+            const badge = document.getElementById('chat-badge');
+            popup.classList.toggle('hidden');
+            if (!popup.classList.contains('hidden')) {
+                badge.classList.add('hidden');
+                const chatContainer = document.getElementById('chat-container');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+
+        function previewFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64ImageToSend = e.target.result;
+                    document.getElementById('image-preview').src = base64ImageToSend;
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function batalKirimFoto() {
+            base64ImageToSend = '';
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('chat-file-input').value = '';
+        }
+
+        function kirimPesanChat() {
+            const inputEl = document.getElementById('chat-input');
+            const pesan = inputEl.value.trim();
+            if (!pesan && !base64ImageToSend) return;
+
+            const currentUser = auth.currentUser;
+            const senderEmail = currentUser ? currentUser.email : "Anonim";
+            const senderName = senderEmail.split('@')[0];
+
+            db.collection("chats").add({
+                sender: senderName,
+                email: senderEmail,
+                text: pesan,
+                imageUrl: base64ImageToSend || '',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                inputEl.value = '';
+                batalKirimFoto();
+            }).catch(e => alert("Gagal mengirim pesan: " + e.message));
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                kirimPesanChat();
+            }
+        }
+
+        function editPesanChat(id, teksLama) {
+            const teksBaru = prompt("Edit pesan Anda:", teksLama);
+            if (teksBaru !== null && teksBaru.trim() !== "") {
+                db.collection("chats").doc(id).update({
+                    text: teksBaru.trim(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(e => alert("Gagal mengedit pesan: " + e.message));
+            }
+        }
+
+        function hapusPesanChat(id) {
+            if (confirm("Hapus pesan ini?")) {
+                db.collection("chats").doc(id).delete().catch(e => alert("Gagal menghapus pesan: " + e.message));
+            }
+        }
+
+        let unsubscribeChat = null;
+        let lastMessageCount = 0;
+
+        function muatDataChat() {
+            if (unsubscribeChat) unsubscribeChat();
+
+            unsubscribeChat = db.collection("chats").orderBy("createdAt", "asc").onSnapshot((querySnapshot) => {
+                const chatContainer = document.getElementById('chat-container');
+                chatContainer.innerHTML = '';
+
+                let count = 0;
+                querySnapshot.forEach((doc) => {
+                    count++;
+                    const data = doc.data();
+                    const docId = doc.id;
+                    const currentUser = auth.currentUser;
+                    const isMyMessage = currentUser && data.email === currentUser.email;
+
+                    const timeString = data.createdAt ? data.createdAt.toDate().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Baru saja';
+                    const teksAman = data.text ? data.text.replace(/'/g, "\\'") : '';
+
+                    let imageTag = data.imageUrl ? `<img src="${data.imageUrl}" alt="Lampiran" class="rounded-lg mt-2 max-h-48 object-cover w-full">` : '';
+
+                    let actionButtons = "";
+                    if (isMyMessage) {
+                        actionButtons = `
+                            <div class="flex gap-2 mt-1 text-[10px]">
+                                ${data.text ? `<button onclick="editPesanChat('${docId}', '${teksAman}')" class="text-blue-400 hover:underline">Edit</button>` : ''}
+                                <button onclick="hapusPesanChat('${docId}')" class="text-red-400 hover:underline">Hapus</button>
+                            </div>
+                        `;
+                    }
+
+                    if (isMyMessage) {
+                        chatContainer.innerHTML += `
+                            <div class="flex flex-col items-end mb-2">
+                                <span class="text-[9px] text-gray-400 mb-0.5">Anda • ${timeString}</span>
+                                <div class="bg-blue-600 text-white px-3.5 py-2 rounded-2xl rounded-tr-none max-w-[80%] text-xs shadow">
+                                    ${data.text ? `<div>${data.text}</div>` : ''}
+                                    ${imageTag}
+                                </div>
+                                ${actionButtons}
+                            </div>
+                        `;
+                    } else {
+                        chatContainer.innerHTML += `
+                            <div class="flex flex-col items-start mb-2">
+                                <span class="text-[9px] text-gray-400 mb-0.5">${data.sender} • ${timeString}</span>
+                                <div class="bg-slate-700 text-white px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[80%] text-xs shadow border border-slate-600">
+                                    ${data.text ? `<div>${data.text}</div>` : ''}
+                                    ${imageTag}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (count === 0) {
+                    chatContainer.innerHTML = `<p class="text-center text-xs text-gray-400 py-10">Belum ada pesan. Mulai obrolan keluarga!</p>`;
+                } else {
+                    const popup = document.getElementById('chat-popup-box');
+                    if (popup.classList.contains('hidden') && count > lastMessageCount && lastMessageCount !== 0) {
+                        document.getElementById('chat-badge').classList.remove('hidden');
+                    }
+                }
+                lastMessageCount = count;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             });
         }
     </script>
