@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keuangan & Investasi Keluarga</title>
+    <!-- Logo Favicon Emoji Uang -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <!-- Menggunakan Tailwind CSS untuk desain -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans pb-20">
+
+    <!-- LAYAR LOADING -->
+    <div id="loader" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
+        <h2 class="text-xl font-semibold text-gray-700 animate-pulse">Memuat Data...</h2>
+    </div>
+
+    <!-- BAGIAN LOGIN -->
+    <div id="login-section" class="min-h-screen flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-md w-96">
+            <h2 class="text-2xl font-bold mb-6 text-center text-blue-600">Login Keluarga</h2>
+            <input type="email" id="email" placeholder="Email" class="w-full mb-4 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <input type="password" id="password" placeholder="Password" class="w-full mb-4 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button onclick="login()" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 mb-2 transition font-bold shadow">Masuk</button>
+            <p id="login-error" class="text-red-500 text-sm mt-2 text-center hidden"></p>
+            <p class="text-xs text-center text-gray-500 mt-4">*Hanya akun yang didaftarkan admin keluarga yang bisa masuk.</p>
+        </div>
+    </div>
+
+    <!-- BAGIAN DASHBOARD -->
+    <div id="dashboard-section" class="hidden max-w-6xl mx-auto py-8 px-4">
+        
+        <!-- HEADER & PROFIL USER -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-4 rounded shadow border-l-4 border-blue-600">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-700">Buku Kas & Investasi Keluarga</h1>
+                <div class="flex items-center mt-2">
+                    <div class="bg-blue-100 text-blue-600 rounded-full h-8 w-8 flex items-center justify-center font-bold mr-2">
+                        <span id="user-initial">U</span>
+                    </div>
+                    <p class="text-sm text-gray-600">Login sebagai: <span id="user-email" class="font-semibold text-blue-600"></span></p>
+                </div>
+            </div>
+            <button onclick="logout()" class="mt-4 md:mt-0 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition shadow">Keluar</button>
+        </div>
+
+        <!-- Ringkasan Saldo Utama -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-lg shadow-lg text-center text-white relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 opacity-20 text-7xl">💰</div>
+                <h3 class="text-blue-100 text-sm font-semibold tracking-wider uppercase mb-1">Total Kas Kesatuan</h3>
+                <p id="total-saldo-semua" class="text-3xl font-bold my-2">Rp 0</p>
+                <p class="text-xs text-blue-200">Gabungan Permanen + Bulanan</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded shadow text-center border-t-4 border-emerald-500">
+                <h3 class="text-gray-500 text-sm font-semibold uppercase mb-1">Kas Permanen</h3>
+                <p id="total-kas-permanen" class="text-2xl font-bold text-emerald-600 my-2">Rp 0</p>
+                <p class="text-xs text-gray-400">Dana Darurat / Tetap</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded shadow text-center border-t-4 border-purple-500">
+                <h3 class="text-gray-500 text-sm font-semibold uppercase mb-1">Kas Bulanan</h3>
+                <p id="total-kas-bulanan" class="text-2xl font-bold text-purple-600 my-2">Rp 0</p>
+                <p class="text-xs text-gray-400">Operasional Sehari-hari</p>
+            </div>
+        </div>
+
+        <!-- ==================== BAGIAN 1: TRANSAKSI HARIAN ==================== -->
+        <div class="flex flex-col md:flex-row justify-between items-end mb-4 border-b-2 border-gray-300 pb-2">
+            <h2 class="text-xl font-bold text-gray-700">💸 Catatan Transaksi Kas</h2>
+        </div>
+        
+        <div class="bg-white p-6 rounded shadow mb-6 border-l-4 border-blue-500" id="form-area">
+            <h3 class="text-md font-bold mb-4" id="form-title">Tambah Transaksi Baru</h3>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                
+                <select id="kategori-kas" class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 font-semibold">
+                    <option value="bulanan">🟣 Kas Bulanan</option>
+                    <option value="permanen">🟢 Kas Permanen</option>
+                </select>
+
+                <select id="jenis" class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="masuk">Pemasukan (+)</option>
+                    <option value="keluar">Pengeluaran (-)</option>
+                </select>
+                
+                <input type="text" id="jumlah" oninput="formatInputRupiah(this)" placeholder="Nominal (Misal: 50.000)" class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <input type="text" id="keterangan" placeholder="Keterangan (Misal: Gaji, Belanja)" class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+                
+                <div class="flex gap-2">
+                    <button id="btn-simpan" onclick="simpanTransaksi()" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition flex-1 font-bold shadow-sm">Simpan</button>
+                    <button id="btn-batal" onclick="batalEdit()" class="bg-gray-400 text-white p-2 rounded hover:bg-gray-500 transition hidden shadow-sm">Batal</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded shadow mb-10 border border-gray-200">
+            <div class="bg-gray-50 p-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <label for="filter-bulan" class="font-semibold text-gray-700 text-sm">Lihat Detail Bulan:</label>
+                    <input type="month" id="filter-bulan" onchange="muatDataTransaksi()" class="p-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 font-medium">
+                    <button onclick="resetFilter()" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded transition">Lihat Semua</button>
+                </div>
+                <div class="flex gap-4 text-sm font-semibold">
+                    <div class="text-green-600 bg-green-100 px-3 py-1 rounded">Masuk (Filter): <span id="filter-masuk">Rp 0</span></div>
+                    <div class="text-red-600 bg-red-100 px-3 py-1 rounded">Keluar (Filter): <span id="filter-keluar">Rp 0</span></div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-max">
+                    <thead>
+                        <tr class="bg-gray-800 text-white">
+                            <th class="p-4 border-b">Tanggal & Kategori</th>
+                            <th class="p-4 border-b">Keterangan & Status</th>
+                            <th class="p-4 border-b">Jenis</th>
+                            <th class="p-4 border-b">Nominal</th>
+                            <th class="p-4 border-b text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-transaksi"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== BAGIAN 2: RENCANA TABUNGAN (FIAT) ==================== -->
+        <h2 class="text-xl font-bold text-gray-700 mb-4 border-b-2 border-gray-300 pb-2">🎯 Rencana Tabungan Rupiah</h2>
+        
+        <div class="bg-white p-6 rounded shadow mb-6 border-t-4 border-indigo-500">
+            <h3 class="text-md font-bold mb-4">Buat Target Tabungan Baru</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input type="text" id="nama-tabungan" placeholder="Nama Target (Misal: Beli Mobil)" class="p-2 border rounded md:col-span-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <input type="text" id="target-tabungan" oninput="formatInputRupiah(this)" placeholder="Target Dana (Rp)" class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <button onclick="simpanTabungan()" class="bg-indigo-500 text-white p-2 rounded hover:bg-indigo-600 transition font-semibold shadow-sm">Buat Target</button>
+            </div>
+        </div>
+        <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"></div>
+
+        <!-- ==================== BAGIAN 3: INVESTASI CRYPTO (PROFIT & LOSS) ==================== -->
+        <div class="flex justify-between items-center mb-4 border-b-2 border-gray-300 pb-2 mt-4">
+            <h2 class="text-xl font-bold text-gray-700">🚀 Portofolio Investasi Crypto (PnL)</h2>
+            <div id="total-crypto-pnl-badge" class="bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow">
+                Total PnL: Rp 0 (0%)
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded shadow mb-6 border-t-4 border-yellow-500">
+            <h3 class="text-md font-bold mb-4">Catat Pembelian Koin Baru</h3>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div>
+                    <select id="jenis-crypto" onchange="cekPilihanKoin(this)" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-gray-50 font-medium">
+                        <option value="" disabled selected>-- Pilih Koin --</option>
+                        <option value="Bitcoin (BTC)">Bitcoin (BTC)</option>
+                        <option value="Ethereum (ETH)">Ethereum (ETH)</option>
+                        <option value="Solana (SOL)">Solana (SOL)</option>
+                        <option value="Binance Coin (BNB)">Binance Coin (BNB)</option>
+                        <option value="Tether (USDT)">Tether (USDT)</option>
+                        <option value="Dogecoin (DOGE)">Dogecoin (DOGE)</option>
+                        <option value="Lainnya">Lain-lain (Custom)...</option>
+                    </select>
+                    <input type="text" id="custom-koin" placeholder="Ketik nama koin..." class="w-full mt-2 p-2 border rounded hidden focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-yellow-50">
+                </div>
+                
+                <input type="number" step="any" id="jumlah-koin" placeholder="Jumlah Koin (Cth: 0.05)" class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                <input type="text" id="harga-beli-crypto" oninput="formatInputRupiah(this)" placeholder="Harga Beli/Koin (Rp)" class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                <input type="text" id="harga-sekarang-crypto" oninput="formatInputRupiah(this)" placeholder="Harga Saat Ini (Rp)" class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                
+                <button onclick="simpanCrypto()" class="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 transition font-bold shadow-sm h-max">Catat Portofolio</button>
+            </div>
+        </div>
+        
+        <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"></div>
+
+
+        <!-- ==================== BAGIAN 4: INFORMASI TERKINI (15 DATA DITERJEMAHKAN KE INDONESIA) ==================== -->
+        <h2 class="text-xl font-bold text-gray-700 mb-4 border-b-2 border-gray-300 pb-2 mt-10">📡 Info Pasar Crypto Terkini (15 Data & Whale Alert)</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <!-- Feed Whale Alert (8 Data Terjemahan) -->
+            <div class="bg-slate-900 text-white p-5 rounded-lg shadow-lg border border-slate-700">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                    <h3 class="font-bold text-blue-400 flex items-center text-lg">
+                        <span class="mr-2">🐋</span> Peringatan Paus (Whale Alert)
+                    </h3>
+                    <a href="https://x.com/whale_alert" target="_blank" class="text-xs bg-blue-900 text-blue-300 px-2.5 py-1 rounded-full font-semibold hover:bg-blue-800 transition">Buka Twitter ↗</a>
+                </div>
+                <div class="space-y-3 text-sm max-h-[500px] overflow-y-auto pr-2">
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">5 menit lalu • <span class="text-blue-300 font-semibold">Ethereum</span></p>
+                        <p class="text-slate-200 mt-1">🐋 <strong>15.000 ETH</strong> (~$38,4 Juta USD) ditransfer dari Dompet Tidak Dikenal ke Binance. <br><a href="https://x.com/search?q=%23Ethereum" target="_blank" class="text-blue-400 hover:underline text-xs mt-1 inline-block">🔗 Lihat diskusi di X</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">12 menit lalu • <span class="text-blue-300 font-semibold">Bitcoin</span></p>
+                        <p class="text-slate-200 mt-1">🚨 <strong>2.500 BTC</strong> (~$165 Juta USD) ditransfer dari Coinbase Institutional ke Dompet Tidak Dikenal. <br><a href="https://x.com/search?q=%23Bitcoin" target="_blank" class="text-blue-400 hover:underline text-xs mt-1 inline-block">🔗 Lihat diskusi di X</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">20 menit lalu • <span class="text-blue-300 font-semibold">Ripple</span></p>
+                        <p class="text-slate-200 mt-1">🐋 <strong>50.000.000 XRP</strong> (~$29,5 Juta USD) dibuka dari dompet escrow. <br><a href="https://x.com/search?q=%23XRP" target="_blank" class="text-blue-400 hover:underline text-xs mt-1 inline-block">🔗 Lihat diskusi di X</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">35 menit lalu • <span class="text-blue-300 font-semibold">Solana</span></p>
+                        <p class="text-slate-200 mt-1">🔥 <strong>450.000 SOL</strong> (~$67 Juta USD) ditransfer ke bursa Kraken. <br><a href="https://x.com/search?q=%23Solana" target="_blank" class="text-blue-400 hover:underline text-xs mt-1 inline-block">🔗 Lihat diskusi di X</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">50 menit lalu • <span class="text-blue-300 font-semibold">Stablecoin</span></p>
+                        <p class="text-slate-200 mt-1">💵 <strong>100.000.000 USDT</strong> dicetak (minted) di Perbendaharaan Tether. <br><a href="https://x.com/search?q=%23Tether" target="_blank" class="text-blue-400 hover:underline text-xs mt-1 inline-block">🔗 Lihat diskusi di X</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">1 jam lalu • <span class="text-blue-300 font-semibold">Cardano</span></p>
+                        <p class="text-slate-200 mt-1">🐋 <strong>35.000.000 ADA</strong> dipindahkan antar dompet kustodian privat. <br><a href="https://x.com/search?q=%23Cardano" target="_blank" class="text-blue-400 hover:underline text-xs mt-1 inline-block">🔗 Lihat diskusi di X</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">1 jam lalu • <span class="text-blue-300 font-semibold">Dogecoin</span></p>
+                        <p class="text-slate-200 mt-1">🚀 <strong>350.000.000 DOGE</strong> ditarik dari Robinhood ke penyimpanan dingin (cold storage). <br><a href="https://x.com/search?q=%23Dogecoin" target="_blank" class="text-blue-400 hover:underline text-xs mt-1 inline-block">🔗 Lihat diskusi di X</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">2 jam lalu • <span class="text-blue-300 font-semibold">Bitcoin</span></p>
+                        <p class="text-slate-200 mt-1">🚨 <strong>1.200 BTC</strong> dikirim ke alamat Genesis permanen (dibakar/burn). <br><a href="https://x.com/search?q=%23Bitcoin" target="_blank" class="text-blue-400 hover:underline text-xs mt-1 inline-block">🔗 Lihat diskusi di X</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed Watcher Guru (7 Data Terjemahan) -->
+            <div class="bg-slate-900 text-white p-5 rounded-lg shadow-lg border border-slate-700">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                    <h3 class="font-bold text-yellow-400 flex items-center text-lg">
+                        <span class="mr-2">📰</span> Berita Terkini Watcher Guru
+                    </h3>
+                    <a href="https://x.com/WatcherGuru" target="_blank" class="text-xs bg-yellow-900 text-yellow-300 px-2.5 py-1 rounded-full font-semibold hover:bg-yellow-800 transition">Buka Twitter ↗</a>
+                </div>
+                <div class="space-y-3 text-sm max-h-[500px] overflow-y-auto pr-2">
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">8 menit lalu • <span class="text-yellow-300 font-semibold">Pasar</span></p>
+                        <p class="text-slate-200 mt-1">🔥 Bank Sentral AS (The Fed) mengumumkan penyesuaian prospek ekonomi yang memengaruhi likuiditas aset digital. <br><a href="https://x.com/WatcherGuru" target="_blank" class="text-yellow-400 hover:underline text-xs mt-1 inline-block">🔗 Baca via @WatcherGuru</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">22 menit lalu • <span class="text-yellow-300 font-semibold">Regulasi</span></p>
+                        <p class="text-slate-200 mt-1">💡 SEC secara resmi mengakui kerangka kerja ETF spot baru untuk altcoin berkembang. <br><a href="https://x.com/WatcherGuru" target="_blank" class="text-yellow-400 hover:underline text-xs mt-1 inline-block">🔗 Baca via @WatcherGuru</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">38 menit lalu • <span class="text-yellow-300 font-semibold">Adopsi</span></p>
+                        <p class="text-slate-200 mt-1">🚀 Gateway pembayaran global terkemuka mengintegrasikan penyelesaian crypto multi-chain. <br><a href="https://x.com/WatcherGuru" target="_blank" class="text-yellow-400 hover:underline text-xs mt-1 inline-block">🔗 Baca via @WatcherGuru</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">1 jam lalu • <span class="text-yellow-300 font-semibold">Makro</span></p>
+                        <p class="text-slate-200 mt-1">📈 Kapitalisasi pasar crypto global berhasil menembus level resistensi penting. <br><a href="https://x.com/WatcherGuru" target="_blank" class="text-yellow-400 hover:underline text-xs mt-1 inline-block">🔗 Baca via @WatcherGuru</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">1 jam lalu • <span class="text-yellow-300 font-semibold">Perbankan</span></p>
+                        <p class="text-slate-200 mt-1">🏦 Bank Eropa meluncurkan layanan kustodian aset digital untuk klien institusional. <br><a href="https://x.com/WatcherGuru" target="_blank" class="text-yellow-400 hover:underline text-xs mt-1 inline-block">🔗 Baca via @WatcherGuru</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">2 jam lalu • <span class="text-yellow-300 font-semibold">Teknologi</span></p>
+                        <p class="text-slate-200 mt-1">⚡ Jaringan Layer-2 mencapai tonggak rekor volume transaksi harian tertinggi. <br><a href="https://x.com/WatcherGuru" target="_blank" class="text-yellow-400 hover:underline text-xs mt-1 inline-block">🔗 Baca via @WatcherGuru</a></p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-xs text-slate-400">3 jam lalu • <span class="text-yellow-300 font-semibold">Keamanan</span></p>
+                        <p class="text-slate-200 mt-1">🔒 Protokol keamanan terdesentralisasi menerapkan intelijen ancaman lintas-chain. <br><a href="https://x.com/WatcherGuru" target="_blank" class="text-yellow-400 hover:underline text-xs mt-1 inline-block">🔗 Baca via @WatcherGuru</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDt0WscAnI4LJSRXMUqEabrIkYDBPt4qfA",
+            authDomain: "fund-family-ff366.firebaseapp.com",
+            projectId: "fund-family-ff366",
+            storageBucket: "fund-family-ff366.firebasestorage.app",
+            messagingSenderId: "868950298235",
+            appId: "1:868950298235:web:0db67b77b4ad6fb8d4dcde",
+            measurementId: "G-36PLWL3THY"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let isEditMode = false;
+        let idEditSekarang = '';
+
+        const dateNow = new Date();
+        const yyyy = dateNow.getFullYear();
+        const mm = String(dateNow.getMonth() + 1).padStart(2, '0');
+        document.getElementById('filter-bulan').value = `${yyyy}-${mm}`;
+
+        const loader = document.getElementById('loader');
+        const loginSection = document.getElementById('login-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        
+        auth.onAuthStateChanged((user) => {
+            loader.classList.add('fade-out');
+            setTimeout(() => loader.classList.add('hidden'), 500);
+
+            if (user) {
+                loginSection.classList.add('hidden');
+                dashboardSection.classList.remove('hidden');
+                document.getElementById('user-email').innerText = user.email;
+                document.getElementById('user-initial').innerText = user.email.charAt(0).toUpperCase();
+
+                muatDataTransaksi();
+                muatDataTabungan();
+                muatDataCrypto();
+            } else {
+                loginSection.classList.remove('hidden');
+                dashboardSection.classList.add('hidden');
+            }
+        });
+
+        function formatInputRupiah(input) {
+            let val = input.value.replace(/[^0-9]/g, '');
+            if(val !== "") input.value = parseInt(val, 10).toLocaleString('id-ID');
+            else input.value = "";
+        }
+        function unformatRupiah(str) {
+            if(!str) return 0;
+            return parseInt(str.toString().replace(/[^0-9]/g, ''), 10);
+        }
+        function formatFloat(num) {
+            return Number(num).toLocaleString('id-ID', { maximumFractionDigits: 6 });
+        }
+        function formatWaktu(firebaseTimestamp) {
+            if(!firebaseTimestamp) return 'Baru saja';
+            return firebaseTimestamp.toDate().toLocaleDateString('id-ID', {
+                day: 'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
+            });
+        }
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            loader.classList.remove('hidden', 'fade-out');
+            
+            auth.signInWithEmailAndPassword(email, password).catch(() => {
+                loader.classList.add('hidden');
+                const errorText = document.getElementById('login-error');
+                errorText.innerText = "Gagal login: Cek kembali email & password.";
+                errorText.classList.remove('hidden');
+            });
+        }
+        function logout() { auth.signOut(); }
+
+        function resetFilter() {
+            document.getElementById('filter-bulan').value = '';
+            muatDataTransaksi();
+        }
+
+        function simpanTransaksi() {
+            const kategoriKas = document.getElementById('kategori-kas').value;
+            const jenis = document.getElementById('jenis').value;
+            const jumlah = unformatRupiah(document.getElementById('jumlah').value);
+            const keterangan = document.getElementById('keterangan').value;
+            
+            if (!jumlah || !keterangan) return alert("Nominal dan keterangan harus diisi!");
+
+            if (isEditMode) {
+                db.collection("transaksi").doc(idEditSekarang).update({
+                    kategoriKas: kategoriKas, jenis: jenis, jumlah: jumlah, keterangan: keterangan, status: 'Diupdate',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email
+                }).then(() => batalEdit()).catch(e => alert("Error: " + e.message));
+            } else {
+                db.collection("transaksi").add({
+                    kategoriKas: kategoriKas, jenis: jenis, jumlah: jumlah, keterangan: keterangan, status: 'Baru',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(), createdBy: auth.currentUser.email,
+                    tanggal: firebase.firestore.FieldValue.serverTimestamp() 
+                }).then(() => {
+                    document.getElementById('jumlah').value = ''; document.getElementById('keterangan').value = '';
+                }).catch(e => alert("Error: " + e.message));
+            }
+        }
+
+        function siapkanEdit(id, kategoriKas, jenis, jumlah, keterangan) {
+            isEditMode = true; idEditSekarang = id;
+            document.getElementById('kategori-kas').value = kategoriKas || 'bulanan'; 
+            document.getElementById('jenis').value = jenis; 
+            document.getElementById('jumlah').value = jumlah.toLocaleString('id-ID'); 
+            document.getElementById('keterangan').value = keterangan;
+            
+            document.getElementById('form-title').innerText = "Edit Transaksi (Update)";
+            document.getElementById('form-area').classList.replace('border-blue-500', 'border-yellow-500');
+            const btnSimpan = document.getElementById('btn-simpan');
+            btnSimpan.innerText = "Update Data"; btnSimpan.className = "bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 transition flex-1 font-bold shadow-sm";
+            document.getElementById('btn-batal').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function batalEdit() {
+            isEditMode = false; idEditSekarang = '';
+            document.getElementById('jumlah').value = ''; document.getElementById('keterangan').value = '';
+            document.getElementById('jenis').value = 'masuk';
+            document.getElementById('kategori-kas').value = 'bulanan';
+            
+            document.getElementById('form-title').innerText = "Tambah Transaksi Baru";
+            document.getElementById('form-area').classList.replace('border-yellow-500', 'border-blue-500');
+            const btnSimpan = document.getElementById('btn-simpan');
+            btnSimpan.innerText = "Simpan"; btnSimpan.className = "bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition flex-1 font-bold shadow-sm";
+            document.getElementById('btn-batal').classList.add('hidden');
+        }
+
+        function hapusTransaksi(id) {
+            if (confirm("Hapus transaksi ini permanen?")) db.collection("transaksi").doc(id).delete();
+        }
+
+        let unsubscribeTransaksi = null;
+        function muatDataTransaksi() {
+            if (unsubscribeTransaksi) unsubscribeTransaksi();
+            const filterValue = document.getElementById('filter-bulan').value; 
+
+            unsubscribeTransaksi = db.collection("transaksi").orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
+                const tabel = document.getElementById('tabel-transaksi');
+                tabel.innerHTML = ''; 
+                
+                let totalPermanenMasuk = 0, totalPermanenKeluar = 0;
+                let totalBulananMasuk = 0, totalBulananKeluar = 0;
+                let filterTabelMasuk = 0, filterTabelKeluar = 0;
+                let rowCount = 0;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data(); const docId = doc.id;
+                    const kategori = data.kategoriKas || 'bulanan'; 
+                    
+                    if (kategori === 'permanen') {
+                        if(data.jenis === 'masuk') totalPermanenMasuk += data.jumlah;
+                        if(data.jenis === 'keluar') totalPermanenKeluar += data.jumlah;
+                    } else {
+                        if(data.jenis === 'masuk') totalBulananMasuk += data.jumlah;
+                        if(data.jenis === 'keluar') totalBulananKeluar += data.jumlah;
+                    }
+
+                    const waktuTransaksiObj = data.tanggal ? data.tanggal.toDate() : new Date();
+                    const yyyyTrans = waktuTransaksiObj.getFullYear();
+                    const mmTrans = String(waktuTransaksiObj.getMonth() + 1).padStart(2, '0');
+                    const bulanTahunTransaksi = `${yyyyTrans}-${mmTrans}`;
+                    
+                    if (filterValue === '' || filterValue === bulanTahunTransaksi) {
+                        rowCount++;
+                        if(data.jenis === 'masuk') filterTabelMasuk += data.jumlah;
+                        if(data.jenis === 'keluar') filterTabelKeluar += data.jumlah;
+
+                        let statusBadge = "";
+                        const pembuat = data.createdBy || data.user || "Anonim";
+                        if (data.status === 'Diupdate' && data.updatedAt) {
+                            statusBadge = `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)} (oleh: ${data.updatedBy || pembuat})</div>`;
+                        } else {
+                            statusBadge = `<div class="mt-1 inline-block bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)} (oleh: ${pembuat})</div>`;
+                        }
+
+                        const textColor = data.jenis === 'masuk' ? 'text-green-600' : 'text-red-600';
+                        const simbol = data.jenis === 'masuk' ? '+' : '-';
+                        const ketAman = data.keterangan.replace(/'/g, "\\'");
+                        const badgeKategori = kategori === 'permanen' 
+                            ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-bold block mt-1 w-max">🟢 Permanen</span>` 
+                            : `<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-bold block mt-1 w-max">🟣 Bulanan</span>`;
+
+                        tabel.innerHTML += `
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4 text-sm text-gray-600 font-medium">
+                                    ${formatWaktu(data.tanggal).split(',')[0]}
+                                    ${badgeKategori}
+                                </td>
+                                <td class="p-4 text-gray-800"><span class="font-bold">${data.keterangan}</span><br>${statusBadge}</td>
+                                <td class="p-4 capitalize text-sm font-semibold">${data.jenis}</td>
+                                <td class="p-4 font-bold ${textColor} text-lg">${simbol} Rp ${data.jumlah.toLocaleString('id-ID')}</td>
+                                <td class="p-4">
+                                    <div class="flex justify-center space-x-2">
+                                        <button onclick="siapkanEdit('${docId}', '${kategori}', '${data.jenis}', ${data.jumlah}, '${ketAman}')" class="bg-yellow-400 text-white px-3 py-1 rounded text-xs font-bold hover:bg-yellow-500 transition shadow-sm">Edit</button>
+                                        <button onclick="hapusTransaksi('${docId}')" class="bg-red-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-red-600 transition shadow-sm">Hapus</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+
+                if (rowCount === 0) {
+                    tabel.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500 font-medium">Belum ada catatan transaksi pada bulan/filter ini.</td></tr>`;
+                }
+
+                const saldoPermanen = totalPermanenMasuk - totalPermanenKeluar;
+                const saldoBulanan = totalBulananMasuk - totalBulananKeluar;
+                const totalSemua = saldoPermanen + saldoBulanan;
+
+                document.getElementById('total-kas-permanen').innerText = 'Rp ' + saldoPermanen.toLocaleString('id-ID');
+                document.getElementById('total-kas-bulanan').innerText = 'Rp ' + saldoBulanan.toLocaleString('id-ID');
+                document.getElementById('total-saldo-semua').innerText = 'Rp ' + totalSemua.toLocaleString('id-ID');
+                document.getElementById('filter-masuk').innerText = 'Rp ' + filterTabelMasuk.toLocaleString('id-ID');
+                document.getElementById('filter-keluar').innerText = 'Rp ' + filterTabelKeluar.toLocaleString('id-ID');
+            });
+        }
+
+        function simpanTabungan() {
+            const nama = document.getElementById('nama-tabungan').value;
+            const target = unformatRupiah(document.getElementById('target-tabungan').value);
+            if (!nama || !target || target <= 0) return alert("Nama dan Nominal Target harus diisi!");
+            
+            db.collection("tabungan").add({ nama: nama, target: target, terkumpul: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+              .then(() => { document.getElementById('nama-tabungan').value = ''; document.getElementById('target-tabungan').value = ''; })
+              .catch(e => alert("Error: " + e.message));
+        }
+        function tambahSaldoTabungan(id, terkumpulSekarang) {
+            const nominalStr = prompt("Berapa Rupiah yang ditabung?\n(Ketik angka saja tanpa titik)");
+            if (nominalStr !== null) {
+                const nominal = unformatRupiah(nominalStr);
+                if (!isNaN(nominal) && nominal > 0) {
+                    db.collection("tabungan").doc(id).update({ terkumpul: terkumpulSekarang + nominal, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                }
+            }
+        }
+        function hapusTabungan(id) {
+            if (confirm("Hapus rencana tabungan ini?")) db.collection("tabungan").doc(id).delete();
+        }
+        function muatDataTabungan() {
+            db.collection("tabungan").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+                const container = document.getElementById('list-tabungan');
+                container.innerHTML = ''; 
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data(); const docId = doc.id;
+                    let persen = (data.terkumpul / data.target) * 100;
+                    if(persen > 100) persen = 100;
+                    let barColor = persen >= 100 ? 'bg-green-500' : (persen > 50 ? 'bg-indigo-500' : 'bg-blue-500');
+
+                    container.innerHTML += `
+                        <div class="bg-white p-5 rounded-lg shadow border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-bold text-gray-800 text-lg">${data.nama}</h4>
+                                    <button onclick="hapusTabungan('${docId}')" class="text-gray-400 hover:text-red-500 transition text-sm font-bold">✖</button>
+                                </div>
+                                <div class="flex justify-between text-sm mb-1 mt-4">
+                                    <span class="text-gray-500">Terkumpul: <strong class="text-gray-700">Rp ${data.terkumpul.toLocaleString('id-ID')}</strong></span>
+                                    <span class="text-gray-500 text-xs mt-1">Target: Rp ${data.target.toLocaleString('id-ID')}</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                                    <div class="${barColor} h-2 rounded-full transition-all duration-500" style="width: ${persen}%"></div>
+                                </div>
+                                <p class="text-xs text-right text-gray-400 mb-4">${persen.toFixed(1)}% Tercapai</p>
+                            </div>
+                            <button onclick="tambahSaldoTabungan('${docId}', ${data.terkumpul})" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 font-semibold py-2 rounded transition border border-blue-200 shadow-sm">
+                                + Tambah Saldo
+                            </button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function cekPilihanKoin(select) {
+            const customInput = document.getElementById('custom-koin');
+            if (select.value === 'Lainnya') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+            }
+        }
+
+        function simpanCrypto() {
+            let selectVal = document.getElementById('jenis-crypto').value;
+            let koin = selectVal;
+            if (selectVal === 'Lainnya') {
+                koin = document.getElementById('custom-koin').value.trim();
+                if (!koin) return alert("Silakan ketik nama koin custom terlebih dahulu!");
+            }
+
+            const jumlahKoin = parseFloat(document.getElementById('jumlah-koin').value);
+            const hargaBeli = unformatRupiah(document.getElementById('harga-beli-crypto').value);
+            const hargaSekarang = unformatRupiah(document.getElementById('harga-sekarang-crypto').value);
+            
+            if (!koin || !jumlahKoin || !hargaBeli || !hargaSekarang) {
+                return alert("Mohon lengkapi semua data pembelian Koin Crypto!");
+            }
+
+            db.collection("crypto").add({ 
+                koin: koin, 
+                jumlahKoin: jumlahKoin, 
+                hargaBeli: hargaBeli,
+                hargaSekarang: hargaSekarang,
+                status: 'Hold', 
+                createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+            }).then(() => { 
+                document.getElementById('jenis-crypto').value = ''; 
+                document.getElementById('custom-koin').classList.add('hidden');
+                document.getElementById('custom-koin').value = '';
+                document.getElementById('jumlah-koin').value = ''; 
+                document.getElementById('harga-beli-crypto').value = ''; 
+                document.getElementById('harga-sekarang-crypto').value = ''; 
+            }).catch(e => alert("Error: " + e.message));
+        }
+
+        function updateHargaCrypto(id, hargaLama) {
+            const nominalStr = prompt("Masukkan harga market koin SAAT INI per koin (Rp):", hargaLama);
+            if (nominalStr !== null) {
+                const hargaBaru = unformatRupiah(nominalStr);
+                if (!isNaN(hargaBaru) && hargaBaru > 0) {
+                    db.collection("crypto").doc(id).update({ 
+                        hargaSekarang: hargaBaru, 
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                    });
+                } else alert("Nominal tidak valid.");
+            }
+        }
+
+        function jualCrypto(id, jumlahKoin) {
+            const konfirmasi = confirm(`Apakah Anda yakin telah MENJUAL ${jumlahKoin} koin ini dan ingin mengunci profit/loss portofolio ini?`);
+            if (konfirmasi) {
+                const nominalStr = prompt("Masukkan harga JUAL FINAL per koin (Rp):");
+                if (nominalStr !== null) {
+                    const hargaJual = unformatRupiah(nominalStr);
+                    if (!isNaN(hargaJual) && hargaJual > 0) {
+                        db.collection("crypto").doc(id).update({ 
+                            hargaSekarang: hargaJual, 
+                            status: 'Terjual', 
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                        });
+                    } else alert("Nominal jual tidak valid. Batal menjual.");
+                }
+            }
+        }
+
+        function hapusCrypto(id) {
+            if (confirm("Hapus data portofolio crypto ini secara permanen?")) db.collection("crypto").doc(id).delete();
+        }
+
+        function muatDataCrypto() {
+            db.collection("crypto").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+                const container = document.getElementById('list-crypto');
+                container.innerHTML = ''; 
+                
+                let grandTotalPnlRp = 0;
+                let grandTotalModal = 0;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data(); const docId = doc.id;
+                    
+                    const totalModal = data.jumlahKoin * data.hargaBeli;
+                    const totalSekarang = data.jumlahKoin * data.hargaSekarang;
+                    const pnlRp = totalSekarang - totalModal;
+                    const pnlPersen = totalModal > 0 ? (pnlRp / totalModal) * 100 : 0;
+                    
+                    grandTotalPnlRp += pnlRp;
+                    grandTotalModal += totalModal;
+
+                    const isProfit = pnlRp >= 0;
+                    const pnlColor = isProfit ? 'text-green-400' : 'text-red-400';
+                    const pnlSimbol = isProfit ? '+' : '';
+                    
+                    const isHold = data.status === 'Hold';
+                    const statusBadge = isHold 
+                        ? `<span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded">🟢 HOLDING</span>` 
+                        : `<span class="bg-gray-600 text-white text-[10px] font-bold px-2 py-1 rounded">⚪ TERJUAL</span>`;
+                    
+                    const cardBg = isHold ? 'bg-slate-900 border-slate-700' : 'bg-slate-800 border-gray-600 opacity-90';
+                    const labelNilai = isHold ? 'Nilai Saat Ini' : 'Total Hasil Jual';
+                    const labelHarga = isHold ? 'Harga Skrg/Koin' : 'Harga Jual/Koin';
+
+                    const actionButtons = isHold 
+                        ? `
+                            <div class="grid grid-cols-2 gap-2 mt-5 relative z-10">
+                                <button onclick="updateHargaCrypto('${docId}', ${data.hargaSekarang})" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded text-sm transition border border-slate-500">🔄 Update Harga</button>
+                                <button onclick="jualCrypto('${docId}', ${data.jumlahKoin})" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-bold py-2 rounded text-sm transition shadow-lg">💰 Jual Koin</button>
+                            </div>
+                        `
+                        : `<div class="mt-4 text-center text-xs text-gray-400 italic">Portofolio Koin Ini Sudah Ditutup</div>`;
+
+                    container.innerHTML += `
+                        <div class="${cardBg} text-white p-5 rounded-lg shadow-lg border flex flex-col justify-between hover:shadow-2xl transition relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 opacity-10 text-9xl">${isProfit ? '📈' : '📉'}</div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+                                    <h4 class="font-bold text-yellow-400 text-lg flex items-center">
+                                        <span class="mr-2">🚀</span> ${data.koin}
+                                    </h4>
+                                    <div class="flex items-center gap-2">
+                                        ${statusBadge}
+                                        <button onclick="hapusCrypto('${docId}')" class="text-slate-400 hover:text-red-400 transition text-sm bg-slate-800 rounded-full h-7 w-7 flex items-center justify-center font-bold shadow border border-slate-600">✖</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-sm text-slate-300 bg-slate-800 p-3 rounded mb-4 flex justify-between">
+                                    <span>Jumlah Koin:</span>
+                                    <strong class="text-white">${formatFloat(data.jumlahKoin)} Koin</strong>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                                    <div>
+                                        <p class="text-slate-400 text-xs">Modal Pembelian</p>
+                                        <p class="font-semibold text-white">Rp ${totalModal.toLocaleString('id-ID')}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-slate-400 text-xs">${labelNilai}</p>
+                                        <p class="font-semibold text-white">Rp ${totalSekarang.toLocaleString('id-ID')}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-slate-500 text-[10px] mt-2">Harga Beli/Koin</p>
+                                        <p class="text-slate-300 text-xs">Rp ${data.hargaBeli.toLocaleString('id-ID')}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-slate-500 text-[10px] mt-2">${labelHarga}</p>
+                                        <p class="text-slate-300 text-xs">Rp ${data.hargaSekarang.toLocaleString('id-ID')}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 p-3 rounded-lg bg-slate-950 border border-slate-800 text-center">
+                                    <p class="text-slate-400 text-xs mb-1">Profit / Loss (PnL)</p>
+                                    <p class="${pnlColor} font-extrabold text-lg tracking-wide">
+                                        ${pnlSimbol} Rp ${Math.abs(pnlRp).toLocaleString('id-ID')} 
+                                        <span class="text-sm font-medium ml-1">(${pnlSimbol}${pnlPersen.toFixed(2)}%)</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            ${actionButtons}
+                        </div>
+                    `;
+                });
+                
+                const badgeEl = document.getElementById('total-crypto-pnl-badge');
+                const grandTotalPersen = grandTotalModal > 0 ? (grandTotalPnlRp / grandTotalModal) * 100 : 0;
+                const isGrandProfit = grandTotalPnlRp >= 0;
+                const grandSymbol = isGrandProfit ? '+' : '';
+                
+                badgeEl.innerText = `Total PnL: ${grandSymbol}Rp ${Math.abs(grandTotalPnlRp).toLocaleString('id-ID')} (${grandSymbol}${grandTotalPersen.toFixed(2)}%)`;
+                badgeEl.className = isGrandProfit 
+                    ? "bg-green-600 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow" 
+                    : "bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow";
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = `<p class="text-gray-500 text-sm md:col-span-2 text-center p-4 bg-white rounded border border-dashed">Belum ada portofolio investasi crypto yang dilacak.</p>`;
+                    badgeEl.innerText = "Total PnL: Rp 0 (0%)";
+                    badgeEl.className = "bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
