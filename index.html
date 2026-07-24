@@ -8,6 +8,8 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
     <!-- Menggunakan Tailwind CSS untuk desain -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js untuk Grafik Interaktif -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -60,7 +62,6 @@
             </div>
             
             <div class="flex items-center gap-3 mt-4 md:mt-0">
-                <!-- Tombol Ganti Tema (Normal / Dark) -->
                 <button onclick="toggleTheme()" id="btn-theme" class="bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-yellow-400 px-4 py-2 rounded-lg font-semibold hover:opacity-80 transition shadow flex items-center gap-2">
                     <span id="theme-icon">☀️</span> <span id="theme-text">Light Mode</span>
                 </button>
@@ -87,6 +88,29 @@
                 <h3 class="text-gray-700 dark:text-gray-400 text-sm font-semibold uppercase mb-1">Kas Bulanan</h3>
                 <p id="total-kas-bulanan" class="text-2xl font-bold text-purple-600 dark:text-purple-400 my-2">Rp 0</p>
                 <p class="text-xs text-gray-600 dark:text-gray-400">Operasional Sehari-hari</p>
+            </div>
+        </div>
+
+        <!-- ==================== BAGIAN GRAFIK ANALITIK KEUANGAN ==================== -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <!-- Grafik PnL Crypto Multi-User -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-lg shadow border border-gray-200 dark:border-slate-700">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-4 text-base flex items-center">
+                    <span class="mr-2">📈</span> Grafik Profit/Loss Crypto (Multi-User)
+                </h3>
+                <div class="h-64 w-full relative">
+                    <canvas id="cryptoProfitChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Grafik Transaksi Kas Bulanan -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-lg shadow border border-gray-200 dark:border-slate-700">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-4 text-base flex items-center">
+                    <span class="mr-2">📊</span> Grafik Arus Kas Bulanan (Detail)
+                </h3>
+                <div class="h-64 w-full relative">
+                    <canvas id="monthlyCashChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -230,7 +254,6 @@
                 <button onclick="fetchWatcherGuruNews()" class="text-xs bg-slate-800 hover:bg-slate-700 text-yellow-400 border border-yellow-500/30 px-3 py-1 rounded-full transition font-semibold">🔄 Refresh Berita</button>
             </div>
             
-            <!-- Grid 20 Berita dengan Gambar -->
             <div id="watcher-guru-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <p class="text-slate-400 text-center py-6 md:col-span-2 animate-pulse">Memuat 20 berita terbaru dari Watcher Guru...</p>
             </div>
@@ -241,15 +264,12 @@
 
     <!-- ==================== FLOATING CHAT POP-UP DI POJOK KANAN BAWAH ==================== -->
     <div id="floating-chat-wrapper" class="fixed bottom-5 right-5 z-50 hidden">
-        <!-- Tombol Pelampung (Floating Button) -->
         <button id="chat-toggle-btn" onclick="toggleChatPopup()" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition transform hover:scale-110 relative">
             <span class="text-2xl">💬</span>
             <span id="chat-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">New</span>
         </button>
 
-        <!-- Kotak Jendela Pop-up Chat (Posisi di Kanan) -->
         <div id="chat-popup-box" class="absolute bottom-16 right-0 w-80 sm:w-96 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 flex flex-col h-[480px] hidden overflow-hidden transition-all duration-300">
-            <!-- Header Chat -->
             <div class="bg-blue-600 text-white p-3.5 flex justify-between items-center shadow">
                 <div class="flex items-center gap-2">
                     <span class="text-lg">💬</span>
@@ -258,21 +278,17 @@
                 <button onclick="toggleChatPopup()" class="text-white hover:text-gray-200 font-bold text-lg px-2">✕</button>
             </div>
 
-            <!-- Area Tampil Pesan -->
             <div id="chat-container" class="flex-1 p-3 overflow-y-auto space-y-3 bg-gray-50 dark:bg-slate-900/60 text-sm">
                 <p class="text-center text-xs text-gray-400 animate-pulse">Memuat percakapan...</p>
             </div>
 
-            <!-- Input & Kirim Foto/Pesan -->
             <div class="p-3 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
-                <!-- Preview Gambar yang Dipilih -->
                 <div id="image-preview-container" class="hidden mb-2 relative w-max">
                     <img id="image-preview" src="" alt="Preview" class="h-16 rounded border border-gray-300 dark:border-slate-600 object-cover">
                     <button onclick="batalKirimFoto()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <!-- Tombol Upload Gambar -->
                     <label for="chat-file-input" class="cursor-pointer bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 p-2 rounded-lg transition text-sm flex items-center justify-center" title="Kirim Foto">
                         📷
                     </label>
@@ -293,7 +309,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        // Konfigurasi Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDt0WscAnI4LJSRXMUqEabrIkYDBPt4qfA",
             authDomain: "fund-family-ff366.firebaseapp.com",
@@ -312,7 +327,13 @@
         let idEditSekarang = '';
         let base64ImageToSend = '';
 
-        // ==================== PENGATURAN TEMA (DEFAULT DARK) ====================
+        let cryptoProfitChartInstance = null;
+        let monthlyCashChartInstance = null;
+
+        // Variabel penampung data sementara agar grafik bisa dirender kapan saja
+        let latestPnlByUser = { 'Ayah': 0, 'Istri': 0, 'Anak': 0, 'Saudara': 0 };
+        let latestMonthlyMap = {};
+
         function toggleTheme() {
             const htmlRoot = document.getElementById('html-root');
             const bodyRoot = document.getElementById('body-root');
@@ -356,7 +377,6 @@
             fetchWatcherGuruNews();
         });
 
-        // ==================== FETCH 20 BERITA WATCHER GURU (DENGAN GAMBAR) ====================
         async function fetchWatcherGuruNews() {
             const container = document.getElementById('watcher-guru-container');
             container.innerHTML = `<p class="text-slate-400 text-center py-6 md:col-span-2 animate-pulse">Menarik 20 berita terbaru dari Watcher Guru...</p>`;
@@ -446,6 +466,12 @@
                 muatDataTabungan();
                 muatDataCrypto();
                 muatDataChat(); 
+
+                // Paksa render ulang grafik setelah dashboard terbuka agar ukuran canvas terdeteksi sempurna
+                setTimeout(() => {
+                    renderCryptoProfitChart(latestPnlByUser);
+                    renderMonthlyCashChart(latestMonthlyMap);
+                }, 300);
             } else {
                 loginSection.classList.remove('hidden');
                 dashboardSection.classList.add('hidden');
@@ -561,6 +587,8 @@
                 let filterTabelMasuk = 0, filterTabelKeluar = 0;
                 let rowCount = 0;
 
+                latestMonthlyMap = {};
+
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); const docId = doc.id;
                     const kategori = data.kategoriKas || 'bulanan'; 
@@ -578,6 +606,12 @@
                     const mmTrans = String(waktuTransaksiObj.getMonth() + 1).padStart(2, '0');
                     const bulanTahunTransaksi = `${yyyyTrans}-${mmTrans}`;
                     
+                    if (!latestMonthlyMap[bulanTahunTransaksi]) {
+                        latestMonthlyMap[bulanTahunTransaksi] = { masuk: 0, keluar: 0 };
+                    }
+                    if (data.jenis === 'masuk') latestMonthlyMap[bulanTahunTransaksi].masuk += data.jumlah;
+                    if (data.jenis === 'keluar') latestMonthlyMap[bulanTahunTransaksi].keluar += data.jumlah;
+
                     if (filterValue === '' || filterValue === bulanTahunTransaksi) {
                         rowCount++;
                         if(data.jenis === 'masuk') filterTabelMasuk += data.jumlah;
@@ -631,10 +665,11 @@
                 document.getElementById('total-saldo-semua').innerText = 'Rp ' + totalSemua.toLocaleString('id-ID');
                 document.getElementById('filter-masuk').innerText = 'Rp ' + filterTabelMasuk.toLocaleString('id-ID');
                 document.getElementById('filter-keluar').innerText = 'Rp ' + filterTabelKeluar.toLocaleString('id-ID');
+
+                renderMonthlyCashChart(latestMonthlyMap);
             });
         }
 
-        // ==================== FUNGSI TABUNGAN DENGAN FOTO ====================
         function simpanTabungan() {
             const nama = document.getElementById('nama-tabungan').value;
             const target = unformatRupiah(document.getElementById('target-tabungan').value);
@@ -804,15 +839,22 @@
                 let grandTotalModal = 0;
                 let dataCount = 0;
 
+                latestPnlByUser = { 'Ayah': 0, 'Istri': 0, 'Anak': 0, 'Saudara': 0 };
+
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); const docId = doc.id;
                     const pemilik = data.pemilik || 'Ayah';
 
+                    const totalModal = data.jumlahKoin * data.hargaBeli;
+                    const totalSekarang = data.jumlahKoin * data.hargaSekarang;
+                    const pnlRp = totalSekarang - totalModal;
+
+                    if (latestPnlByUser[pemilik] !== undefined) {
+                        latestPnlByUser[pemilik] += pnlRp;
+                    }
+
                     if (filterUser === 'Semua' || filterUser === pemilik) {
                         dataCount++;
-                        const totalModal = data.jumlahKoin * data.hargaBeli;
-                        const totalSekarang = data.jumlahKoin * data.hargaSekarang;
-                        const pnlRp = totalSekarang - totalModal;
                         const pnlPersen = totalModal > 0 ? (pnlRp / totalModal) * 100 : 0;
                         
                         grandTotalPnlRp += pnlRp;
@@ -915,10 +957,108 @@
                     badgeEl.innerText = "Total PnL: Rp 0 (0%)";
                     badgeEl.className = "bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow";
                 }
+
+                renderCryptoProfitChart(latestPnlByUser);
             });
         }
 
-        // ==================== FUNGSI CHAT POP-UP DI KANAN & KIRIM FOTO ====================
+        function renderCryptoProfitChart(pnlData) {
+            const canvasEl = document.getElementById('cryptoProfitChart');
+            if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
+            if (cryptoProfitChartInstance) cryptoProfitChartInstance.destroy();
+
+            const labels = Object.keys(pnlData);
+            const values = Object.values(pnlData);
+            const backgroundColors = values.map(val => val >= 0 ? 'rgba(34, 197, 94, 0.7)' : 'rgba(239, 68, 68, 0.7)');
+
+            cryptoProfitChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total PnL (Rp)',
+                        data: values,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderMonthlyCashChart(monthlyMap) {
+            const canvasEl = document.getElementById('monthlyCashChart');
+            if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
+            if (monthlyCashChartInstance) monthlyCashChartInstance.destroy();
+
+            const sortedKeys = Object.keys(monthlyMap).sort();
+            const incomeData = sortedKeys.map(k => monthlyMap[k].masuk);
+            const expenseData = sortedKeys.map(k => monthlyMap[k].keluar);
+
+            monthlyCashChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedKeys.length > 0 ? sortedKeys : ['Belum Ada Data'],
+                    datasets: [
+                        {
+                            label: 'Pemasukan',
+                            data: sortedKeys.length > 0 ? incomeData : [0],
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Pengeluaran',
+                            data: sortedKeys.length > 0 ? expenseData : [0],
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8', font: { size: 11 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
         function toggleChatPopup() {
             const popup = document.getElementById('chat-popup-box');
             const badge = document.getElementById('chat-badge');
