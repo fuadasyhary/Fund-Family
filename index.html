@@ -31,12 +31,22 @@
         <h2 class="text-xl font-semibold text-gray-200 animate-pulse">Memuat Data...</h2>
     </div>
 
-    <!-- BAGIAN LOGIN -->
+    <!-- BAGIAN LOGIN DENGAN CAPTCHA -->
     <div id="login-section" class="min-h-screen flex items-center justify-center hidden">
         <div class="bg-slate-800 p-8 rounded-lg shadow-md w-96 border border-slate-700">
             <h2 class="text-2xl font-bold mb-6 text-center text-blue-400">Login Keluarga</h2>
             <input type="email" id="email" onkeypress="handleLoginKeyPress(event)" placeholder="Email" class="w-full mb-4 p-2 border border-slate-600 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
             <input type="password" id="password" onkeypress="handleLoginKeyPress(event)" placeholder="Password" class="w-full mb-4 p-2 border border-slate-600 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+            
+            <!-- CAPTCHA ANTI-BOT -->
+            <div class="mb-4">
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">Verifikasi Anti-Bot (Captcha)</label>
+                <div class="flex gap-2 items-center">
+                    <span id="captcha-text" class="bg-slate-700 px-3 py-2 rounded text-yellow-400 font-bold text-sm tracking-wider select-none border border-slate-600 min-w-[90px] text-center"></span>
+                    <input type="text" id="captcha-input" onkeypress="handleLoginKeyPress(event)" placeholder="Hasil" class="w-full p-2 border border-slate-600 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                </div>
+            </div>
+
             <button onclick="login()" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 mb-2 transition font-bold shadow">Masuk</button>
             <p id="login-error" class="text-red-400 text-sm mt-2 text-center hidden"></p>
             <p class="text-xs text-center text-gray-400 mt-4">*Gunakan email & password terdaftar (Default penghutang: 12345678).</p>
@@ -46,8 +56,8 @@
     <!-- ==================== DASHBOARD UTAMA (AYAH, BUNDA, ANAK) ==================== -->
     <div id="dashboard-section" class="hidden max-w-6xl mx-auto py-8 px-4">
         
-        <!-- HEADER & PROFIL USER + TOMBOL TEMA -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white dark:bg-slate-800 p-4 rounded shadow border-l-4 border-blue-600 transition-colors duration-300" id="header-card">
+        <!-- HEADER & PROFIL USER + TOMBOL TEMA (STICKY DI ATAS SAAT DISCROLL) -->
+        <div class="sticky top-4 z-40 flex flex-col md:flex-row justify-between items-center mb-8 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-4 rounded-xl shadow-xl border-l-4 border-blue-600 transition-colors duration-300" id="header-card">
             <div class="flex items-center gap-3">
                 <div class="text-3xl">💰</div>
                 <div>
@@ -617,6 +627,7 @@
 
         let isEditMode = false;
         let idEditSekarang = '';
+        let currentCaptchaResult = 0;
         
         let base64ImageToSend = '';
         let base64TabunganImage = '';
@@ -634,6 +645,18 @@
         let latestMonthlyMap = {};
         let latestDebtSummary = { totalHutang: 0, totalTerbayar: 0, sisaHutang: 0 };
         let currentUserJenisAkun = '';
+
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            currentCaptchaResult = num1 + num2;
+            const captchaEl = document.getElementById('captcha-text');
+            if(captchaEl) {
+                captchaEl.innerText = `${num1} + ${num2} = ?`;
+            }
+            const inputEl = document.getElementById('captcha-input');
+            if(inputEl) inputEl.value = '';
+        }
 
         function toggleTheme() {
             const htmlRoot = document.getElementById('html-root');
@@ -675,6 +698,7 @@
                 if(themeText) themeText.innerText = 'Light Mode';
             }
             
+            generateCaptcha();
             fetchWatcherGuruNews();
         });
 
@@ -688,16 +712,30 @@
         function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            if(!email || !password) return;
+            const captchaInput = document.getElementById('captcha-input').value.trim();
+            const errorText = document.getElementById('login-error');
+
+            if(!email || !password || !captchaInput) {
+                errorText.innerText = "Semua field termasuk captcha harus diisi!";
+                errorText.classList.remove('hidden');
+                return;
+            }
+
+            if(parseInt(captchaInput, 10) !== currentCaptchaResult) {
+                errorText.innerText = "Jawaban captcha salah! Silakan coba lagi.";
+                errorText.classList.remove('hidden');
+                generateCaptcha();
+                return;
+            }
 
             const loader = document.getElementById('loader');
             loader.classList.remove('hidden', 'fade-out');
             
-            auth.signInWithEmailAndPassword(email, password).catch(() => {
+            auth.signInWithEmailAndPassword(email, password).catch((err) => {
                 loader.classList.add('hidden');
-                const errorText = document.getElementById('login-error');
                 errorText.innerText = "Gagal login: Cek kembali email & password.";
                 errorText.classList.remove('hidden');
+                generateCaptcha();
             });
         }
         
@@ -720,6 +758,7 @@
                 dashboardSection.classList.add('hidden');
                 debtorDashboardSection.classList.add('hidden');
                 document.getElementById('floating-chat-wrapper').classList.add('hidden');
+                generateCaptcha();
             }
         });
 
