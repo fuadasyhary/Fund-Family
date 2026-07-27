@@ -303,7 +303,6 @@
                     <option value="Semua">Semua Anggota</option>
                     <option value="Ayah">Ayah</option>
                     <option value="Bunda">Bunda</option>
-                    <option value="Istri">Istri</option>
                     <option value="Anak">Anak</option>
                 </select>
             </div>
@@ -319,7 +318,6 @@
                 <select id="pemilik-crypto" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-blue-50 dark:bg-slate-700 dark:text-white font-bold">
                     <option value="Ayah">👨 Ayah</option>
                     <option value="Bunda">👩 Bunda</option>
-                    <option value="Istri">👩 Istri</option>
                     <option value="Anak">👦 Anak</option>
                 </select>
 
@@ -641,7 +639,7 @@
         let monthlyCashChartInstance = null;
         let debtPelunasanChartInstance = null;
 
-        let latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Istri': 0, 'Anak': 0 };
+        let latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Anak': 0 };
         let latestMonthlyMap = {};
         let latestDebtSummary = { totalHutang: 0, totalTerbayar: 0, sisaHutang: 0 };
         let currentUserJenisAkun = '';
@@ -1892,7 +1890,7 @@
                 let grandTotalModal = 0;
                 let dataCount = 0;
 
-                latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Istri': 0, 'Anak': 0 };
+                latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Anak': 0 };
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); const docId = doc.id;
@@ -1927,7 +1925,7 @@
                         const labelHarga = isHold ? 'Harga Skrg/Koin' : 'Harga Jual/Koin';
 
                         let ownerBadgeColor = 'bg-blue-900 text-blue-200';
-                        if (pemilik === 'Bunda' || pemilik === 'Istri') ownerBadgeColor = 'bg-pink-900 text-pink-200';
+                        if (pemilik === 'Bunda') ownerBadgeColor = 'bg-pink-900 text-pink-200';
                         if (pemilik === 'Anak') ownerBadgeColor = 'bg-emerald-900 text-emerald-200';
 
                         const actionButtons = isHold 
