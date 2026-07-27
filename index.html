@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta tags untuk mencegah caching agresif pada PWA/Mobile browser -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Keuangan & Investasi Keluarga</title>
     <!-- Logo Favicon Emoji Uang -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
@@ -31,7 +35,7 @@
         <h2 class="text-xl font-semibold text-gray-200 animate-pulse">Memuat Data...</h2>
     </div>
 
-    <!-- BAGIAN LOGIN DENGAN CAPTCHA GAMBAR (MENARIK & MODERN) -->
+    <!-- BAGIAN LOGIN DENGAN CAPTCHA GAMBAR -->
     <div id="login-section" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 px-4 hidden">
         <div class="bg-slate-800/90 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-blue-500/10 w-full max-w-md border border-slate-700/80 relative overflow-hidden">
             <div class="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -53,7 +57,7 @@
                     <input type="password" id="password" onkeypress="handleLoginKeyPress(event)" placeholder="••••••••" class="w-full px-4 py-2.5 border border-slate-600 rounded-xl bg-slate-900/80 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition">
                 </div>
                 
-                <!-- CAPTCHA GAMBAR (CANVAS) -->
+                <!-- CAPTCHA GAMBAR -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-300 mb-1">Verifikasi Anti-Bot (Klik gambar untuk mengganti)</label>
                     <div class="flex gap-3 items-center">
@@ -72,7 +76,7 @@
     <!-- ==================== DASHBOARD UTAMA (AYAH, BUNDA, ANAK) ==================== -->
     <div id="dashboard-section" class="hidden max-w-6xl mx-auto py-8 px-4">
         
-        <!-- HEADER & PROFIL USER + TOMBOL TEMA (STICKY DI ATAS SAAT DISCROLL) -->
+        <!-- HEADER & PROFIL USER + TOMBOL TEMA -->
         <div class="sticky top-4 z-40 flex flex-col md:flex-row justify-between items-center mb-8 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-4 rounded-xl shadow-xl border-l-4 border-blue-600 transition-colors duration-300" id="header-card">
             <div class="flex items-center gap-3">
                 <div class="text-3xl">💰</div>
@@ -125,7 +129,7 @@
             </div>
         </div>
 
-        <!-- ==================== BAGIAN GRAFIK ANALITIK KEUANGAN & PELUNASAN HUTANG ==================== -->
+        <!-- ==================== BAGIAN GRAFIK ANALITIK ==================== -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
             <div class="bg-white dark:bg-slate-800 p-5 rounded-lg shadow border border-gray-200 dark:border-slate-700">
                 <h3 class="font-bold text-gray-900 dark:text-white mb-4 text-base flex items-center">
@@ -146,7 +150,7 @@
             </div>
         </div>
 
-        <!-- ==================== BAGIAN 1: TRANSAKSI HARIAN ==================== -->
+        <!-- ==================== TRANSAKSI HARIAN ==================== -->
         <div class="flex flex-col md:flex-row justify-between items-end mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">💸 Catatan Transaksi Kas</h2>
         </div>
@@ -272,7 +276,7 @@
         </div>
         <div id="list-hutang" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"></div>
 
-        <!-- ==================== BAGIAN 2: RENCANA TABUNGAN ==================== -->
+        <!-- ==================== RENCANA TABUNGAN ==================== -->
         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2">🎯 Rencana Tabungan Rupiah</h2>
         
         <div class="bg-white dark:bg-slate-800 p-6 rounded shadow mb-6 border-t-4 border-indigo-500 transition-colors duration-300">
@@ -301,7 +305,7 @@
         </div>
         <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"></div>
 
-        <!-- ==================== BAGIAN 3: INVESTASI CRYPTO MULTI-USER ==================== -->
+        <!-- ==================== INVESTASI CRYPTO MULTI-USER ==================== -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2 mt-4 gap-4">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">🚀 Portofolio Investasi Crypto</h2>
             <div class="flex items-center gap-3">
@@ -352,7 +356,7 @@
         
         <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"></div>
 
-        <!-- ==================== BAGIAN 4: BERITA WATCHER GURU ==================== -->
+        <!-- ==================== BERITA WATCHER GURU ==================== -->
         <div class="flex justify-between items-center mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2 mt-10">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">📡 Berita Terbaru Watcher Guru</h2>
             <span class="text-xs bg-amber-500 text-white px-3 py-1 rounded-full font-bold animate-pulse">Live</span>
@@ -373,7 +377,7 @@
 
     </div>
 
-    <!-- ==================== HALAMAN KHUSUS PENGHUTANG (DEBTOR PORTAL) ==================== -->
+    <!-- ==================== HALAMAN KHUSUS PENGHUTANG ==================== -->
     <div id="debtor-dashboard-section" class="hidden max-w-4xl mx-auto py-8 px-4">
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white dark:bg-slate-800 p-4 rounded shadow border-l-4 border-orange-500 transition-colors duration-300">
             <div class="flex items-center gap-3">
@@ -403,34 +407,46 @@
             <span id="chat-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">New</span>
         </button>
 
-        <div id="chat-popup-box" class="absolute bottom-16 right-0 w-80 sm:w-96 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 flex flex-col h-[480px] hidden overflow-hidden transition-all duration-300">
+        <div id="chat-popup-box" class="absolute bottom-16 right-0 w-[420px] sm:w-[500px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 flex flex-col h-[500px] hidden overflow-hidden transition-all duration-300">
             <div class="bg-blue-600 text-white p-3.5 flex justify-between items-center shadow">
                 <div class="flex items-center gap-2">
                     <span class="text-lg">💬</span>
-                    <h3 class="font-bold text-sm">Chat Keluarga Realtime</h3>
+                    <h3 class="font-bold text-sm" id="chat-header-title">Chat Keluarga Realtime</h3>
                 </div>
                 <button onclick="toggleChatPopup()" class="text-white hover:text-gray-200 font-bold text-lg px-2">✕</button>
             </div>
 
-            <div id="chat-container" class="flex-1 p-3 overflow-y-auto space-y-3 bg-gray-50 dark:bg-slate-900/60 text-sm">
-                <p class="text-center text-xs text-gray-400 animate-pulse">Memuat percakapan...</p>
-            </div>
-
-            <div class="p-3 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
-                <div id="image-preview-container" class="hidden mb-2 relative w-max">
-                    <img id="image-preview" src="" alt="Preview" class="h-16 rounded border border-gray-300 dark:border-slate-600 object-cover cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
-                    <button onclick="batalKirimFoto()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
+            <div class="flex flex-1 overflow-hidden">
+                <div class="w-36 bg-gray-100 dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 flex flex-col overflow-y-auto" id="chat-sidebar-list">
+                    <!-- Populated dynamically -->
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <label for="chat-file-input" class="cursor-pointer bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 p-2 rounded-lg transition text-sm flex items-center justify-center" title="Kirim Foto">
-                        📷
-                    </label>
-                    <input type="file" id="chat-file-input" accept="image/*" onchange="previewFile(event)" class="hidden">
+                <div class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-800">
+                    <div id="chat-container" class="flex-1 p-3 overflow-y-auto space-y-3 bg-gray-50 dark:bg-slate-900/60 text-sm">
+                        <p class="text-center text-xs text-gray-400 animate-pulse">Memuat percakapan...</p>
+                    </div>
 
-                    <input type="text" id="chat-input" onkeypress="handleChatKeyPress(event)" placeholder="Ketik pesan..." class="flex-1 p-2 border dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-slate-700 dark:text-white text-xs">
-                    
-                    <button onclick="kirimPesanChat()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-2 rounded-lg transition text-xs shadow">Kirim</button>
+                    <div id="typing-indicator" class="px-3 py-1 text-[11px] text-gray-400 italic bg-gray-50 dark:bg-slate-900/60 hidden">
+                        Seseorang sedang mengetik...
+                    </div>
+
+                    <div class="p-3 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
+                        <div id="image-preview-container" class="hidden mb-2 relative w-max">
+                            <img id="image-preview" src="" alt="Preview" class="h-16 rounded border border-gray-300 dark:border-slate-600 object-cover cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                            <button onclick="batalKirimFoto()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <label for="chat-file-input" class="cursor-pointer bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 p-2 rounded-lg transition text-sm flex items-center justify-center" title="Kirim Foto">
+                                📷
+                            </label>
+                            <input type="file" id="chat-file-input" accept="image/*" onchange="previewFile(event)" class="hidden">
+
+                            <input type="text" id="chat-input" oninput="handleChatInputTyping()" onkeypress="handleChatKeyPress(event)" placeholder="Ketik pesan..." class="flex-1 p-2 border dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-slate-700 dark:text-white text-xs">
+                            
+                            <button onclick="kirimPesanChat()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-2 rounded-lg transition text-xs shadow">Kirim</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -488,7 +504,6 @@
                 </div>
             </div>
 
-            <!-- Bagian Khusus Manajemen User Keluarga (Hanya muncul jika Ayah / Bunda) -->
             <div id="manajemen-keluarga-container" class="hidden mt-6 pt-6 border-t border-gray-200 dark:border-slate-700">
                 <h4 class="text-md font-bold mb-3 text-blue-600 dark:text-blue-400">👥 Tambah User Keluarga Baru (Ayah/Bunda/Anak)</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
@@ -527,7 +542,7 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL BAYAR HUTANG ONLINE ==================== -->
+    <!-- ==================== MODAL BAYAR HUTANG ==================== -->
     <div id="modal-bayar-hutang" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center">
         <div class="bg-white dark:bg-slate-800 w-full max-w-sm p-6 rounded-lg shadow-2xl border border-gray-200 dark:border-slate-700 m-4">
             <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white border-b border-gray-200 dark:border-slate-700 pb-2">💸 Bayar / Cicil Hutang</h3>
@@ -557,7 +572,7 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL EDIT HUTANG ONLINE ==================== -->
+    <!-- ==================== MODAL EDIT HUTANG ==================== -->
     <div id="modal-edit-hutang" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center overflow-y-auto py-10">
         <div class="bg-white dark:bg-slate-800 w-full max-w-lg p-6 rounded-lg shadow-2xl border border-gray-200 dark:border-slate-700 m-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white border-b border-gray-200 dark:border-slate-700 pb-2">✏️ Edit Data Hutang Online</h3>
@@ -596,7 +611,7 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL DETAIL HUTANG ONLINE ==================== -->
+    <!-- ==================== MODAL DETAIL HUTANG ==================== -->
     <div id="modal-detail-hutang" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center overflow-y-auto py-10">
         <div class="bg-white dark:bg-slate-800 w-full max-w-2xl p-6 rounded-lg shadow-2xl border border-gray-200 dark:border-slate-700 m-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white border-b border-gray-200 dark:border-slate-700 pb-2">📋 Detail Lengkap Data Hutang</h3>
@@ -639,6 +654,13 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // Aktifkan offline persistence agar data selalu sinkron dengan cache lokal & server
+        db.enablePersistence().catch((err) => {
+            if (err.code == 'unimplemented') {
+                console.log('Browser tidak mendukung persistence cache.');
+            }
+        });
+
         let isEditMode = false;
         let idEditSekarang = '';
         let currentCaptchaText = '';
@@ -657,6 +679,14 @@
         let latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Anak': 0 };
         let latestDebtSummary = { totalHutang: 0, totalTerbayar: 0, sisaHutang: 0, debtors: [] };
         let currentUserJenisAkun = '';
+
+        // --- CHAT STATE ---
+        let activeChatTarget = 'group'; 
+        let activeChatName = 'Chat Keluarga Realtime';
+        let unsubscribeChat = null;
+        let unsubscribeTyping = null;
+        let typingTimeout = null;
+        let lastMessageCount = 0;
 
         // --- 1 JAM INACTIVITY TIMEOUT LOGIC ---
         let inactivityTimer = null;
@@ -799,6 +829,9 @@
         
         function logout() { 
             clearTimeout(inactivityTimer);
+            if (auth.currentUser) {
+                db.collection("users").doc(auth.currentUser.uid).update({ isOnline: false }).catch(() => {});
+            }
             auth.signOut(); 
         }
 
@@ -814,6 +847,7 @@
             if (user) {
                 loginSection.classList.add('hidden');
                 resetInactivityTimer();
+                setupPresence(user);
                 muatProfilPenggunaDanAturTampilan(user);
             } else {
                 clearTimeout(inactivityTimer);
@@ -825,8 +859,46 @@
             }
         });
 
+        function setupPresence(user) {
+            const userRef = db.collection("users").doc(user.uid);
+            userRef.set({ isOnline: true, email: user.email, lastSeen: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).catch(() => {});
+            
+            const heartbeat = setInterval(() => {
+                if (auth.currentUser) {
+                    db.collection("users").doc(auth.currentUser.uid).update({
+                        email: auth.currentUser.email,
+                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(() => {});
+                } else {
+                    clearInterval(heartbeat);
+                }
+            }, 30000);
+
+            window.addEventListener('beforeunload', () => {
+                if (auth.currentUser) {
+                    db.collection("users").doc(auth.currentUser.uid).update({ isOnline: false }).catch(() => {});
+                }
+            });
+        }
+
         function muatProfilPenggunaDanAturTampilan(user) {
-            db.collection("users").doc(user.uid).onSnapshot((doc) => {
+            const userDocRef = db.collection("users").doc(user.uid);
+            userDocRef.get().then((docSnap) => {
+                if (!docSnap.exists) {
+                    userDocRef.set({
+                        nama: user.email.split('@')[0],
+                        email: user.email,
+                        jenisAkun: 'Ayah',
+                        foto: '',
+                        isOnline: true
+                    }, { merge: true });
+                } else {
+                    // Pastikan email selalu sinkron dengan auth
+                    userDocRef.update({ email: user.email }).catch(()=>{});
+                }
+            });
+
+            userDocRef.onSnapshot((doc) => {
                 const displayNameEl = document.getElementById('user-display-name');
                 const accTypeEl = document.getElementById('user-account-type');
                 const photoEl = document.getElementById('user-photo');
@@ -877,12 +949,6 @@
                             renderDebtPelunasanChart(latestDebtSummary);
                         }, 300);
                     }
-                } else {
-                    db.collection("users").doc(user.uid).set({
-                        nama: user.email.split('@')[0],
-                        jenisAkun: 'Ayah',
-                        foto: ''
-                    });
                 }
             });
         }
@@ -948,6 +1014,7 @@
             let promises = [
                 db.collection("users").doc(user.uid).update({
                     nama: namaBaru,
+                    email: user.email,
                     foto: base64ProfilImage
                 })
             ];
@@ -975,7 +1042,6 @@
             document.getElementById('modal-gambar-besar').classList.add('hidden');
         }
 
-        // --- LIMIT BULANAN LOGIC ---
         function getCurrentMonthKey() {
             const d = new Date();
             const yyyy = d.getFullYear();
@@ -1008,7 +1074,6 @@
             }).catch(e => alert("Gagal menyimpan limit: " + e.message));
         }
 
-        // ==================== UTILITAS ====================
         function formatInputRupiah(input) {
             let val = input.value.replace(/[^0-9]/g, '');
             if(val !== "") input.value = parseInt(val, 10).toLocaleString('id-ID');
@@ -1033,7 +1098,6 @@
             return d.toLocaleDateString('id-ID', { day: 'numeric', month:'short', year:'numeric' });
         }
 
-        // ==================== TRANSAKSI HARIAN & LIMIT BULANAN ====================
         function gantiKategoriKas(select) {
             const jenisSelect = document.getElementById('jenis');
             if (select.value === 'limit_bulanan') {
@@ -1055,7 +1119,7 @@
             const kategoriKas = document.getElementById('kategori-kas').value;
             let jenis = document.getElementById('jenis').value;
             if (kategoriKas === 'limit_bulanan') {
-                jenis = 'keluar'; // Default minus for monthly limit cash
+                jenis = 'keluar';
             }
             const jumlah = unformatRupiah(document.getElementById('jumlah').value);
             const keterangan = document.getElementById('keterangan').value;
@@ -1251,7 +1315,6 @@
             });
         }
 
-        // ==================== MANAJEMEN USER KELUARGA ====================
         function previewNewUserFoto(event) {
             const file = event.target.files[0];
             if (file) {
@@ -1301,9 +1364,10 @@
                     const newUid = userCred.user.uid;
                     db.collection("users").doc(newUid).set({
                         nama: nama,
-                        jenisAkun: jenisAkun,
                         email: email,
-                        foto: base64NewUserImage || ''
+                        jenisAkun: jenisAkun,
+                        foto: base64NewUserImage || '',
+                        isOnline: false
                     }).then(() => {
                         secondaryAuth.signOut();
                         alert(`Berhasil membuat akun baru untuk ${jenisAkun} (${nama})!`);
@@ -1319,7 +1383,6 @@
                 });
         }
 
-        // ==================== MANAJEMEN HUTANG ONLINE ====================
         function previewHutangJaminanFile(event) {
             const file = event.target.files[0];
             if (file) {
@@ -1387,9 +1450,10 @@
                     const newUid = userCred.user.uid;
                     db.collection("users").doc(newUid).set({
                         nama: nama,
-                        jenisAkun: 'Penghutang',
                         email: emailPenghutang,
-                        foto: ''
+                        jenisAkun: 'Penghutang',
+                        foto: '',
+                        isOnline: false
                     }).then(() => {
                         secondaryAuth.signOut();
                         simpanDataHutangKeDb(newUid, nama, emailPenghutang, total, jaminan, tempo);
@@ -1717,7 +1781,6 @@
             });
         }
 
-        // ==================== KHUSUS HALAMAN PENGHUTANG ====================
         function muatDataHutangPenghutang(userEmail, namaUser) {
             db.collection("hutang").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('debtor-portal-content');
@@ -1866,7 +1929,6 @@
             reader.readAsDataURL(file);
         }
 
-        // ==================== TABUNGAN ====================
         function previewTabunganFile(event) {
             const file = event.target.files[0];
             if (file) {
@@ -1968,7 +2030,6 @@
             });
         }
 
-        // ==================== CRYPTO ====================
         function cekPilihanKoin(select) {
             const customInput = document.getElementById('custom-koin');
             if (select.value === 'Lainnya') {
@@ -2187,7 +2248,6 @@
             });
         }
 
-        // ==================== WATCHER GURU ====================
         async function fetchWatcherGuruNews() {
             const container = document.getElementById('watcher-guru-container');
             if(!container) return;
@@ -2252,7 +2312,6 @@
             }
         }
 
-        // ==================== CHARTS (CHART.JS) ====================
         function renderCryptoProfitChart(pnlData) {
             const canvasEl = document.getElementById('cryptoProfitChart');
             if (!canvasEl) return;
@@ -2296,7 +2355,6 @@
             const debtors = debtSummary.debtors || [];
             const labels = debtors.map(d => `${d.nama} (${d.sisa <= 0 ? 'Lunas' : 'Belum Lunas'})`);
             const dataValues = debtors.map(d => d.total);
-            // Warna Hijau jika sudah lunas (sisa <= 0), warna Oranye jika belum lunas
             const bgColors = debtors.map(d => d.sisa <= 0 ? '#22c55e' : '#f97316');
 
             debtPelunasanChartInstance = new Chart(ctx, {
@@ -2338,7 +2396,6 @@
             });
         }
 
-        // ==================== CHAT KELUARGA ====================
         function toggleChatPopup() {
             const popup = document.getElementById('chat-popup-box');
             const badge = document.getElementById('chat-badge');
@@ -2346,9 +2403,67 @@
             popup.classList.toggle('hidden');
             if (!popup.classList.contains('hidden')) {
                 if(badge) badge.classList.add('hidden');
+                muatSidebarChat();
                 const chatContainer = document.getElementById('chat-container');
                 if(chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
             }
+        }
+
+        function switchChatTarget(targetId, targetName) {
+            activeChatTarget = targetId;
+            activeChatName = targetName;
+            document.getElementById('chat-header-title').innerText = targetName;
+            muatSidebarChat();
+            muatDataChat();
+        }
+
+        function muatSidebarChat() {
+            const sidebar = document.getElementById('chat-sidebar-list');
+            if (!sidebar) return;
+            sidebar.innerHTML = '';
+
+            const isGroupActive = activeChatTarget === 'group';
+            sidebar.innerHTML += `
+                <div onclick="switchChatTarget('group', 'Chat Keluarga Realtime')" class="p-2.5 border-b border-gray-200 dark:border-slate-800 cursor-pointer transition ${isGroupActive ? 'bg-blue-600 text-white font-bold' : 'hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-800 dark:text-gray-200'}">
+                    <div class="flex items-center gap-2 text-xs truncate">
+                        <span>🌍</span>
+                        <span class="truncate">Grup Keluarga</span>
+                    </div>
+                </div>
+            `;
+
+            db.collection("users").onSnapshot((snapshot) => {
+                let userHtml = '';
+                const currentUser = auth.currentUser;
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const uid = doc.id;
+                    if (currentUser && uid === currentUser.uid) return;
+
+                    const isOnline = data.lastSeen && (Date.now() - data.lastSeen.toDate().getTime() < 45000);
+                    const isActive = activeChatTarget === uid;
+                    const dotColor = isOnline ? 'bg-green-500' : 'bg-gray-400';
+                    const name = data.nama || (data.email ? data.email.split('@')[0] : 'User');
+
+                    userHtml += `
+                        <div onclick="switchChatTarget('${uid}', 'Chat dengan ${name}')" class="p-2.5 border-b border-gray-200 dark:border-slate-800 cursor-pointer transition ${isActive ? 'bg-blue-600 text-white font-bold' : 'hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-800 dark:text-gray-200'}">
+                            <div class="flex items-center justify-between text-xs truncate">
+                                <span class="truncate">👤 ${name}</span>
+                                <span class="h-2 w-2 rounded-full ${dotColor} flex-shrink-0" title="${isOnline ? 'Online' : 'Offline'}"></span>
+                            </div>
+                        </div>
+                    `;
+                });
+                const groupActive = activeChatTarget === 'group';
+                sidebar.innerHTML = `
+                    <div onclick="switchChatTarget('group', 'Chat Keluarga Realtime')" class="p-2.5 border-b border-gray-200 dark:border-slate-800 cursor-pointer transition ${groupActive ? 'bg-blue-600 text-white font-bold' : 'hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-800 dark:text-gray-200'}">
+                        <div class="flex items-center gap-2 text-xs truncate">
+                            <span>🌍</span>
+                            <span class="truncate">Grup Keluarga</span>
+                        </div>
+                    </div>
+                ` + userHtml;
+            });
         }
 
         function previewFile(event) {
@@ -2370,6 +2485,56 @@
             document.getElementById('chat-file-input').value = '';
         }
 
+        function handleChatInputTyping() {
+            const currentUser = auth.currentUser;
+            if (!currentUser) return;
+
+            const typingDocId = activeChatTarget === 'group' ? 'typing_group' : `typing_${[currentUser.uid, activeChatTarget].sort().join('_')}`;
+            const typingRef = db.collection("typing").doc(typingDocId);
+            
+            typingRef.set({
+                [currentUser.uid]: { name: document.getElementById('user-display-name').innerText, timestamp: Date.now() }
+            }, { merge: true });
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                typingRef.set({
+                    [currentUser.uid]: firebase.firestore.FieldValue.delete()
+                }, { merge: true });
+            }, 2500);
+        }
+
+        function listenTypingIndicator() {
+            if (unsubscribeTyping) unsubscribeTyping();
+            const currentUser = auth.currentUser;
+            if (!currentUser) return;
+
+            const typingDocId = activeChatTarget === 'group' ? 'typing_group' : `typing_${[currentUser.uid, activeChatTarget].sort().join('_')}`;
+            
+            unsubscribeTyping = db.collection("typing").doc(typingDocId).onSnapshot((doc) => {
+                const indicator = document.getElementById('typing-indicator');
+                if (!doc.exists || !indicator) {
+                    if(indicator) indicator.classList.add('hidden');
+                    return;
+                }
+                const data = doc.data();
+                let typingNames = [];
+                const now = Date.now();
+                for (let uid in data) {
+                    if (uid === currentUser.uid) continue;
+                    if (now - data[uid].timestamp < 3500) {
+                        typingNames.push(data[uid].name);
+                    }
+                }
+                if (typingNames.length > 0) {
+                    indicator.innerText = `${typingNames.join(', ')} lagi ngetik...`;
+                    indicator.classList.remove('hidden');
+                } else {
+                    indicator.classList.add('hidden');
+                }
+            });
+        }
+
         function kirimPesanChat() {
             const inputEl = document.getElementById('chat-input');
             const pesan = inputEl.value.trim();
@@ -2379,44 +2544,76 @@
             const senderEmail = currentUser ? currentUser.email : "Anonim";
             const senderName = document.getElementById('user-display-name')?.innerText || senderEmail.split('@')[0];
 
-            db.collection("chats").add({
-                sender: senderName,
-                email: senderEmail,
-                text: pesan,
-                imageUrl: base64ImageToSend || '',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                inputEl.value = '';
-                batalKirimFoto();
-            }).catch(e => alert("Gagal mengirim pesan: " + e.message));
+            if (activeChatTarget === 'group') {
+                db.collection("chats").add({
+                    sender: senderName,
+                    email: senderEmail,
+                    text: pesan,
+                    imageUrl: base64ImageToSend || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    inputEl.value = '';
+                    batalKirimFoto();
+                }).catch(e => alert("Gagal mengirim pesan: " + e.message));
+            } else {
+                const chatId = [currentUser.uid, activeChatTarget].sort().join('_');
+                db.collection("private_chats").add({
+                    chatId: chatId,
+                    senderId: currentUser.uid,
+                    senderName: senderName,
+                    senderEmail: senderEmail,
+                    recipientId: activeChatTarget,
+                    text: pesan,
+                    imageUrl: base64ImageToSend || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    inputEl.value = '';
+                    batalKirimFoto();
+                }).catch(e => alert("Gagal mengirim pesan: " + e.message));
+            }
         }
 
         function handleChatKeyPress(event) {
             if (event.key === 'Enter') kirimPesanChat();
         }
 
-        function editPesanChat(id, teksLama) {
+        function editPesanChat(id, teksLama, isPrivate = false) {
             const teksBaru = prompt("Edit pesan Anda:", teksLama);
             if (teksBaru !== null && teksBaru.trim() !== "") {
-                db.collection("chats").doc(id).update({
+                const colName = isPrivate ? "private_chats" : "chats";
+                db.collection(colName).doc(id).update({
                     text: teksBaru.trim(),
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }).catch(e => alert("Gagal mengedit pesan: " + e.message));
             }
         }
 
-        function hapusPesanChat(id) {
+        function hapusPesanChat(id, isPrivate = false) {
             if (confirm("Hapus pesan ini?")) {
-                db.collection("chats").doc(id).delete().catch(e => alert("Gagal menghapus pesan: " + e.message));
+                const colName = isPrivate ? "private_chats" : "chats";
+                db.collection(colName).doc(id).delete().catch(e => alert("Gagal menghapus pesan: " + e.message));
             }
         }
 
-        let unsubscribeChat = null;
-        let lastMessageCount = 0;
-
         function muatDataChat() {
             if (unsubscribeChat) unsubscribeChat();
-            unsubscribeChat = db.collection("chats").orderBy("createdAt", "asc").onSnapshot((querySnapshot) => {
+            listenTypingIndicator();
+
+            const currentUser = auth.currentUser;
+            if (!currentUser) return;
+
+            let query;
+            let isPrivate = false;
+
+            if (activeChatTarget === 'group') {
+                query = db.collection("chats").orderBy("createdAt", "asc");
+            } else {
+                isPrivate = true;
+                const chatId = [currentUser.uid, activeChatTarget].sort().join('_');
+                query = db.collection("private_chats").where("chatId", "==", chatId).orderBy("createdAt", "asc");
+            }
+
+            unsubscribeChat = query.onSnapshot((querySnapshot) => {
                 const chatContainer = document.getElementById('chat-container');
                 if(!chatContainer) return;
                 chatContainer.innerHTML = '';
@@ -2425,8 +2622,7 @@
                 querySnapshot.forEach((doc) => {
                     count++;
                     const data = doc.data(); const docId = doc.id;
-                    const currentUser = auth.currentUser;
-                    const isMyMessage = currentUser && data.email === currentUser.email;
+                    const isMyMessage = isPrivate ? (data.senderId === currentUser.uid) : (data.email === currentUser.email);
 
                     const timeString = data.createdAt ? data.createdAt.toDate().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Baru saja';
                     const teksAman = data.text ? data.text.replace(/'/g, "\\'") : '';
@@ -2435,11 +2631,13 @@
                     if (isMyMessage) {
                         actionButtons = `
                             <div class="flex gap-2 mt-1 text-[10px]">
-                                ${data.text ? `<button onclick="editPesanChat('${docId}', '${teksAman}')" class="text-blue-400 hover:underline">Edit</button>` : ''}
-                                <button onclick="hapusPesanChat('${docId}')" class="text-red-400 hover:underline">Hapus</button>
+                                ${data.text ? `<button onclick="editPesanChat('${docId}', '${teksAman}', ${isPrivate})" class="text-blue-400 hover:underline">Edit</button>` : ''}
+                                <button onclick="hapusPesanChat('${docId}', ${isPrivate})" class="text-red-400 hover:underline">Hapus</button>
                             </div>
                         `;
                     }
+
+                    const senderLabel = isPrivate ? data.senderName : data.sender;
 
                     if (isMyMessage) {
                         chatContainer.innerHTML += `
@@ -2455,7 +2653,7 @@
                     } else {
                         chatContainer.innerHTML += `
                             <div class="flex flex-col items-start mb-2">
-                                <span class="text-[9px] text-gray-400 mb-0.5">${data.sender} • ${timeString}</span>
+                                <span class="text-[9px] text-gray-400 mb-0.5">${senderLabel || 'Anggota'} • ${timeString}</span>
                                 <div class="bg-slate-700 text-white px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[80%] text-xs shadow border border-slate-600">
                                     ${data.text ? `<div>${data.text}</div>` : ''}
                                     ${imageTag}
@@ -2466,7 +2664,7 @@
                 });
 
                 if (count === 0) {
-                    chatContainer.innerHTML = `<p class="text-center text-xs text-gray-400 py-10">Belum ada pesan. Mulai obrolan keluarga!</p>`;
+                    chatContainer.innerHTML = `<p class="text-center text-xs text-gray-400 py-10">Belum ada pesan. Mulai obrolan!</p>`;
                 } else {
                     const popup = document.getElementById('chat-popup-box');
                     const badge = document.getElementById('chat-badge');
