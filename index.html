@@ -26,7 +26,7 @@
 <body class="bg-slate-900 text-gray-100 font-sans pb-20 transition-colors duration-300" id="body-root">
 
     <!-- LAYAR LOADING -->
-    <div id="loader" class="fixed inset-0 bg-slate-900 z-50 flex flex-col items-center justify-center">
+    <div id="loader" class="fixed inset-0 bg-slate-900 z-[70] flex flex-col items-center justify-center">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
         <h2 class="text-xl font-semibold text-gray-200 animate-pulse">Memuat Data...</h2>
     </div>
@@ -35,15 +35,15 @@
     <div id="login-section" class="min-h-screen flex items-center justify-center hidden">
         <div class="bg-slate-800 p-8 rounded-lg shadow-md w-96 border border-slate-700">
             <h2 class="text-2xl font-bold mb-6 text-center text-blue-400">Login Keluarga</h2>
-            <input type="email" id="email" placeholder="Email" class="w-full mb-4 p-2 border border-slate-600 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
-            <input type="password" id="password" placeholder="Password" class="w-full mb-4 p-2 border border-slate-600 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <input type="email" id="email" onkeypress="handleLoginKeyPress(event)" placeholder="Email" class="w-full mb-4 p-2 border border-slate-600 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <input type="password" id="password" onkeypress="handleLoginKeyPress(event)" placeholder="Password" class="w-full mb-4 p-2 border border-slate-600 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
             <button onclick="login()" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 mb-2 transition font-bold shadow">Masuk</button>
             <p id="login-error" class="text-red-400 text-sm mt-2 text-center hidden"></p>
-            <p class="text-xs text-center text-gray-400 mt-4">*Hanya akun yang didaftarkan admin keluarga yang bisa masuk.</p>
+            <p class="text-xs text-center text-gray-400 mt-4">*Gunakan email & password terdaftar (Default penghutang: 12345678).</p>
         </div>
     </div>
 
-    <!-- BAGIAN DASHBOARD -->
+    <!-- ==================== DASHBOARD UTAMA (AYAH, BUNDA, ANAK) ==================== -->
     <div id="dashboard-section" class="hidden max-w-6xl mx-auto py-8 px-4">
         
         <!-- HEADER & PROFIL USER + TOMBOL TEMA -->
@@ -52,20 +52,27 @@
                 <div class="text-3xl">💰</div>
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white" id="header-title">Buku Kas & Investasi Keluarga</h1>
-                    <div class="flex items-center mt-2">
-                        <div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full h-8 w-8 flex items-center justify-center font-bold mr-2">
+                    <div class="flex flex-wrap items-center mt-2 gap-2">
+                        <div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full h-10 w-10 flex items-center justify-center font-bold overflow-hidden border-2 border-blue-400 shadow-sm">
+                            <img id="user-photo" src="" class="hidden w-full h-full object-cover" alt="Profile">
                             <span id="user-initial">U</span>
                         </div>
-                        <p class="text-sm text-gray-800 dark:text-gray-300">Login sebagai: <span id="user-email" class="font-semibold text-blue-600 dark:text-blue-400"></span></p>
+                        <div>
+                            <p class="text-sm text-gray-800 dark:text-gray-300 leading-tight">Halo, <span id="user-display-name" class="font-bold text-blue-600 dark:text-blue-400"></span></p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold bg-gray-200 dark:bg-slate-700 px-2 py-0.5 rounded-full inline-block mt-0.5"><span id="user-account-type">Memuat...</span></p>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="flex items-center gap-3 mt-4 md:mt-0">
-                <button onclick="toggleTheme()" id="btn-theme" class="bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-yellow-400 px-4 py-2 rounded-lg font-semibold hover:opacity-80 transition shadow flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2 mt-4 md:mt-0">
+                <button onclick="bukaModalProfil()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition shadow font-semibold flex items-center gap-2 text-sm">
+                    ✏️ Edit Profil & Akun
+                </button>
+                <button onclick="toggleTheme()" id="btn-theme" class="bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-yellow-400 px-4 py-2 rounded-lg font-semibold hover:opacity-80 transition shadow flex items-center gap-2 text-sm">
                     <span id="theme-icon">☀️</span> <span id="theme-text">Light Mode</span>
                 </button>
-                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition shadow font-semibold">Keluar</button>
+                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition shadow font-semibold text-sm">Keluar</button>
             </div>
         </div>
 
@@ -91,25 +98,32 @@
             </div>
         </div>
 
-        <!-- ==================== BAGIAN GRAFIK ANALITIK KEUANGAN ==================== -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            <!-- Grafik PnL Crypto Multi-User -->
+        <!-- ==================== BAGIAN GRAFIK ANALITIK KEUANGAN & PELUNASAN HUTANG ==================== -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div class="bg-white dark:bg-slate-800 p-5 rounded-lg shadow border border-gray-200 dark:border-slate-700">
                 <h3 class="font-bold text-gray-900 dark:text-white mb-4 text-base flex items-center">
-                    <span class="mr-2">📈</span> Grafik Profit/Loss Crypto (Multi-User)
+                    <span class="mr-2">📈</span> Grafik P/L Crypto
                 </h3>
                 <div class="h-64 w-full relative">
                     <canvas id="cryptoProfitChart"></canvas>
                 </div>
             </div>
 
-            <!-- Grafik Transaksi Kas Bulanan -->
             <div class="bg-white dark:bg-slate-800 p-5 rounded-lg shadow border border-gray-200 dark:border-slate-700">
                 <h3 class="font-bold text-gray-900 dark:text-white mb-4 text-base flex items-center">
-                    <span class="mr-2">📊</span> Grafik Arus Kas Bulanan (Detail)
+                    <span class="mr-2">📊</span> Arus Kas Bulanan
                 </h3>
                 <div class="h-64 w-full relative">
                     <canvas id="monthlyCashChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-lg shadow border border-gray-200 dark:border-slate-700">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-4 text-base flex items-center">
+                    <span class="mr-2">🎯</span> Total Pelunasan Hutang
+                </h3>
+                <div class="h-64 w-full relative">
+                    <canvas id="debtPelunasanChart"></canvas>
                 </div>
             </div>
         </div>
@@ -151,8 +165,8 @@
                     <button onclick="resetFilter()" class="text-sm bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 text-gray-900 dark:text-white px-3 py-2 rounded transition font-medium">Lihat Semua</button>
                 </div>
                 <div class="flex gap-4 text-sm font-semibold">
-                    <div class="text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-950 px-3 py-1 rounded">Masuk (Filter): <span id="filter-masuk">Rp 0</span></div>
-                    <div class="text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950 px-3 py-1 rounded">Keluar (Filter): <span id="filter-keluar">Rp 0</span></div>
+                    <div class="text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-950 px-3 py-1 rounded">Masuk: <span id="filter-masuk">Rp 0</span></div>
+                    <div class="text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950 px-3 py-1 rounded">Keluar: <span id="filter-keluar">Rp 0</span></div>
                 </div>
             </div>
 
@@ -172,31 +186,139 @@
             </div>
         </div>
 
-        <!-- ==================== BAGIAN 2: RENCANA TABUNGAN (DENGAN FOTO) ==================== -->
+        <!-- ==================== MANAJEMEN USER KELUARGA (AYAH & BUNDA) ==================== -->
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2">👥 Manajemen Akun Keluarga (Ayah/Bunda/Anak)</h2>
+        
+        <div class="bg-white dark:bg-slate-800 p-6 rounded shadow mb-6 border-t-4 border-blue-500 transition-colors duration-300">
+            <h3 class="text-md font-bold mb-4 text-gray-900 dark:text-white">Tambah User Baru dengan Upload Foto Profil</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <input type="text" id="new-user-nama" placeholder="Nama Lengkap" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-slate-700 dark:text-white">
+                <input type="email" id="new-user-email" placeholder="Email Akun" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-slate-700 dark:text-white">
+                <input type="password" id="new-user-password" placeholder="Password (Min. 6 Karakter)" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-slate-700 dark:text-white">
+                <select id="new-user-jenis" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-slate-700 dark:text-white font-semibold">
+                    <option value="Ayah">👨 Ayah</option>
+                    <option value="Bunda">👩 Bunda</option>
+                    <option value="Anak">👦 Anak</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Foto Profil Anggota Keluarga:</label>
+                <div class="flex items-center gap-3">
+                    <label for="new-user-file-input" class="cursor-pointer bg-blue-50 dark:bg-slate-700 hover:bg-blue-100 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-slate-600 px-3 py-1.5 rounded text-xs font-semibold transition">
+                        📁 Pilih Foto Profil
+                    </label>
+                    <input type="file" id="new-user-file-input" accept="image/*" onchange="previewNewUserFoto(event)" class="hidden">
+                    <span id="new-user-file-name" class="text-xs text-gray-400 truncate">Tidak ada file</span>
+                </div>
+                <div id="new-user-preview-container" class="hidden mt-3 relative w-max">
+                    <img id="new-user-preview" src="" alt="Preview" class="h-16 w-16 rounded-full object-cover border border-gray-300 dark:border-slate-600 shadow cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                    <button onclick="batalNewUserFoto()" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
+                </div>
+            </div>
+
+            <button onclick="tambahUserKeluarga()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition font-bold shadow-sm w-full md:w-auto">Buat Akun Keluarga Baru</button>
+        </div>
+
+        <!-- ==================== MANAJEMEN HUTANG ONLINE (OTOMATIS DAFTAR AUTH) ==================== -->
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2">🤝 Manajemen Hutang Online</h2>
+        
+        <div class="bg-white dark:bg-slate-800 p-6 rounded shadow mb-6 border-t-4 border-orange-500 transition-colors duration-300">
+            <h3 class="text-md font-bold mb-4 text-gray-900 dark:text-white">Catat Hutang / Piutang Baru (Otomatis Buat Akun Login Password: 12345678)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                <input type="text" id="hutang-nama" placeholder="Nama Penghutang" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white dark:bg-slate-700 dark:text-white">
+                <input type="email" id="hutang-email" placeholder="Email Akun Penghutang (Cth: budi@mail.com)" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white dark:bg-slate-700 dark:text-white">
+                <input type="text" id="hutang-total" oninput="formatInputRupiah(this)" placeholder="Total Hutang (Rp)" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white dark:bg-slate-700 dark:text-white">
+                <input type="text" id="hutang-jaminan" placeholder="Nama Jaminan (Cth: BPKB Motor)" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white dark:bg-slate-700 dark:text-white">
+                
+                <div class="flex flex-col">
+                    <label class="text-[10px] text-gray-500 font-bold mb-1">Tanggal Jatuh Tempo:</label>
+                    <input type="date" id="hutang-tempo" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white dark:bg-slate-700 dark:text-white">
+                </div>
+
+                <div class="flex flex-col">
+                    <label class="text-[10px] text-gray-500 font-bold mb-1">Foto Jaminan (Opsional):</label>
+                    <div class="flex items-center gap-2">
+                        <label for="hutang-file-jaminan-input" class="cursor-pointer bg-orange-50 dark:bg-slate-700 hover:bg-orange-100 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-slate-600 px-3 py-1.5 rounded text-xs font-semibold transition">
+                            📁 Pilih Foto Jaminan
+                        </label>
+                        <input type="file" id="hutang-file-jaminan-input" accept="image/*" onchange="previewHutangJaminanFile(event)" class="hidden">
+                        <span id="hutang-jaminan-file-name" class="text-xs text-gray-400 truncate">Tidak ada file</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <label class="text-[10px] text-gray-500 font-bold mb-1">Foto KTP Penghutang (Wajib/Opsional):</label>
+                    <div class="flex items-center gap-2">
+                        <label for="hutang-file-ktp-input" class="cursor-pointer bg-blue-50 dark:bg-slate-700 hover:bg-blue-100 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-slate-600 px-3 py-1.5 rounded text-xs font-semibold transition">
+                            📁 Pilih Foto KTP
+                        </label>
+                        <input type="file" id="hutang-file-ktp-input" accept="image/*" onchange="previewHutangKtpFile(event)" class="hidden">
+                        <span id="hutang-ktp-file-name" class="text-xs text-gray-400 truncate">Tidak ada file</span>
+                    </div>
+                </div>
+
+                <div class="flex items-end md:col-span-2 lg:col-span-2">
+                    <button onclick="simpanHutang()" class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600 transition font-bold shadow-sm w-full h-[40px]">Tambah Hutang & Daftarkan Akun Login</button>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-2">
+                <div id="hutang-jaminan-preview-container" class="hidden relative w-max">
+                    <p class="text-[10px] text-gray-400 mb-1">Preview Jaminan:</p>
+                    <img id="hutang-jaminan-preview" src="" alt="Preview Jaminan" class="h-20 rounded border border-gray-300 dark:border-slate-600 object-cover cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                    <button onclick="batalHutangJaminanFoto()" class="absolute top-4 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
+                </div>
+                <div id="hutang-ktp-preview-container" class="hidden relative w-max">
+                    <p class="text-[10px] text-gray-400 mb-1">Preview KTP:</p>
+                    <img id="hutang-ktp-preview" src="" alt="Preview KTP" class="h-20 rounded border border-gray-300 dark:border-slate-600 object-cover cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                    <button onclick="batalHutangKtpFoto()" class="absolute top-4 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
+                </div>
+            </div>
+        </div>
+        <div id="list-hutang" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"></div>
+
+
+        <!-- ==================== BAGIAN 2: RENCANA TABUNGAN ==================== -->
         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2">🎯 Rencana Tabungan Rupiah</h2>
         
         <div class="bg-white dark:bg-slate-800 p-6 rounded shadow mb-6 border-t-4 border-indigo-500 transition-colors duration-300">
             <h3 class="text-md font-bold mb-4 text-gray-900 dark:text-white">Buat Target Tabungan Baru</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <input type="text" id="nama-tabungan" placeholder="Nama Target (Misal: Beli Mobil)" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white dark:bg-slate-700 dark:text-white">
                 <input type="text" id="target-tabungan" oninput="formatInputRupiah(this)" placeholder="Target Dana (Rp)" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white dark:bg-slate-700 dark:text-white">
-                <input type="text" id="foto-tabungan" placeholder="Link URL Foto (Opsional, cth: https://...)" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white dark:bg-slate-700 dark:text-white">
             </div>
+
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pilih Gambar Target (Opsional):</label>
+                <div class="flex items-center gap-3">
+                    <label for="tabungan-file-input" class="cursor-pointer bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-slate-600 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-slate-600 px-4 py-2 rounded-lg text-sm font-semibold transition">
+                        📁 Unggah Foto
+                    </label>
+                    <input type="file" id="tabungan-file-input" accept="image/*" onchange="previewTabunganFile(event)" class="hidden">
+                    <span id="tabungan-file-name" class="text-xs text-gray-500 dark:text-gray-400">Belum ada file dipilih</span>
+                </div>
+                <div id="tabungan-preview-container" class="hidden mt-3 relative w-max">
+                    <img id="tabungan-preview" src="" alt="Preview Target" class="h-20 rounded border border-gray-300 dark:border-slate-600 object-cover cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                    <button onclick="batalTabunganFoto()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
+                </div>
+            </div>
+
             <button onclick="simpanTabungan()" class="bg-indigo-500 text-white px-6 py-2 rounded hover:bg-indigo-600 transition font-semibold shadow-sm w-full md:w-auto">Buat Target Tabungan</button>
         </div>
         <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"></div>
 
-        <!-- ==================== BAGIAN 3: INVESTASI CRYPTO MULTI-USER (PROFIT & LOSS) ==================== -->
+        <!-- ==================== BAGIAN 3: INVESTASI CRYPTO MULTI-USER ==================== -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2 mt-4 gap-4">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">🚀 Portofolio Investasi Crypto (Multi-User Keluarga)</h2>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">🚀 Portofolio Investasi Crypto</h2>
             <div class="flex items-center gap-3">
                 <label for="filter-user-crypto" class="text-xs font-semibold text-gray-700 dark:text-gray-300">Filter Anggota:</label>
                 <select id="filter-user-crypto" onchange="muatDataCrypto()" class="p-1.5 text-xs border dark:border-slate-600 rounded bg-white dark:bg-slate-800 dark:text-white font-bold">
                     <option value="Semua">Semua Anggota</option>
                     <option value="Ayah">Ayah</option>
+                    <option value="Bunda">Bunda</option>
                     <option value="Istri">Istri</option>
                     <option value="Anak">Anak</option>
-                    <option value="Saudara">Saudara</option>
                 </select>
             </div>
             <div id="total-crypto-pnl-badge" class="bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow">
@@ -205,14 +327,14 @@
         </div>
         
         <div class="bg-white dark:bg-slate-800 p-6 rounded shadow mb-6 border-t-4 border-yellow-500 transition-colors duration-300">
-            <h3 class="text-md font-bold mb-4 text-gray-900 dark:text-white">Catat Pembelian Koin Baru (Pilih Anggota Keluarga)</h3>
+            <h3 class="text-md font-bold mb-4 text-gray-900 dark:text-white">Catat Pembelian Koin Baru</h3>
             <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
                 
                 <select id="pemilik-crypto" class="p-2 border dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-blue-50 dark:bg-slate-700 dark:text-white font-bold">
                     <option value="Ayah">👨 Ayah</option>
+                    <option value="Bunda">👩 Bunda</option>
                     <option value="Istri">👩 Istri</option>
                     <option value="Anak">👦 Anak</option>
-                    <option value="Saudara">👥 Saudara</option>
                 </select>
 
                 <div>
@@ -240,30 +362,54 @@
         <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"></div>
 
 
-        <!-- ==================== BAGIAN 4: 20 BERITA TERBARU WATCHER GURU (DENGAN GAMBAR) ==================== -->
+        <!-- ==================== BAGIAN 4: BERITA WATCHER GURU ==================== -->
         <div class="flex justify-between items-center mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2 mt-10">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">📡 20 Berita Terbaru Watcher Guru (Realtime & Gambar)</h2>
-            <span class="text-xs bg-amber-500 text-white px-3 py-1 rounded-full font-bold animate-pulse">● Watcher Guru Live</span>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">📡 Berita Terbaru Watcher Guru</h2>
+            <span class="text-xs bg-amber-500 text-white px-3 py-1 rounded-full font-bold animate-pulse">Live</span>
         </div>
         
         <div class="bg-slate-900 text-white p-5 rounded-lg shadow-lg border border-slate-700 mb-10">
             <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
                 <h3 class="font-bold text-yellow-400 flex items-center text-lg">
-                    <span class="mr-2">📰</span> Watcher Guru News Feed (20 Item)
+                    <span class="mr-2">📰</span> Watcher Guru News Feed
                 </h3>
-                <button onclick="fetchWatcherGuruNews()" class="text-xs bg-slate-800 hover:bg-slate-700 text-yellow-400 border border-yellow-500/30 px-3 py-1 rounded-full transition font-semibold">🔄 Refresh Berita</button>
+                <button onclick="fetchWatcherGuruNews()" class="text-xs bg-slate-800 hover:bg-slate-700 text-yellow-400 border border-yellow-500/30 px-3 py-1 rounded-full transition font-semibold">🔄 Refresh</button>
             </div>
             
             <div id="watcher-guru-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <p class="text-slate-400 text-center py-6 md:col-span-2 animate-pulse">Memuat 20 berita terbaru dari Watcher Guru...</p>
+                <p class="text-slate-400 text-center py-6 md:col-span-2 animate-pulse">Memuat berita terbaru...</p>
             </div>
         </div>
 
     </div>
 
 
-    <!-- ==================== FLOATING CHAT POP-UP DI POJOK KANAN BAWAH ==================== -->
-    <div id="floating-chat-wrapper" class="fixed bottom-5 right-5 z-50 hidden">
+    <!-- ==================== HALAMAN KHUSUS PENGHUTANG (DEBTOR PORTAL) ==================== -->
+    <div id="debtor-dashboard-section" class="hidden max-w-4xl mx-auto py-8 px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white dark:bg-slate-800 p-4 rounded shadow border-l-4 border-orange-500 transition-colors duration-300">
+            <div class="flex items-center gap-3">
+                <div class="text-3xl">🤝</div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Portal Pembayaran & Log Hutang</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-0.5">Akun: <span id="debtor-display-name" class="text-orange-500 font-bold"></span> (Penghutang)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 mt-4 md:mt-0">
+                <button onclick="bukaModalProfil()" class="bg-indigo-500 text-white px-3 py-2 rounded-lg font-semibold transition shadow text-xs">✏️ Ganti Password</button>
+                <button onclick="toggleTheme()" class="bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-yellow-400 px-3 py-2 rounded-lg font-semibold transition shadow text-xs">Ganti Tema</button>
+                <button onclick="logout()" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition shadow font-semibold text-xs">Keluar</button>
+            </div>
+        </div>
+
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2">📋 Rincian Tagihan Hutang & Persentase Pelunasan</h2>
+        <div id="debtor-portal-content" class="space-y-6">
+            <!-- Diisi secara dinamis -->
+        </div>
+    </div>
+
+
+    <!-- ==================== FLOATING CHAT ==================== -->
+    <div id="floating-chat-wrapper" class="fixed bottom-5 right-5 z-[50] hidden">
         <button id="chat-toggle-btn" onclick="toggleChatPopup()" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition transform hover:scale-110 relative">
             <span class="text-2xl">💬</span>
             <span id="chat-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">New</span>
@@ -284,7 +430,7 @@
 
             <div class="p-3 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
                 <div id="image-preview-container" class="hidden mb-2 relative w-max">
-                    <img id="image-preview" src="" alt="Preview" class="h-16 rounded border border-gray-300 dark:border-slate-600 object-cover">
+                    <img id="image-preview" src="" alt="Preview" class="h-16 rounded border border-gray-300 dark:border-slate-600 object-cover cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
                     <button onclick="batalKirimFoto()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
                 </div>
 
@@ -299,6 +445,88 @@
                     <button onclick="kirimPesanChat()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-2 rounded-lg transition text-xs shadow">Kirim</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== MODAL PROFIL & EDIT AKUN ==================== -->
+    <div id="modal-profil" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center overflow-y-auto py-10">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-lg p-6 rounded-lg shadow-2xl border border-gray-200 dark:border-slate-700 m-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white border-b border-gray-200 dark:border-slate-700 pb-2">✏️ Edit Profil & Password Akun</h3>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Nama Tampilan</label>
+                <input type="text" id="profil-nama" class="w-full p-2 border dark:border-slate-600 rounded bg-gray-50 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email Login</label>
+                <input type="email" id="profil-email" disabled class="w-full p-2 border dark:border-slate-600 rounded bg-gray-200 dark:bg-slate-900 text-gray-400 text-sm cursor-not-allowed" title="Email terikat otomatis">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Ganti Password Baru</label>
+                <input type="password" id="profil-password" class="w-full p-2 border dark:border-slate-600 rounded bg-gray-50 dark:bg-slate-700 dark:text-white text-sm" placeholder="Kosongkan jika tetap">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Foto Profil (Opsional)</label>
+                <div class="flex items-center gap-4">
+                    <div class="h-16 w-16 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden border border-gray-300 dark:border-slate-600 flex items-center justify-center">
+                        <img id="profil-foto-preview" src="" class="hidden w-full h-full object-cover cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                        <span id="profil-foto-icon" class="text-2xl text-gray-400">👤</span>
+                    </div>
+                    <div>
+                        <label for="profil-file-input" class="cursor-pointer bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded text-sm font-semibold hover:bg-blue-200 transition">Ubah Foto</label>
+                        <input type="file" id="profil-file-input" accept="image/*" onchange="previewProfilFoto(event)" class="hidden">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="tutupModalProfil()" class="px-4 py-2 bg-gray-300 dark:bg-slate-600 text-gray-800 dark:text-white rounded hover:bg-gray-400 dark:hover:bg-slate-500 transition font-semibold text-sm">Batal</button>
+                <button onclick="simpanProfil()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-bold shadow-md text-sm">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== MODAL BAYAR HUTANG ONLINE ==================== -->
+    <div id="modal-bayar-hutang" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-sm p-6 rounded-lg shadow-2xl border border-gray-200 dark:border-slate-700 m-4">
+            <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white border-b border-gray-200 dark:border-slate-700 pb-2">💸 Bayar / Cicil Hutang</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Sisa hutang: <strong id="modal-sisa-hutang" class="text-red-500 dark:text-red-400">Rp 0</strong></p>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Nominal Pembayaran (Rp)</label>
+                <input type="text" id="input-bayar-hutang" oninput="formatInputRupiah(this)" placeholder="Misal: 500000" class="w-full p-2 border dark:border-slate-600 rounded bg-gray-50 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-orange-500 text-lg font-bold">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Upload Bukti Bayar / Transfer</label>
+                <input type="file" id="bukti-bayar-file" accept="image/*" onchange="previewBuktiBayar(event)" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-slate-700 dark:file:text-orange-400">
+                <div id="bukti-preview-container" class="hidden mt-3 relative w-max">
+                    <img id="bukti-preview" src="" alt="Bukti" class="h-24 rounded border border-gray-300 dark:border-slate-600 object-cover cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                    <button onclick="batalBuktiFoto()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 text-xs font-bold flex items-center justify-center shadow">✕</button>
+                </div>
+            </div>
+
+            <input type="hidden" id="modal-hutang-id">
+            <input type="hidden" id="modal-hutang-terbayar-lama">
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="tutupModalHutang()" class="px-4 py-2 bg-gray-300 dark:bg-slate-600 text-gray-800 dark:text-white rounded hover:bg-gray-400 transition font-semibold">Batal</button>
+                <button onclick="prosesBayarHutang()" class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition font-bold shadow-md">Simpan Bukti</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== MODAL ZOOM GAMBAR (KLIK GAMBAR) ==================== -->
+    <div id="modal-gambar-besar" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4" onclick="tutupModalGambarBesar()">
+        <div class="relative max-w-4xl max-h-[90vh]">
+            <img id="gambar-zoom-view" src="" alt="Zoom Gambar" class="max-w-full max-h-[85vh] object-contain rounded shadow-2xl border border-slate-700">
+            <button class="absolute -top-4 -right-4 bg-red-600 text-white rounded-full h-8 w-8 text-base font-bold flex items-center justify-center shadow-lg" onclick="tutupModalGambarBesar()">✕</button>
         </div>
     </div>
 
@@ -325,14 +553,22 @@
 
         let isEditMode = false;
         let idEditSekarang = '';
+        
         let base64ImageToSend = '';
+        let base64TabunganImage = '';
+        let base64ProfilImage = '';
+        let base64BuktiImage = '';
+        let base64HutangJaminanImage = '';
+        let base64HutangKtpImage = '';
+        let base64NewUserImage = '';
 
         let cryptoProfitChartInstance = null;
         let monthlyCashChartInstance = null;
+        let debtPelunasanChartInstance = null;
 
-        // Variabel penampung data sementara agar grafik bisa dirender kapan saja
-        let latestPnlByUser = { 'Ayah': 0, 'Istri': 0, 'Anak': 0, 'Saudara': 0 };
+        let latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Istri': 0, 'Anak': 0 };
         let latestMonthlyMap = {};
+        let latestDebtSummary = { totalHutang: 0, totalTerbayar: 0, sisaHutang: 0 };
 
         function toggleTheme() {
             const htmlRoot = document.getElementById('html-root');
@@ -343,14 +579,14 @@
             if (htmlRoot.classList.contains('dark')) {
                 htmlRoot.classList.remove('dark');
                 bodyRoot.className = "bg-gray-100 text-gray-900 font-sans pb-20 transition-colors duration-300";
-                themeIcon.innerText = '🌙';
-                themeText.innerText = 'Dark Mode';
+                if(themeIcon) themeIcon.innerText = '🌙';
+                if(themeText) themeText.innerText = 'Dark Mode';
                 localStorage.setItem('theme', 'light');
             } else {
                 htmlRoot.classList.add('dark');
                 bodyRoot.className = "bg-slate-900 text-gray-100 font-sans pb-20 transition-colors duration-300";
-                themeIcon.innerText = '☀️';
-                themeText.innerText = 'Light Mode';
+                if(themeIcon) themeIcon.innerText = '☀️';
+                if(themeText) themeText.innerText = 'Light Mode';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -365,91 +601,47 @@
             if (savedTheme === 'light') {
                 htmlRoot.classList.remove('dark');
                 bodyRoot.className = "bg-gray-100 text-gray-900 font-sans pb-20 transition-colors duration-300";
-                themeIcon.innerText = '🌙';
-                themeText.innerText = 'Dark Mode';
+                if(themeIcon) themeIcon.innerText = '🌙';
+                if(themeText) themeText.innerText = 'Dark Mode';
             } else {
                 htmlRoot.classList.add('dark');
                 bodyRoot.className = "bg-slate-900 text-gray-100 font-sans pb-20 transition-colors duration-300";
-                themeIcon.innerText = '☀️';
-                themeText.innerText = 'Light Mode';
+                if(themeIcon) themeIcon.innerText = '☀️';
+                if(themeText) themeText.innerText = 'Light Mode';
             }
             
             fetchWatcherGuruNews();
         });
 
-        async function fetchWatcherGuruNews() {
-            const container = document.getElementById('watcher-guru-container');
-            container.innerHTML = `<p class="text-slate-400 text-center py-6 md:col-span-2 animate-pulse">Menarik 20 berita terbaru dari Watcher Guru...</p>`;
-
-            try {
-                const watcherUrl = 'https://watcher.guru/news/feed';
-                const rssUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(watcherUrl)}`;
-                
-                const response = await fetch(rssUrl);
-                const data = await response.json();
-
-                if (data.status === 'ok' && data.items && data.items.length > 0) {
-                    container.innerHTML = '';
-                    const top20News = data.items.slice(0, 20);
-
-                    top20News.forEach((item, index) => {
-                        let desc = item.description ? item.description.replace(/<[^>]*>?/gm, '') : '';
-                        if (desc.length > 100) desc = desc.substring(0, 100) + '...';
-
-                        let imageUrl = item.thumbnail || (item.enclosure ? item.enclosure.link : '');
-                        if (!imageUrl) {
-                            const fallbackImages = [
-                                "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=80",
-                                "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?w=500&auto=format&fit=crop&q=80",
-                                "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500&auto=format&fit=crop&q=80",
-                                "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=500&auto=format&fit=crop&q=80",
-                                "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=500&auto=format&fit=crop&q=80"
-                            ];
-                            imageUrl = fallbackImages[index % fallbackImages.length];
-                        }
-
-                        const dateObj = new Date(item.pubDate);
-                        const tanggalFormatted = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' • ' + dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-                        container.innerHTML += `
-                            <div class="bg-slate-800 rounded-lg overflow-hidden border border-slate-700 hover:border-yellow-500/50 transition flex flex-col justify-between shadow-md">
-                                <div>
-                                    <div class="h-36 overflow-hidden relative bg-slate-900">
-                                        <img src="${imageUrl}" alt="Thumbnail" class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                                        <span class="absolute top-2 left-2 bg-black/70 text-yellow-400 text-[10px] font-bold px-2 py-0.5 rounded">#${index + 1} Watcher Guru</span>
-                                    </div>
-                                    <div class="p-4">
-                                        <div class="text-[11px] text-slate-400 mb-1 font-semibold">🕒 ${tanggalFormatted} WIB</div>
-                                        <h4 class="font-bold text-white text-sm mb-2 leading-snug hover:text-yellow-400 transition">
-                                            <a href="${item.link}" target="_blank">${item.title}</a>
-                                        </h4>
-                                        <p class="text-slate-300 text-xs leading-relaxed mb-3">${desc}</p>
-                                    </div>
-                                </div>
-                                <div class="px-4 pb-4 pt-0">
-                                    <a href="${item.link}" target="_blank" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-1.5 px-3 rounded inline-block transition w-full text-center">
-                                        Baca Artikel Asli ↗
-                                    </a>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    container.innerHTML = `<p class="text-slate-400 text-center text-xs py-6 md:col-span-2">Gagal memuat berita Watcher Guru. Silakan klik tombol Refresh.</p>`;
-                }
-            } catch (err) {
-                container.innerHTML = `<p class="text-slate-400 text-center text-xs py-6 md:col-span-2">Terjadi kesalahan koneksi jaringan: ${err.message}</p>`;
+        function handleLoginKeyPress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                login();
             }
         }
 
-        const dateNow = new Date();
-        const yyyy = dateNow.getFullYear();
-        const mm = String(dateNow.getMonth() + 1).padStart(2, '0');
-        document.getElementById('filter-bulan').value = `${yyyy}-${mm}`;
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if(!email || !password) return;
+
+            const loader = document.getElementById('loader');
+            loader.classList.remove('hidden', 'fade-out');
+            
+            auth.signInWithEmailAndPassword(email, password).catch(() => {
+                loader.classList.add('hidden');
+                const errorText = document.getElementById('login-error');
+                errorText.innerText = "Gagal login: Cek kembali email & password.";
+                errorText.classList.remove('hidden');
+            });
+        }
+        
+        function logout() { auth.signOut(); }
 
         const loader = document.getElementById('loader');
         const loginSection = document.getElementById('login-section');
         const dashboardSection = document.getElementById('dashboard-section');
+        const debtorDashboardSection = document.getElementById('debtor-dashboard-section');
         
         auth.onAuthStateChanged((user) => {
             loader.classList.add('fade-out');
@@ -457,28 +649,161 @@
 
             if (user) {
                 loginSection.classList.add('hidden');
-                dashboardSection.classList.remove('hidden');
-                document.getElementById('floating-chat-wrapper').classList.remove('hidden');
-                document.getElementById('user-email').innerText = user.email;
-                document.getElementById('user-initial').innerText = user.email.charAt(0).toUpperCase();
-
-                muatDataTransaksi();
-                muatDataTabungan();
-                muatDataCrypto();
-                muatDataChat(); 
-
-                // Paksa render ulang grafik setelah dashboard terbuka agar ukuran canvas terdeteksi sempurna
-                setTimeout(() => {
-                    renderCryptoProfitChart(latestPnlByUser);
-                    renderMonthlyCashChart(latestMonthlyMap);
-                }, 300);
+                muatProfilPenggunaDanAturTampilan(user);
             } else {
                 loginSection.classList.remove('hidden');
                 dashboardSection.classList.add('hidden');
+                debtorDashboardSection.classList.add('hidden');
                 document.getElementById('floating-chat-wrapper').classList.add('hidden');
             }
         });
 
+        function muatProfilPenggunaDanAturTampilan(user) {
+            db.collection("users").doc(user.uid).onSnapshot((doc) => {
+                const displayNameEl = document.getElementById('user-display-name');
+                const accTypeEl = document.getElementById('user-account-type');
+                const photoEl = document.getElementById('user-photo');
+                const initialEl = document.getElementById('user-initial');
+
+                if (doc.exists) {
+                    const data = doc.data();
+                    const nama = data.nama || user.email.split('@')[0];
+                    const jenisAkun = data.jenisAkun || 'Keluarga';
+
+                    if (jenisAkun === 'Penghutang') {
+                        dashboardSection.classList.add('hidden');
+                        debtorDashboardSection.classList.remove('hidden');
+                        document.getElementById('floating-chat-wrapper').classList.add('hidden');
+                        document.getElementById('debtor-display-name').innerText = nama;
+                        muatDataHutangPenghutang(user.email, nama);
+                    } else {
+                        debtorDashboardSection.classList.add('hidden');
+                        dashboardSection.classList.remove('hidden');
+                        document.getElementById('floating-chat-wrapper').classList.remove('hidden');
+
+                        if(displayNameEl) displayNameEl.innerText = nama;
+                        if(accTypeEl) accTypeEl.innerText = jenisAkun;
+
+                        if (data.foto && data.foto !== '') {
+                            if(photoEl) {
+                                photoEl.src = data.foto;
+                                photoEl.classList.remove('hidden');
+                            }
+                            if(initialEl) initialEl.classList.add('hidden');
+                        } else {
+                            if(photoEl) photoEl.classList.add('hidden');
+                            if(initialEl) {
+                                initialEl.classList.remove('hidden');
+                                initialEl.innerText = nama.charAt(0).toUpperCase();
+                            }
+                        }
+
+                        muatDataTransaksi();
+                        muatDataTabungan();
+                        muatDataCrypto();
+                        muatDataChat(); 
+                        muatDataHutang();
+
+                        setTimeout(() => {
+                            renderCryptoProfitChart(latestPnlByUser);
+                            renderMonthlyCashChart(latestMonthlyMap);
+                            renderDebtPelunasanChart(latestDebtSummary);
+                        }, 300);
+                    }
+                } else {
+                    db.collection("users").doc(user.uid).set({
+                        nama: user.email.split('@')[0],
+                        jenisAkun: 'Keluarga',
+                        foto: ''
+                    });
+                }
+            });
+        }
+
+        function bukaModalProfil() {
+            const user = auth.currentUser;
+            if(!user) return;
+            
+            db.collection("users").doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('profil-nama').value = data.nama || user.email.split('@')[0];
+                    document.getElementById('profil-email').value = user.email || '';
+                    document.getElementById('profil-password').value = '';
+                    
+                    if(data.foto) {
+                        document.getElementById('profil-foto-preview').src = data.foto;
+                        document.getElementById('profil-foto-preview').classList.remove('hidden');
+                        document.getElementById('profil-foto-icon').classList.add('hidden');
+                        base64ProfilImage = data.foto;
+                    } else {
+                        document.getElementById('profil-foto-preview').classList.add('hidden');
+                        document.getElementById('profil-foto-icon').classList.remove('hidden');
+                        base64ProfilImage = '';
+                    }
+                }
+                document.getElementById('modal-profil').classList.remove('hidden');
+            });
+        }
+
+        function tutupModalProfil() {
+            document.getElementById('modal-profil').classList.add('hidden');
+        }
+
+        function previewProfilFoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64ProfilImage = e.target.result;
+                    document.getElementById('profil-foto-preview').src = base64ProfilImage;
+                    document.getElementById('profil-foto-preview').classList.remove('hidden');
+                    document.getElementById('profil-foto-icon').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function simpanProfil() {
+            const user = auth.currentUser;
+            if(!user) return;
+            
+            const namaBaru = document.getElementById('profil-nama').value;
+            const passwordBaru = document.getElementById('profil-password').value.trim();
+
+            let promises = [
+                db.collection("users").doc(user.uid).update({
+                    nama: namaBaru,
+                    foto: base64ProfilImage
+                })
+            ];
+
+            if (passwordBaru) {
+                promises.push(user.updatePassword(passwordBaru));
+            }
+
+            Promise.all(promises).then(() => {
+                alert("Profil dan password berhasil diperbarui!");
+                tutupModalProfil();
+            }).catch(e => {
+                alert("Gagal update profil: " + e.message);
+                tutupModalProfil();
+            });
+        }
+
+        // ==================== MODAL ZOOM GAMBAR ====================
+        function bukaModalGambarBesar(url) {
+            if(!url) return;
+            document.getElementById('gambar-zoom-view').src = url;
+            document.getElementById('modal-gambar-besar').classList.remove('hidden');
+        }
+
+        function tutupModalGambarBesar() {
+            document.getElementById('modal-gambar-besar').classList.add('hidden');
+        }
+
+
+        // ==================== UTILITAS ====================
         function formatInputRupiah(input) {
             let val = input.value.replace(/[^0-9]/g, '');
             if(val !== "") input.value = parseInt(val, 10).toLocaleString('id-ID');
@@ -497,21 +822,14 @@
                 day: 'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
             });
         }
-
-        function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            loader.classList.remove('hidden', 'fade-out');
-            
-            auth.signInWithEmailAndPassword(email, password).catch(() => {
-                loader.classList.add('hidden');
-                const errorText = document.getElementById('login-error');
-                errorText.innerText = "Gagal login: Cek kembali email & password.";
-                errorText.classList.remove('hidden');
-            });
+        function formatTanggal(dateString) {
+            if(!dateString) return '-';
+            const d = new Date(dateString);
+            return d.toLocaleDateString('id-ID', { day: 'numeric', month:'short', year:'numeric' });
         }
-        function logout() { auth.signOut(); }
 
+
+        // ==================== TRANSAKSI HARIAN ====================
         function resetFilter() {
             document.getElementById('filter-bulan').value = '';
             muatDataTransaksi();
@@ -528,12 +846,12 @@
             if (isEditMode) {
                 db.collection("transaksi").doc(idEditSekarang).update({
                     kategoriKas: kategoriKas, jenis: jenis, jumlah: jumlah, keterangan: keterangan, status: 'Diupdate',
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: document.getElementById('user-display-name').innerText
                 }).then(() => batalEdit()).catch(e => alert("Error: " + e.message));
             } else {
                 db.collection("transaksi").add({
                     kategoriKas: kategoriKas, jenis: jenis, jumlah: jumlah, keterangan: keterangan, status: 'Baru',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(), createdBy: auth.currentUser.email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(), createdBy: document.getElementById('user-display-name').innerText,
                     tanggal: firebase.firestore.FieldValue.serverTimestamp() 
                 }).then(() => {
                     document.getElementById('jumlah').value = ''; document.getElementById('keterangan').value = '';
@@ -580,13 +898,13 @@
 
             unsubscribeTransaksi = db.collection("transaksi").orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
                 const tabel = document.getElementById('tabel-transaksi');
+                if(!tabel) return;
                 tabel.innerHTML = ''; 
                 
                 let totalPermanenMasuk = 0, totalPermanenKeluar = 0;
                 let totalBulananMasuk = 0, totalBulananKeluar = 0;
                 let filterTabelMasuk = 0, filterTabelKeluar = 0;
                 let rowCount = 0;
-
                 latestMonthlyMap = {};
 
                 querySnapshot.forEach((doc) => {
@@ -670,23 +988,557 @@
             });
         }
 
+
+        // ==================== MANAJEMEN USER KELUARGA (AYAH, BUNDA, ANAK) ====================
+        function previewNewUserFoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('new-user-file-name').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64NewUserImage = e.target.result;
+                    document.getElementById('new-user-preview').src = base64NewUserImage;
+                    document.getElementById('new-user-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function batalNewUserFoto() {
+            base64NewUserImage = '';
+            document.getElementById('new-user-preview-container').classList.add('hidden');
+            document.getElementById('new-user-file-input').value = '';
+            document.getElementById('new-user-file-name').innerText = 'Tidak ada file';
+        }
+
+        function tambahUserKeluarga() {
+            const nama = document.getElementById('new-user-nama').value.trim();
+            const email = document.getElementById('new-user-email').value.trim().toLowerCase();
+            const password = document.getElementById('new-user-password').value.trim();
+            const jenisAkun = document.getElementById('new-user-jenis').value;
+
+            if (!nama || !email || !password || !jenisAkun) {
+                return alert("Semua field form tambah user harus diisi dengan lengkap!");
+            }
+
+            if (password.length < 6) {
+                return alert("Password minimal harus 6 karakter!");
+            }
+
+            let secondaryApp;
+            const appName = "Auth_Family_" + Date.now();
+            try {
+                secondaryApp = firebase.initializeApp(firebaseConfig, appName);
+            } catch(err) {
+                secondaryApp = firebase.app(appName);
+            }
+
+            const secondaryAuth = secondaryApp.auth();
+            secondaryAuth.createUserWithEmailAndPassword(email, password)
+                .then((userCred) => {
+                    const newUid = userCred.user.uid;
+                    db.collection("users").doc(newUid).set({
+                        nama: nama,
+                        jenisAkun: jenisAkun,
+                        email: email,
+                        foto: base64NewUserImage || ''
+                    }).then(() => {
+                        secondaryAuth.signOut();
+                        alert(`Berhasil membuat akun baru untuk ${jenisAkun} (${nama})!`);
+                        document.getElementById('new-user-nama').value = '';
+                        document.getElementById('new-user-email').value = '';
+                        document.getElementById('new-user-password').value = '';
+                        batalNewUserFoto();
+                    });
+                })
+                .catch((error) => {
+                    alert("Gagal membuat akun keluarga: " + error.message);
+                });
+        }
+
+
+        // ==================== MANAJEMEN HUTANG ONLINE + PENGHAPUSAN AKUN OTOMATIS ====================
+        function previewHutangJaminanFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('hutang-jaminan-file-name').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64HutangJaminanImage = e.target.result;
+                    document.getElementById('hutang-jaminan-preview').src = base64HutangJaminanImage;
+                    document.getElementById('hutang-jaminan-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function batalHutangJaminanFoto() {
+            base64HutangJaminanImage = '';
+            document.getElementById('hutang-jaminan-preview-container').classList.add('hidden');
+            document.getElementById('hutang-file-jaminan-input').value = '';
+            document.getElementById('hutang-jaminan-file-name').innerText = 'Tidak ada file';
+        }
+
+        function previewHutangKtpFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('hutang-ktp-file-name').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64HutangKtpImage = e.target.result;
+                    document.getElementById('hutang-ktp-preview').src = base64HutangKtpImage;
+                    document.getElementById('hutang-ktp-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function batalHutangKtpFoto() {
+            base64HutangKtpImage = '';
+            document.getElementById('hutang-ktp-preview-container').classList.add('hidden');
+            document.getElementById('hutang-file-ktp-input').value = '';
+            document.getElementById('hutang-ktp-file-name').innerText = 'Tidak ada file';
+        }
+
+        function simpanHutang() {
+            const nama = document.getElementById('hutang-nama').value.trim();
+            const emailPenghutang = document.getElementById('hutang-email').value.trim().toLowerCase();
+            const total = unformatRupiah(document.getElementById('hutang-total').value);
+            const jaminan = document.getElementById('hutang-jaminan').value.trim();
+            const tempo = document.getElementById('hutang-tempo').value;
+            
+            if (!nama || !emailPenghutang || !total || !tempo) {
+                return alert("Nama, Email, Total Hutang, dan Tanggal Jatuh Tempo harus diisi!");
+            }
+
+            let secondaryApp;
+            const appName = "Auth_" + Date.now();
+            try {
+                secondaryApp = firebase.initializeApp(firebaseConfig, appName);
+            } catch(err) {
+                secondaryApp = firebase.app(appName);
+            }
+
+            const secondaryAuth = secondaryApp.auth();
+            secondaryAuth.createUserWithEmailAndPassword(emailPenghutang, "12345678")
+                .then((userCred) => {
+                    const newUid = userCred.user.uid;
+                    db.collection("users").doc(newUid).set({
+                        nama: nama,
+                        jenisAkun: 'Penghutang',
+                        email: emailPenghutang,
+                        foto: ''
+                    }).then(() => {
+                        secondaryAuth.signOut();
+                        simpanDataHutangKeDb(newUid, nama, emailPenghutang, total, jaminan, tempo);
+                    });
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        // Cari uid di database users berdasarkan email
+                        db.collection("users").where("email", "==", emailPenghutang).get().then((querySnapshot) => {
+                            let foundUid = "";
+                            querySnapshot.forEach(doc => { foundUid = doc.id; });
+                            simpanDataHutangKeDb(foundUid, nama, emailPenghutang, total, jaminan, tempo);
+                        });
+                    } else {
+                        alert("Gagal mendaftarkan akun login: " + error.message);
+                    }
+                });
+        }
+
+        function simpanDataHutangKeDb(authUid, nama, emailPenghutang, total, jaminan, tempo) {
+            db.collection("hutang").add({ 
+                authUid: authUid || '',
+                nama: nama, 
+                email: emailPenghutang,
+                total: total, 
+                terbayar: 0, 
+                jaminan: jaminan || 'Tidak ada jaminan',
+                fotoJaminan: base64HutangJaminanImage || '',
+                fotoKtp: base64HutangKtpImage || '',
+                jatuhTempo: tempo,
+                riwayatBayar: [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+            }).then(() => { 
+                alert("Berhasil mencatat hutang dan mengaktifkan akun login penghutang (Password default: 12345678)!");
+                document.getElementById('hutang-nama').value = ''; 
+                document.getElementById('hutang-email').value = '';
+                document.getElementById('hutang-total').value = ''; 
+                document.getElementById('hutang-jaminan').value = '';
+                document.getElementById('hutang-tempo').value = '';
+                batalHutangJaminanFoto();
+                batalHutangKtpFoto();
+            }).catch(e => alert("Error database: " + e.message));
+        }
+
+        function hapusHutang(docId, authUid) {
+            if (confirm("Hapus data hutang ini dan hapus permanen akun penghutang dari sistem?")) {
+                // Hapus dokumen hutang di firestore
+                db.collection("hutang").doc(docId).delete().then(() => {
+                    if (authUid) {
+                        // Hapus dokumen user di collection users
+                        db.collection("users").doc(authUid).delete().catch(err => console.log(err));
+                    }
+                    alert("Data hutang dan akun penghutang berhasil dihapus!");
+                }).catch(e => alert("Gagal menghapus: " + e.message));
+            }
+        }
+
+        function bukaModalHutang(id, sisa, terbayarLama) {
+            document.getElementById('modal-hutang-id').value = id;
+            document.getElementById('modal-hutang-terbayar-lama').value = terbayarLama;
+            document.getElementById('modal-sisa-hutang').innerText = 'Rp ' + sisa.toLocaleString('id-ID');
+            document.getElementById('input-bayar-hutang').value = '';
+            batalBuktiFoto();
+            document.getElementById('modal-bayar-hutang').classList.remove('hidden');
+        }
+
+        function tutupModalHutang() {
+            document.getElementById('modal-bayar-hutang').classList.add('hidden');
+        }
+
+        function previewBuktiBayar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64BuktiImage = e.target.result;
+                    document.getElementById('bukti-preview').src = base64BuktiImage;
+                    document.getElementById('bukti-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function batalBuktiFoto() {
+            base64BuktiImage = '';
+            document.getElementById('bukti-preview-container').classList.add('hidden');
+            document.getElementById('bukti-bayar-file').value = '';
+        }
+
+        function prosesBayarHutang() {
+            const id = document.getElementById('modal-hutang-id').value;
+            const terbayarLama = parseFloat(document.getElementById('modal-hutang-terbayar-lama').value);
+            const bayarBaru = unformatRupiah(document.getElementById('input-bayar-hutang').value);
+            
+            if (!bayarBaru || bayarBaru <= 0) return alert("Masukkan nominal pembayaran!");
+            
+            db.collection("hutang").doc(id).get().then((docSnapshot) => {
+                if(!docSnapshot.exists) return;
+
+                const logBaru = {
+                    nominal: bayarBaru,
+                    tanggal: new Date().toISOString(),
+                    bukti: base64BuktiImage || ''
+                };
+
+                db.collection("hutang").doc(id).update({ 
+                    terbayar: terbayarLama + bayarBaru,
+                    riwayatBayar: firebase.firestore.FieldValue.arrayUnion(logBaru),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                }).then(() => {
+                    tutupModalHutang();
+                    alert("Berhasil mencatat pembayaran!");
+                }).catch(e => alert("Gagal membayar: " + e.message));
+            });
+        }
+
+        function muatDataHutang() {
+            db.collection("hutang").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+                const container = document.getElementById('list-hutang');
+                if(!container) return;
+                container.innerHTML = ''; 
+                
+                let sumTotalHutang = 0;
+                let sumTerbayar = 0;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data(); const docId = doc.id;
+                    sumTotalHutang += data.total || 0;
+                    sumTerbayar += data.terbayar || 0;
+
+                    let persen = (data.terbayar / data.total) * 100;
+                    if(persen > 100) persen = 100;
+                    
+                    let sisa = data.total - data.terbayar;
+                    if(sisa < 0) sisa = 0;
+
+                    let status = "Belum Lunas";
+                    let bgStatus = "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300";
+                    if (persen >= 100) {
+                        status = "Lunas ✓";
+                        bgStatus = "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300";
+                    }
+
+                    const today = new Date().setHours(0,0,0,0);
+                    const tempoDate = new Date(data.jatuhTempo).setHours(0,0,0,0);
+                    if(persen < 100 && tempoDate < today) {
+                        status = "Lewat Jatuh Tempo ⚠️";
+                        bgStatus = "bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-400 font-bold animate-pulse";
+                    }
+
+                    let fotoJaminanTag = data.fotoJaminan ? `<div class="mt-2"><p class="text-[11px] text-gray-400 font-semibold mb-1">Foto Jaminan (Klik untuk memperbesar):</p><img src="${data.fotoJaminan}" alt="Foto Jaminan" class="h-32 w-full object-cover rounded border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)"></div>` : '';
+                    let fotoKtpTag = data.fotoKtp ? `<div class="mt-2"><p class="text-[11px] text-blue-400 font-semibold mb-1">Foto KTP (Klik untuk memperbesar):</p><img src="${data.fotoKtp}" alt="Foto KTP" class="h-32 w-full object-cover rounded border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)"></div>` : '';
+                    
+                    let jaminanInfo = `<div class="mt-2 text-xs bg-slate-900 p-2 rounded border border-slate-700 text-slate-300">🔒 <strong>Jaminan:</strong> ${data.jaminan || 'Tidak ada'}${fotoJaminanTag}${fotoKtpTag}</div>`;
+                    let emailInfo = data.email ? `<p class="text-xs text-blue-400 font-medium mb-1">✉️ ${data.email} (Pass: 12345678)</p>` : '';
+
+                    let riwayatListHtml = '';
+                    if (data.riwayatBayar && data.riwayatBayar.length > 0) {
+                        data.riwayatBayar.forEach((log, lIdx) => {
+                            let buktiBtn = log.bukti ? `<span class="text-blue-400 underline cursor-pointer" onclick="bukaModalGambarBesar('${log.bukti}')">🖼️ Lihat Bukti</span>` : 'Tanpa Bukti';
+                            let tglLog = new Date(log.tanggal).toLocaleDateString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                            riwayatListHtml += `<div class="text-[11px] bg-slate-900 p-2 rounded border border-slate-700 mb-1 flex justify-between items-center"><div><strong class="text-green-400">Rp ${log.nominal.toLocaleString('id-ID')}</strong><br><span class="text-gray-400">${tglLog}</span></div><div>${buktiBtn}</div></div>`;
+                        });
+                    } else {
+                        riwayatListHtml = `<p class="text-[11px] text-gray-500 italic">Belum ada riwayat pembayaran.</p>`;
+                    }
+
+                    container.innerHTML += `
+                        <div class="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-100 dark:border-slate-700 flex flex-col justify-between overflow-hidden relative">
+                            <button onclick="hapusHutang('${docId}', '${data.authUid || ''}')" class="absolute top-2 right-2 bg-slate-200 dark:bg-slate-700 hover:bg-red-500 hover:text-white transition text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center" title="Hapus Hutang & Akun">✖</button>
+                            
+                            <div class="p-5">
+                                <h4 class="font-bold text-gray-900 dark:text-white text-lg mb-0.5 flex items-center gap-2">👤 ${data.nama}</h4>
+                                ${emailInfo}
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-semibold">Jatuh Tempo: ${formatTanggal(data.jatuhTempo)}</p>
+                                <span class="px-2 py-1 rounded text-[10px] font-bold ${bgStatus}">${status}</span>
+
+                                ${jaminanInfo}
+
+                                <div class="mt-3">
+                                    <p class="text-xs font-bold text-yellow-400 mb-1">📜 Log Pembayaran:</p>
+                                    <div class="max-h-28 overflow-y-auto space-y-1">${riwayatListHtml}</div>
+                                </div>
+                                
+                                <div class="mt-4 mb-2 p-3 bg-gray-50 dark:bg-slate-900 rounded border border-gray-200 dark:border-slate-700">
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-500">Total:</span>
+                                        <strong class="text-gray-900 dark:text-white">Rp ${data.total.toLocaleString('id-ID')}</strong>
+                                    </div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-500">Terbayar:</span>
+                                        <strong class="text-green-600 dark:text-green-400">Rp ${data.terbayar.toLocaleString('id-ID')}</strong>
+                                    </div>
+                                    <div class="flex justify-between text-sm border-t border-gray-300 dark:border-slate-700 pt-1 mt-1">
+                                        <span class="text-gray-700 dark:text-gray-300 font-bold">Sisa:</span>
+                                        <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisa.toLocaleString('id-ID')}</strong>
+                                    </div>
+                                </div>
+                                
+                                <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-1 mt-3">
+                                    <div class="bg-orange-500 h-2.5 rounded-full transition-all duration-500" style="width: ${persen}%"></div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <p class="text-[11px] text-orange-500 dark:text-orange-400 font-extrabold">📊 ${persen.toFixed(1)}% Lunas</p>
+                                </div>
+                            </div>
+                            
+                            <div class="px-5 pb-5 pt-0">
+                                <button onclick="bukaModalHutang('${docId}', ${sisa}, ${data.terbayar})" class="w-full bg-orange-50 dark:bg-slate-700 hover:bg-orange-100 dark:hover:bg-slate-600 text-orange-600 dark:text-orange-400 font-bold py-2 rounded-lg transition border border-orange-200 dark:border-slate-600 shadow-sm text-sm flex items-center justify-center gap-2">
+                                    💸 Upload Bukti & Bayar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                latestDebtSummary = {
+                    totalHutang: sumTotalHutang,
+                    totalTerbayar: sumTerbayar,
+                    sisaHutang: Math.max(0, sumTotalHutang - sumTerbayar)
+                };
+                renderDebtPelunasanChart(latestDebtSummary);
+            });
+        }
+
+        // ==================== KHUSUS HALAMAN PENGHUTANG ====================
+        function muatDataHutangPenghutang(userEmail, namaUser) {
+            db.collection("hutang").onSnapshot((querySnapshot) => {
+                const container = document.getElementById('debtor-portal-content');
+                if(!container) return;
+                container.innerHTML = '';
+
+                let found = false;
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const docId = doc.id;
+                    const emailHutang = (data.email || "").toLowerCase().trim();
+                    const namaHutang = (data.nama || "").toLowerCase().trim();
+
+                    if (emailHutang === userEmail.toLowerCase().trim() || namaHutang === namaUser.toLowerCase().trim()) {
+                        found = true;
+                        let persen = (data.terbayar / data.total) * 100;
+                        if(persen > 100) persen = 100;
+                        let sisa = data.total - data.terbayar;
+                        if(sisa < 0) sisa = 0;
+
+                        let fotoJaminanTag = data.fotoJaminan ? `<div class="mt-2"><p class="text-[11px] text-gray-400 font-semibold mb-1">Foto Jaminan (Klik untuk memperbesar):</p><img src="${data.fotoJaminan}" alt="Foto Jaminan" class="h-32 w-full object-cover rounded border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)"></div>` : '';
+                        let fotoKtpTag = data.fotoKtp ? `<div class="mt-2"><p class="text-[11px] text-blue-400 font-semibold mb-1">Foto KTP (Klik untuk memperbesar):</p><img src="${data.fotoKtp}" alt="Foto KTP" class="h-32 w-full object-cover rounded border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)"></div>` : '';
+
+                        let riwayatHtml = '';
+                        if(data.riwayatBayar && data.riwayatBayar.length > 0) {
+                            data.riwayatBayar.forEach((log, idx) => {
+                                let buktiImg = log.bukti ? `<span class="text-blue-400 underline cursor-pointer block mt-1" onclick="bukaModalGambarBesar('${log.bukti}')">🖼️ Lihat Bukti Transfer ↗</span>` : '';
+                                let tglStr = new Date(log.tanggal).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                                riwayatHtml += `
+                                    <div class="bg-slate-900 p-3 rounded border border-slate-700 text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                        <div>
+                                            <p class="font-bold text-green-400">Pembayaran #${idx+1}: Rp ${log.nominal.toLocaleString('id-ID')}</p>
+                                            <p class="text-gray-400 text-[10px]">🕒 ${tglStr}</p>
+                                            ${buktiImg}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            riwayatHtml = `<p class="text-xs text-gray-500 italic">Belum ada riwayat pembayaran tercatat.</p>`;
+                        }
+
+                        container.innerHTML += `
+                            <div class="bg-slate-800 rounded-lg shadow-lg border border-slate-700 p-6">
+                                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-slate-700 pb-4">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-white">Tagihan Atas Nama: ${data.nama}</h3>
+                                        <p class="text-xs text-gray-400">Jatuh Tempo: ${formatTanggal(data.jatuhTempo)}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="px-3 py-1 rounded text-xs font-bold ${persen >= 100 ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}">
+                                            ${persen >= 100 ? 'LUNAS ✓' : 'Belum Lunas'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div>
+                                        <div class="bg-slate-900 p-4 rounded border border-slate-700 space-y-2 text-sm">
+                                            <div class="flex justify-between"><span class="text-gray-400">Total Hutang:</span> <strong class="text-white">Rp ${data.total.toLocaleString('id-ID')}</strong></div>
+                                            <div class="flex justify-between"><span class="text-gray-400">Total Terbayar:</span> <strong class="text-green-400">Rp ${data.terbayar.toLocaleString('id-ID')}</strong></div>
+                                            <div class="flex justify-between border-t border-slate-800 pt-2"><span class="text-gray-300 font-bold">Sisa Tagihan:</span> <strong class="text-red-400 text-base">Rp ${sisa.toLocaleString('id-ID')}</strong></div>
+                                        </div>
+                                        <div class="mt-3 bg-slate-900 p-3 rounded border border-slate-700 text-xs">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-gray-400 font-semibold">Persentase Pelunasan:</span>
+                                                <strong class="text-orange-400 font-extrabold text-sm">${persen.toFixed(1)}% Lunas</strong>
+                                            </div>
+                                            <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
+                                                <div class="bg-orange-500 h-2 rounded-full transition-all duration-500" style="width: ${persen}%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3 text-xs bg-slate-900 p-3 rounded border border-slate-700 text-slate-300">
+                                            🔒 <strong>Jaminan:</strong> ${data.jaminan || 'Tidak ada'}
+                                            ${fotoJaminanTag}
+                                            ${fotoKtpTag}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 class="font-bold text-sm text-orange-400 mb-2">💸 Form Bayar / Cicil & Upload Bukti</h4>
+                                        <div class="bg-slate-900 p-4 rounded border border-slate-700 space-y-3">
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-300 mb-1">Nominal Pembayaran (Rp)</label>
+                                                <input type="text" id="debtor-input-bayar-${docId}" oninput="formatInputRupiah(this)" placeholder="Misal: 100.000" class="w-full p-2 border border-slate-600 rounded bg-slate-800 text-white text-sm focus:ring-2 focus:ring-orange-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-300 mb-1">Upload Bukti Transfer</label>
+                                                <input type="file" id="debtor-file-bukti-${docId}" accept="image/*" class="w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-300">
+                                            </div>
+                                            <button onclick="prosesBayarOlehPenghutang('${docId}', ${sisa}, ${data.terbayar})" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 rounded text-xs transition shadow">Kirim Pembayaran & Bukti</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-slate-700 pt-4">
+                                    <h4 class="font-bold text-sm text-yellow-400 mb-3">📜 Log / Riwayat Pembayaran Hutang</h4>
+                                    <div class="space-y-2">
+                                        ${riwayatHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if(!found) {
+                    container.innerHTML = `<div class="bg-slate-800 p-6 rounded-lg text-center text-gray-400 border border-slate-700">Belum ada data hutang yang terhubung dengan email akun Anda (${userEmail}). Hubungi admin keluarga jika ini adalah kesalahan.</div>`;
+                }
+            });
+        }
+
+        function prosesBayarOlehPenghutang(docId, sisaHutang, terbayarLama) {
+            const inputNominalEl = document.getElementById(`debtor-input-bayar-${docId}`);
+            const inputFileEl = document.getElementById(`debtor-file-bukti-${docId}`);
+            
+            const bayarBaru = unformatRupiah(inputNominalEl.value);
+            if(!bayarBaru || bayarBaru <= 0) return alert("Masukkan nominal pembayaran yang valid!");
+
+            const file = inputFileEl.files[0];
+            if(!file) return alert("Harap upload foto bukti pembayaran/transfer!");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Bukti = e.target.result;
+                const logBaru = {
+                    nominal: bayarBaru,
+                    tanggal: new Date().toISOString(),
+                    bukti: base64Bukti
+                };
+
+                db.collection("hutang").doc(docId).update({
+                    terbayar: terbayarLama + bayarBaru,
+                    riwayatBayar: firebase.firestore.FieldValue.arrayUnion(logBaru),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    alert("Berhasil mengirim pembayaran dan bukti transfer!");
+                    inputNominalEl.value = '';
+                    inputFileEl.value = '';
+                }).catch(err => alert("Gagal mengirim pembayaran: " + err.message));
+            };
+            reader.readAsDataURL(file);
+        }
+
+
+        // ==================== TABUNGAN ====================
+        function previewTabunganFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('tabungan-file-name').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64TabunganImage = e.target.result;
+                    document.getElementById('tabungan-preview').src = base64TabunganImage;
+                    document.getElementById('tabungan-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function batalTabunganFoto() {
+            base64TabunganImage = '';
+            document.getElementById('tabungan-preview-container').classList.add('hidden');
+            document.getElementById('tabungan-file-input').value = '';
+            document.getElementById('tabungan-file-name').innerText = 'Belum ada file dipilih';
+        }
+
         function simpanTabungan() {
             const nama = document.getElementById('nama-tabungan').value;
             const target = unformatRupiah(document.getElementById('target-tabungan').value);
-            const foto = document.getElementById('foto-tabungan').value.trim();
             
             if (!nama || !target || target <= 0) return alert("Nama dan Nominal Target harus diisi!");
             
+            const defaultImage = "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=500&auto=format&fit=crop&q=80";
+
             db.collection("tabungan").add({ 
                 nama: nama, 
                 target: target, 
                 terkumpul: 0, 
-                foto: foto || "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=500&auto=format&fit=crop&q=80",
+                foto: base64TabunganImage || defaultImage,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp() 
             }).then(() => { 
                 document.getElementById('nama-tabungan').value = ''; 
                 document.getElementById('target-tabungan').value = ''; 
-                document.getElementById('foto-tabungan').value = ''; 
+                batalTabunganFoto();
             }).catch(e => alert("Error: " + e.message));
         }
 
@@ -707,6 +1559,7 @@
         function muatDataTabungan() {
             db.collection("tabungan").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('list-tabungan');
+                if(!container) return;
                 container.innerHTML = ''; 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); const docId = doc.id;
@@ -719,9 +1572,9 @@
                         <div class="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-100 dark:border-slate-700 flex flex-col justify-between overflow-hidden hover:shadow-lg transition">
                             <div>
                                 <div class="h-40 overflow-hidden relative bg-slate-900">
-                                    <img src="${fotoUrl}" alt="Foto Target" class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
-                                    <h4 class="absolute bottom-3 left-4 right-4 font-bold text-white text-lg drop-shadow-md truncate">${data.nama}</h4>
+                                    <img src="${fotoUrl}" alt="Foto Target" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent pointer-events-none"></div>
+                                    <h4 class="absolute bottom-3 left-4 right-4 font-bold text-white text-lg drop-shadow-md truncate pointer-events-none">${data.nama}</h4>
                                     <button onclick="hapusTabungan('${docId}')" class="absolute top-2 right-2 bg-black/60 hover:bg-red-600 text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center">✖</button>
                                 </div>
                                 
@@ -748,6 +1601,7 @@
             });
         }
 
+        // ==================== CRYPTO ====================
         function cekPilihanKoin(select) {
             const customInput = document.getElementById('custom-koin');
             if (select.value === 'Lainnya') {
@@ -833,13 +1687,14 @@
 
             db.collection("crypto").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('list-crypto');
+                if(!container) return;
                 container.innerHTML = ''; 
                 
                 let grandTotalPnlRp = 0;
                 let grandTotalModal = 0;
                 let dataCount = 0;
 
-                latestPnlByUser = { 'Ayah': 0, 'Istri': 0, 'Anak': 0, 'Saudara': 0 };
+                latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Istri': 0, 'Anak': 0 };
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); const docId = doc.id;
@@ -874,9 +1729,8 @@
                         const labelHarga = isHold ? 'Harga Skrg/Koin' : 'Harga Jual/Koin';
 
                         let ownerBadgeColor = 'bg-blue-900 text-blue-200';
-                        if (pemilik === 'Istri') ownerBadgeColor = 'bg-pink-900 text-pink-200';
+                        if (pemilik === 'Bunda' || pemilik === 'Istri') ownerBadgeColor = 'bg-pink-900 text-pink-200';
                         if (pemilik === 'Anak') ownerBadgeColor = 'bg-emerald-900 text-emerald-200';
-                        if (pemilik === 'Saudara') ownerBadgeColor = 'bg-purple-900 text-purple-200';
 
                         const actionButtons = isHold 
                             ? `
@@ -884,7 +1738,7 @@
                                     <button onclick="updateHargaCrypto('${docId}', ${data.hargaSekarang})" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded text-sm transition border border-slate-500">🔄 Update Harga</button>
                                     <button onclick="jualCrypto('${docId}', ${data.jumlahKoin})" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-bold py-2 rounded text-sm transition shadow-lg">💰 Jual Koin</button>
                                 </div>
-                            `
+                              ` 
                             : `<div class="mt-4 text-center text-xs text-gray-400 italic">Portofolio Koin Ini Sudah Ditutup</div>`;
 
                         container.innerHTML += `
@@ -943,25 +1797,97 @@
                 });
                 
                 const badgeEl = document.getElementById('total-crypto-pnl-badge');
-                const grandTotalPersen = grandTotalModal > 0 ? (grandTotalPnlRp / grandTotalModal) * 100 : 0;
-                const isGrandProfit = grandTotalPnlRp >= 0;
-                const grandSymbol = isGrandProfit ? '+' : '';
-                
-                badgeEl.innerText = `Total PnL: ${grandSymbol}Rp ${Math.abs(grandTotalPnlRp).toLocaleString('id-ID')} (${grandSymbol}${grandTotalPersen.toFixed(2)}%)`;
-                badgeEl.className = isGrandProfit 
-                    ? "bg-green-600 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow" 
-                    : "bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow";
+                if(badgeEl) {
+                    const grandTotalPersen = grandTotalModal > 0 ? (grandTotalPnlRp / grandTotalModal) * 100 : 0;
+                    const isGrandProfit = grandTotalPnlRp >= 0;
+                    const grandSymbol = isGrandProfit ? '+' : '';
+                    
+                    badgeEl.innerText = `Total PnL: ${grandSymbol}Rp ${Math.abs(grandTotalPnlRp).toLocaleString('id-ID')} (${grandSymbol}${grandTotalPersen.toFixed(2)}%)`;
+                    badgeEl.className = isGrandProfit 
+                        ? "bg-green-600 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow" 
+                        : "bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow";
+                }
 
                 if (dataCount === 0) {
                     container.innerHTML = `<p class="text-gray-400 text-sm md:col-span-2 text-center p-6 bg-slate-800 rounded border border-dashed border-slate-700">Belum ada portofolio investasi crypto untuk anggota ini.</p>`;
-                    badgeEl.innerText = "Total PnL: Rp 0 (0%)";
-                    badgeEl.className = "bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow";
+                    if(badgeEl) {
+                        badgeEl.innerText = "Total PnL: Rp 0 (0%)";
+                        badgeEl.className = "bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow";
+                    }
                 }
 
                 renderCryptoProfitChart(latestPnlByUser);
             });
         }
 
+
+        // ==================== WATCHER GURU ====================
+        async function fetchWatcherGuruNews() {
+            const container = document.getElementById('watcher-guru-container');
+            if(!container) return;
+            container.innerHTML = `<p class="text-slate-400 text-center py-6 md:col-span-2 animate-pulse">Menarik 20 berita terbaru dari Watcher Guru...</p>`;
+
+            try {
+                const watcherUrl = 'https://watcher.guru/news/feed';
+                const rssUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(watcherUrl)}`;
+                
+                const response = await fetch(rssUrl);
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.items && data.items.length > 0) {
+                    container.innerHTML = '';
+                    const top20News = data.items.slice(0, 20);
+
+                    top20News.forEach((item, index) => {
+                        let desc = item.description ? item.description.replace(/<[^>]*>?/gm, '') : '';
+                        if (desc.length > 100) desc = desc.substring(0, 100) + '...';
+
+                        let imageUrl = item.thumbnail || (item.enclosure ? item.enclosure.link : '');
+                        if (!imageUrl) {
+                            const fallbackImages = [
+                                "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=80",
+                                "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?w=500&auto=format&fit=crop&q=80",
+                                "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500&auto=format&fit=crop&q=80"
+                            ];
+                            imageUrl = fallbackImages[index % fallbackImages.length];
+                        }
+
+                        const dateObj = new Date(item.pubDate);
+                        const tanggalFormatted = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' • ' + dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+                        container.innerHTML += `
+                            <div class="bg-slate-800 rounded-lg overflow-hidden border border-slate-700 hover:border-yellow-500/50 transition flex flex-col justify-between shadow-md">
+                                <div>
+                                    <div class="h-36 overflow-hidden relative bg-slate-900">
+                                        <img src="${imageUrl}" alt="Thumbnail" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                                        <span class="absolute top-2 left-2 bg-black/70 text-yellow-400 text-[10px] font-bold px-2 py-0.5 rounded pointer-events-none">#${index + 1} Watcher Guru</span>
+                                    </div>
+                                    <div class="p-4">
+                                        <div class="text-[11px] text-slate-400 mb-1 font-semibold">🕒 ${tanggalFormatted} WIB</div>
+                                        <h4 class="font-bold text-white text-sm mb-2 leading-snug hover:text-yellow-400 transition">
+                                            <a href="${item.link}" target="_blank">${item.title}</a>
+                                        </h4>
+                                        <p class="text-slate-300 text-xs leading-relaxed mb-3">${desc}</p>
+                                    </div>
+                                </div>
+                                <div class="px-4 pb-4 pt-0">
+                                    <a href="${item.link}" target="_blank" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-1.5 px-3 rounded inline-block transition w-full text-center">
+                                        Baca Artikel Asli ↗
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = `<p class="text-slate-400 text-center text-xs py-6 md:col-span-2">Gagal memuat berita Watcher Guru.</p>`;
+                }
+            } catch (err) {
+                container.innerHTML = `<p class="text-slate-400 text-center text-xs py-6 md:col-span-2">Terjadi kesalahan koneksi jaringan.</p>`;
+            }
+        }
+
+
+        // ==================== CHARTS (CHART.JS) ====================
         function renderCryptoProfitChart(pnlData) {
             const canvasEl = document.getElementById('cryptoProfitChart');
             if (!canvasEl) return;
@@ -987,18 +1913,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#94a3b8', font: { size: 10 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8', font: { size: 11 } }
-                        }
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } }
                     }
                 }
             });
@@ -1019,54 +1937,58 @@
                 data: {
                     labels: sortedKeys.length > 0 ? sortedKeys : ['Belum Ada Data'],
                     datasets: [
-                        {
-                            label: 'Pemasukan',
-                            data: sortedKeys.length > 0 ? incomeData : [0],
-                            borderColor: '#22c55e',
-                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Pengeluaran',
-                            data: sortedKeys.length > 0 ? expenseData : [0],
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        }
+                        { label: 'Pemasukan', data: sortedKeys.length > 0 ? incomeData : [0], borderColor: '#22c55e', backgroundColor: 'rgba(34, 197, 94, 0.1)', fill: true, tension: 0.3 },
+                        { label: 'Pengeluaran', data: sortedKeys.length > 0 ? expenseData : [0], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.3 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#94a3b8', font: { size: 11 } }
-                        }
-                    },
+                    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
                     scales: {
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#94a3b8', font: { size: 10 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8', font: { size: 11 } }
-                        }
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } }
                     }
                 }
             });
         }
 
+        function renderDebtPelunasanChart(debtSummary) {
+            const canvasEl = document.getElementById('debtPelunasanChart');
+            if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
+            if (debtPelunasanChartInstance) debtPelunasanChartInstance.destroy();
+
+            debtPelunasanChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sudah Terbayar', 'Sisa Hutang'],
+                    datasets: [{
+                        data: [debtSummary.totalTerbayar, debtSummary.sisaHutang],
+                        backgroundColor: ['#22c55e', '#f97316'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // ==================== CHAT KELUARGA ====================
         function toggleChatPopup() {
             const popup = document.getElementById('chat-popup-box');
             const badge = document.getElementById('chat-badge');
+            if(!popup) return;
             popup.classList.toggle('hidden');
             if (!popup.classList.contains('hidden')) {
-                badge.classList.add('hidden');
+                if(badge) badge.classList.add('hidden');
                 const chatContainer = document.getElementById('chat-container');
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                if(chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
             }
         }
 
@@ -1096,7 +2018,7 @@
 
             const currentUser = auth.currentUser;
             const senderEmail = currentUser ? currentUser.email : "Anonim";
-            const senderName = senderEmail.split('@')[0];
+            const senderName = document.getElementById('user-display-name')?.innerText || senderEmail.split('@')[0];
 
             db.collection("chats").add({
                 sender: senderName,
@@ -1111,9 +2033,7 @@
         }
 
         function handleChatKeyPress(event) {
-            if (event.key === 'Enter') {
-                kirimPesanChat();
-            }
+            if (event.key === 'Enter') kirimPesanChat();
         }
 
         function editPesanChat(id, teksLama) {
@@ -1137,24 +2057,21 @@
 
         function muatDataChat() {
             if (unsubscribeChat) unsubscribeChat();
-
             unsubscribeChat = db.collection("chats").orderBy("createdAt", "asc").onSnapshot((querySnapshot) => {
                 const chatContainer = document.getElementById('chat-container');
+                if(!chatContainer) return;
                 chatContainer.innerHTML = '';
 
                 let count = 0;
                 querySnapshot.forEach((doc) => {
                     count++;
-                    const data = doc.data();
-                    const docId = doc.id;
+                    const data = doc.data(); const docId = doc.id;
                     const currentUser = auth.currentUser;
                     const isMyMessage = currentUser && data.email === currentUser.email;
 
                     const timeString = data.createdAt ? data.createdAt.toDate().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Baru saja';
                     const teksAman = data.text ? data.text.replace(/'/g, "\\'") : '';
-
-                    let imageTag = data.imageUrl ? `<img src="${data.imageUrl}" alt="Lampiran" class="rounded-lg mt-2 max-h-48 object-cover w-full">` : '';
-
+                    let imageTag = data.imageUrl ? `<img src="${data.imageUrl}" alt="Lampiran" class="rounded-lg mt-2 max-h-48 object-cover w-full cursor-pointer" onclick="bukaModalGambarBesar(this.src)">` : '';
                     let actionButtons = "";
                     if (isMyMessage) {
                         actionButtons = `
@@ -1193,8 +2110,9 @@
                     chatContainer.innerHTML = `<p class="text-center text-xs text-gray-400 py-10">Belum ada pesan. Mulai obrolan keluarga!</p>`;
                 } else {
                     const popup = document.getElementById('chat-popup-box');
-                    if (popup.classList.contains('hidden') && count > lastMessageCount && lastMessageCount !== 0) {
-                        document.getElementById('chat-badge').classList.remove('hidden');
+                    const badge = document.getElementById('chat-badge');
+                    if (popup && popup.classList.contains('hidden') && count > lastMessageCount && lastMessageCount !== 0) {
+                        if(badge) badge.classList.remove('hidden');
                     }
                 }
                 lastMessageCount = count;
