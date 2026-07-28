@@ -3020,7 +3020,7 @@
                 const oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
                 oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
+                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime);
                 gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
@@ -3283,93 +3283,103 @@
                 return;
             }
 
-            let query;
-            let isPrivate = false;
+            const container = document.getElementById('chat-container');
+            if (!container) return;
 
             if (activeChatTarget === 'group') {
-                query = db.collection("chats").orderBy("createdAt", "asc");
-            } else {
-                isPrivate = true;
-                const chatId = [currentUser.uid, activeChatTarget].sort().join('_');
-                query = db.collection("private_chats").where("chatId", "==", chatId).orderBy("createdAt", "asc");
-            }
+                unsubscribeChat = db.collection("chats").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+                    container.innerHTML = '';
+                    let count = 0;
+                    snapshot.forEach((doc) => {
+                        count++;
+                        const data = doc.data();
+                        const docId = doc.id;
+                        const isMe = currentUser.email === data.email;
+                        const align = isMe ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-gray-100';
+                        const timeStr = data.createdAt ? formatWaktu(data.createdAt) : 'Baru saja';
+                        const imageTag = data.imageUrl ? `<img src="${data.imageUrl}" class="h-32 object-cover rounded mt-2 cursor-pointer border border-slate-600" onclick="bukaModalGambarBesar(this.src)">` : '';
 
-            unsubscribeChat = query.onSnapshot((querySnapshot) => {
-                const chatContainer = document.getElementById('chat-container');
-                if(!chatContainer) return;
+                        let actionMenu = '';
+                        if (isMe) {
+                            const safeText = (data.text || '').replace(/'/g, "\\'");
+                            actionMenu = `
+                                <div class="flex gap-2 text-[10px] mt-1 opacity-70">
+                                    <span class="underline cursor-pointer hover:opacity-100" onclick="editPesanChat('${docId}', '${safeText}', false)">Edit</span>
+                                    <span class="underline cursor-pointer hover:opacity-100" onclick="hapusPesanChat('${docId}', false)">Hapus</span>
+                                </div>
+                            `;
+                        }
 
-                // Deteksi pesan masuk baru secara realtime dengan docChanges
-                querySnapshot.docChanges().forEach((change) => {
-                    if (change.type === 'added' && initialLoadComplete) {
-                        const data = change.doc.data();
-                        const isMyMessage = isPrivate ? (data.senderId === currentUser.uid) : (data.email === currentUser.email);
-                        if (!isMyMessage) {
-                            playNotificationSound();
-                            showChatToast(data.senderName || data.sender || 'Seseorang', data.text || 'Mengirim gambar');
-                            
-                            const popup = document.getElementById('chat-popup-box');
-                            const badge = document.getElementById('chat-badge');
-                            if (popup && popup.classList.contains('hidden') && badge) {
-                                badge.classList.remove('hidden');
-                            }
+                        container.innerHTML += `
+                            <div class="max-w-[80%] p-3 rounded-xl ${align} shadow-sm text-xs relative">
+                                <p class="font-bold text-[10px] opacity-80 mb-0.5">${data.sender || 'User'}</p>
+                                <p class="break-words leading-relaxed">${data.text || ''}</p>
+                                ${imageTag}
+                                <div class="text-[9px] opacity-70 text-right mt-1">${timeStr}</div>
+                                ${actionMenu}
+                            </div>
+                        `;
+                    });
+
+                    if (initialLoadComplete && count > lastMessageCount) {
+                        playNotificationSound();
+                        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+                        if (lastDoc && lastDoc.data().email !== currentUser.email) {
+                            showChatToast(lastDoc.data().sender, lastDoc.data().text);
                         }
                     }
+                    lastMessageCount = count;
+                    initialLoadComplete = true;
+                    container.scrollTop = container.scrollHeight;
                 });
-                initialLoadComplete = true;
+            } else {
+                const chatId = [currentUser.uid, activeChatTarget].sort().join('_');
+                unsubscribeChat = db.collection("private_chats").where("chatId", "==", chatId).orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+                    container.innerHTML = '';
+                    let count = 0;
+                    snapshot.forEach((doc) => {
+                        count++;
+                        const data = doc.data();
+                        const docId = doc.id;
+                        const isMe = data.senderId === currentUser.uid;
+                        const align = isMe ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-gray-100';
+                        const timeStr = data.createdAt ? formatWaktu(data.createdAt) : 'Baru saja';
+                        const imageTag = data.imageUrl ? `<img src="${data.imageUrl}" class="h-32 object-cover rounded mt-2 cursor-pointer border border-slate-600" onclick="bukaModalGambarBesar(this.src)">` : '';
 
-                chatContainer.innerHTML = '';
-                let count = 0;
-
-                querySnapshot.forEach((doc) => {
-                    count++;
-                    const data = doc.data(); const docId = doc.id;
-                    const isMyMessage = isPrivate ? (data.senderId === currentUser.uid) : (data.email === currentUser.email);
-
-                    const timeString = data.createdAt ? data.createdAt.toDate().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Baru saja';
-                    const teksAman = data.text ? data.text.replace(/'/g, "\\'") : '';
-                    let imageTag = data.imageUrl ? `<img src="${data.imageUrl}" alt="Lampiran" class="rounded-lg mt-2 max-h-48 object-cover w-full cursor-pointer" onclick="bukaModalGambarBesar(this.src)">` : '';
-                    let actionButtons = "";
-                    if (isMyMessage) {
-                        actionButtons = `
-                            <div class="flex gap-2 mt-1 text-[10px]">
-                                ${data.text ? `<button onclick="editPesanChat('${docId}', '${teksAman}', ${isPrivate})" class="text-blue-400 hover:underline">Edit</button>` : ''}
-                                <button onclick="hapusPesanChat('${docId}', ${isPrivate})" class="text-red-400 hover:underline">Hapus</button>
-                            </div>
-                        `;
-                    }
-
-                    const senderLabel = isPrivate ? data.senderName : data.sender;
-
-                    if (isMyMessage) {
-                        chatContainer.innerHTML += `
-                            <div class="flex flex-col items-end mb-2">
-                                <span class="text-[9px] text-gray-400 mb-0.5">Anda • ${timeString}</span>
-                                <div class="bg-blue-600 text-white px-3.5 py-2 rounded-2xl rounded-tr-none max-w-[80%] text-xs shadow">
-                                    ${data.text ? `<div>${data.text}</div>` : ''}
-                                    ${imageTag}
+                        let actionMenu = '';
+                        if (isMe) {
+                            const safeText = (data.text || '').replace(/'/g, "\\'");
+                            actionMenu = `
+                                <div class="flex gap-2 text-[10px] mt-1 opacity-70">
+                                    <span class="underline cursor-pointer hover:opacity-100" onclick="editPesanChat('${docId}', '${safeText}', true)">Edit</span>
+                                    <span class="underline cursor-pointer hover:opacity-100" onclick="hapusPesanChat('${docId}', true)">Hapus</span>
                                 </div>
-                                ${actionButtons}
+                            `;
+                        }
+
+                        container.innerHTML += `
+                            <div class="max-w-[80%] p-3 rounded-xl ${align} shadow-sm text-xs relative">
+                                <p class="font-bold text-[10px] opacity-80 mb-0.5">${data.senderName || 'User'}</p>
+                                <p class="break-words leading-relaxed">${data.text || ''}</p>
+                                ${imageTag}
+                                <div class="text-[9px] opacity-70 text-right mt-1">${timeStr}</div>
+                                ${actionMenu}
                             </div>
                         `;
-                    } else {
-                        chatContainer.innerHTML += `
-                            <div class="flex flex-col items-start mb-2">
-                                <span class="text-[9px] text-gray-400 mb-0.5">${senderLabel || 'Anggota'} • ${timeString}</span>
-                                <div class="bg-slate-700 text-white px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[80%] text-xs shadow border border-slate-600">
-                                    ${data.text ? `<div>${data.text}</div>` : ''}
-                                    ${imageTag}
-                                </div>
-                            </div>
-                        `;
+                    });
+
+                    if (initialLoadComplete && count > lastMessageCount) {
+                        playNotificationSound();
+                        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+                        if (lastDoc && lastDoc.data().senderId !== currentUser.uid) {
+                            showChatToast(lastDoc.data().senderName, lastDoc.data().text);
+                        }
                     }
+                    lastMessageCount = count;
+                    initialLoadComplete = true;
+                    container.scrollTop = container.scrollHeight;
                 });
-
-                if (count === 0) {
-                    chatContainer.innerHTML = `<p class="text-center text-xs text-gray-400 py-10">Belum ada pesan. Mulai obrolan!</p>`;
-                }
-                lastMessageCount = count;
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            });
+            }
         }
     </script>
 </body>
