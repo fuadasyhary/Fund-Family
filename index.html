@@ -164,6 +164,118 @@
             </div>
         </div>
 
+        <!-- === MODUL ASET KELUARGA === -->
+        <div class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+            
+            <!-- Header & Tombol Tambah -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">🏢 Manajemen Aset Keluarga</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Pantau seluruh kekayaan, investasi, dan harta keluarga secara transparan.</p>
+                </div>
+                <button onclick="bukaModalAset()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah Aset Baru
+                </button>
+            </div>
+
+            <!-- Dashboard Ringkasan & Grafik Pie -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Kartu Total Nilai Aset -->
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-6 rounded-2xl shadow-lg flex flex-col justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm font-medium">Total Estimasi Nilai Aset</p>
+                        <h2 id="total-nilai-aset" class="text-3xl font-extrabold mt-2">Rp 0</h2>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-white/20 flex justify-between text-xs text-blue-100">
+                        <span>Total Jenis: <strong id="total-jenis-aset">0</strong> Kategori</span>
+                        <span>Update Terakhir: <span id="last-update-time">Hari ini</span></span>
+                    </div>
+                </div>
+
+                <!-- Grafik Pie Jenis Aset -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-around">
+                    <div class="w-full sm:w-1/2 h-48 relative">
+                        <canvas id="pieChartAset"></canvas>
+                    </div>
+                    <div class="w-full sm:w-1/2 mt-4 sm:mt-0 pl-0 sm:pl-4">
+                        <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Distribusi Kategori Aset</h3>
+                        <div id="pie-legend-custom" class="space-y-2 text-xs text-gray-600 dark:text-gray-400 max-h-40 overflow-y-auto">
+                            <!-- Legend dinamis akan terisi otomatis -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel / List Data Aset -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800 dark:text-white text-lg">Daftar Rincian Aset</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="search-aset" placeholder="Cari aset..." onkeyup="filterTabelAset()" class="px-3 py-1.5 text-xs border border-gray-200 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-white focus:outline-none">
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 dark:bg-slate-700/50 text-gray-500 dark:text-gray-400 uppercase text-[10px] tracking-wider">
+                                <th class="p-4">Nama Aset</th>
+                                <th class="p-4">Kategori</th>
+                                <th class="p-4">Kepemilikan / Lokasi</th>
+                                <th class="p-4 text-right">Estimasi Nilai (Rp)</th>
+                                <th class="p-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-aset-body" class="divide-y divide-gray-100 dark:divide-slate-700 text-gray-700 dark:text-gray-300">
+                            <tr>
+                                <td colspan="5" class="p-6 text-center text-gray-400">Memuat data aset...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- === MODAL TAMBAH / EDIT ASET === -->
+        <div id="modal-aset" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-scale-up">
+                <div class="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                    <h3 id="modal-aset-title" class="font-bold text-lg text-gray-800 dark:text-white">Tambah Aset Keluarga</h3>
+                    <button onclick="tutupModalAset()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white">&times;</button>
+                </div>
+                <form id="form-aset" onsubmit="simpanAset(event)" class="p-6 space-y-4">
+                    <input type="hidden" id="aset-id">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Aset / Keterangan</label>
+                        <input type="text" id="aset-nama" required placeholder="Contoh: Emas ANTAM 50 gram, Rumah Surabaya" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis / Kategori Aset</label>
+                        <select id="aset-kategori" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="Emas">Emas / Logam Mulia</option>
+                            <option value="Lahan & Properti">Lahan & Properti</option>
+                            <option value="Kendaraan">Kendaraan (Mobil/Motor)</option>
+                            <option value="Crypto">Crypto / Aset Digital</option>
+                            <option value="Tabungan / Saham">Tabungan / Investasi / Saham</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Estimasi Nilai (Rupiah)</label>
+                        <input type="number" id="aset-nilai" required placeholder="Contoh: 50000000" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Atas Nama / Lokasi Penyimpanan</label>
+                        <input type="text" id="aset-lokasi" placeholder="Contoh: BNI / Brankas Rumah / Atas Nama Ayah" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="pt-2 flex justify-end gap-3">
+                        <button type="button" onclick="tutupModalAset()" class="px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-100 dark:hover:bg-slate-700">Batal</button>
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow-md">Simpan Aset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- TRANSAKSI HARIAN -->
         <div class="flex flex-col md:flex-row justify-between items-end mb-4 border-b-2 border-gray-300 dark:border-slate-700 pb-2">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">💸 Catatan Transaksi Kas</h2>
@@ -464,7 +576,7 @@
         <div class="bg-slate-900 text-white p-5 rounded-lg shadow-lg border border-slate-700 mb-10">
             <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
                 <h3 id="news-section-title" class="font-bold text-yellow-400 flex items-center text-lg">
-                    <span class="mr-2">📰</span> Watcher Guru News Feed (10 Berita Terbaru)
+                    <span class="mr-2">📰</span> Watcher Guru News
                 </h3>
                 <button onclick="fetchCryptoNews()" class="text-xs bg-slate-800 hover:bg-slate-700 text-yellow-400 border border-yellow-500/30 px-3 py-1 rounded-full transition font-semibold">🔄 Refresh</button>
             </div>
@@ -2941,6 +3053,198 @@
                 }
             });
         }
+        let pieChartInstance = null;
+        let cacheDataAset = [];
+
+        // Format angka ke Rupiah
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
+        }
+
+        // Buka / Tutup Modal
+        function bukaModalAset(id = '', nama = '', kategori = 'Emas', nilai = '', lokasi = '') {
+            document.getElementById('aset-id').value = id;
+            document.getElementById('aset-nama').value = nama;
+            document.getElementById('aset-kategori').value = kategori;
+            document.getElementById('aset-nilai').value = nilai;
+            document.getElementById('aset-lokasi').value = lokasi;
+            document.getElementById('modal-aset-title').innerText = id ? 'Edit Aset Keluarga' : 'Tambah Aset Baru';
+            document.getElementById('modal-aset').classList.remove('hidden');
+        }
+
+        function tutupModalAset() {
+            document.getElementById('modal-aset').classList.add('hidden');
+        }
+
+        // Simpan atau Update Aset ke Firebase Firestore
+        function simpanAset(e) {
+            e.preventDefault();
+            const id = document.getElementById('aset-id').value;
+            const dataAset = {
+                nama: document.getElementById('aset-nama').value,
+                kategori: document.getElementById('aset-kategori').value,
+                nilai: Number(document.getElementById('aset-nilai').value),
+                lokasi: document.getElementById('aset-lokasi').value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const dbRef = db.collection("aset_keluarga");
+            
+            let promise = id ? dbRef.doc(id).update(dataAset) : dbRef.add(dataAset);
+
+            promise.then(() => {
+                tutupModalAset();
+                // Data akan otomatis tersinkronisasi lewat real-time listener muatDataAset()
+            }).catch(err => {
+                alert("Gagal menyimpan aset: " + err.message);
+            });
+        }
+
+        // Hapus Aset
+        function hapusAset(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus data aset ini dari daftar keluarga?")) {
+                db.collection("aset_keluarga").doc(id).delete().catch(err => {
+                    alert("Gagal menghapus: " + err.message);
+                });
+            }
+        }
+
+        // Real-time Listener & Render Data Aset + Pie Chart
+        function inisialisasiRealtimeAset() {
+            db.collection("aset_keluarga").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                const tbody = document.getElementById('tabel-aset-body');
+                tbody.innerHTML = '';
+                cacheDataAset = [];
+
+                if (snapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada data aset keluarga yang tersimpan.</td></tr>`;
+                    updateDashboardAset([]);
+                    return;
+                }
+
+                let totalNilai = 0;
+                let kategoriSet = new Set();
+
+                snapshot.forEach(doc => {
+                    const data = doc.id ? { id: doc.id, ...doc.data() } : null;
+                    if (data) {
+                        cacheDataAset.push(data);
+                        totalNilai += (data.nilai || 0);
+                        kategoriSet.add(data.kategori);
+
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-gray-50/50 dark:hover:bg-slate-700/30 transition">
+                                <td class="p-4 font-semibold text-gray-800 dark:text-white">${data.nama}</td>
+                                <td class="p-4"><span class="px-2.5 py-1 text-xs rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-medium">${data.kategori}</span></td>
+                                <td class="p-4 text-gray-500 dark:text-gray-400 text-xs">${data.lokasi || '-'}</td>
+                                <td class="p-4 text-right font-bold text-gray-800 dark:text-white">${formatRupiah(data.nilai || 0)}</td>
+                                <td class="p-4 text-center space-x-2">
+                                    <button onclick="bukaModalAset('${data.id}', '${data.nama}', '${data.kategori}', ${data.nilai}, '${data.lokasi}')" class="text-blue-500 hover:text-blue-700 font-medium text-xs">Edit</button>
+                                    <button onclick="hapusAset('${data.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs">Hapus</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+
+                document.getElementById('total-nilai-aset').innerText = formatRupiah(totalNilai);
+                document.getElementById('total-jenis-aset').innerText = kategoriSet.size;
+
+                updateDashboardAset(cacheDataAset);
+            });
+        }
+
+        // Fungsi Render Grafik Pie & Rangkuman Kategori
+        function updateDashboardAset(dataList) {
+            const kategoriRekap = {};
+            
+            dataList.forEach(item => {
+                kategoriRekap[item.kategori] = (kategoriRekap[item.kategori] || 0) + item.nilai;
+            });
+
+            const labels = Object.keys(kategoriRekap);
+            const dataValues = Object.values(kategoriRekap);
+            
+            // Warna tema chart
+            const backgroundColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'];
+
+            // Render Legend Kustom
+            const legendContainer = document.getElementById('pie-legend-custom');
+            legendContainer.innerHTML = '';
+            labels.forEach((label, idx) => {
+                const color = backgroundColors[idx % backgroundColors.length];
+                legendContainer.innerHTML += `
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background-color: ${color};"></span> ${label}</span>
+                        <span class="font-bold">${formatRupiah(kategoriRekap[label])}</span>
+                    </div>
+                `;
+            });
+
+            // Render Chart.js Pie
+            const ctx = document.getElementById('pieChartAset').getContext('2d');
+            if (pieChartInstance) {
+                pieChartInstance.destroy();
+            }
+
+            pieChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.length ? labels : ['Belum ada data'],
+                    datasets: [{
+                        data: dataValues.length ? dataValues : [1],
+                        backgroundColor: labels.length ? backgroundColors : ['#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        // Fitur Pencarian Tabel Aset
+        function filterTabelAset() {
+            const keyword = document.getElementById('search-aset').value.toLowerCase();
+            const filtered = cacheDataAset.filter(item => 
+                item.nama.toLowerCase().includes(keyword) || 
+                item.kategori.toLowerCase().includes(keyword) || 
+                (item.lokasi && item.lokasi.toLowerCase().includes(keyword))
+            );
+
+            const tbody = document.getElementById('tabel-aset-body');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Aset tidak ditemukan.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(data => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50/50 dark:hover:bg-slate-700/30 transition">
+                        <td class="p-4 font-semibold text-gray-800 dark:text-white">${data.nama}</td>
+                        <td class="p-4"><span class="px-2.5 py-1 text-xs rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-medium">${data.kategori}</span></td>
+                        <td class="p-4 text-gray-500 dark:text-gray-400 text-xs">${data.lokasi || '-'}</td>
+                        <td class="p-4 text-right font-bold text-gray-800 dark:text-white">${formatRupiah(data.nilai || 0)}</td>
+                        <td class="p-4 text-center space-x-2">
+                            <button onclick="bukaModalAset('${data.id}', '${data.nama}', '${data.kategori}', ${data.nilai}, '${data.lokasi}')" class="text-blue-500 hover:text-blue-700 font-medium text-xs">Edit</button>
+                            <button onclick="hapusAset('${data.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Panggil fungsi inisialisasi saat halaman dimuat
+        document.addEventListener("DOMContentLoaded", () => {
+            inisialisasiRealtimeAset();
+        });
 
         function renderFamilyDebtPelunasanChart(familyDebtSummary) {
             const canvasEl = document.getElementById('familyDebtPelunasanChart');
