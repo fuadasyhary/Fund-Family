@@ -3333,7 +3333,6 @@
                         const data = doc.data();
                         messages.push({ id: doc.id, ...data });
 
-                        // Mark group message as seen by current user if not already
                         if (data.senderId !== currentUser.uid && (!data.seenBy || !data.seenBy.includes(currentUser.uid))) {
                             batchSeen.update(doc.ref, {
                                 seenBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
@@ -3364,11 +3363,11 @@
                         let statusBadge = '';
                         if (isMe) {
                             if (!data.createdAt) {
-                                statusBadge = `<span class="text-[9px] text-yellow-200 ml-1" title="Belum terkirim ke server">⏳ Belum terkirim</span>`;
+                                statusBadge = `<span class="inline-block px-1.5 py-0.5 rounded bg-yellow-500/30 text-yellow-200 text-[10px] font-bold ml-1" title="Belum terkirim ke server">⏳ Belum terkirim</span>`;
                             } else if (data.seenBy && data.seenBy.length > 1) {
-                                statusBadge = `<span class="text-[9px] text-green-200 ml-1" title="Sudah dilihat anggota lain">✓✓ Sudah dilihat</span>`;
+                                statusBadge = `<span class="inline-block px-1.5 py-0.5 rounded bg-green-500/30 text-green-200 text-[10px] font-bold ml-1" title="Sudah dilihat anggota lain">✓✓ Sudah dilihat</span>`;
                             } else {
-                                statusBadge = `<span class="text-[9px] text-gray-200 ml-1" title="Belum dilihat">✓ Belum dilihat</span>`;
+                                statusBadge = `<span class="inline-block px-1.5 py-0.5 rounded bg-black/20 text-gray-200 text-[10px] font-bold ml-1" title="Belum dilihat">✓ Belum dilihat</span>`;
                             }
                         }
 
@@ -3388,7 +3387,7 @@
                                 <p class="font-bold text-[10px] opacity-80 mb-0.5">${data.sender || 'User'}</p>
                                 <p class="break-words leading-relaxed">${data.text || ''}</p>
                                 ${imageTag}
-                                <div class="flex items-center justify-end gap-1 text-[9px] opacity-70 text-right mt-1">
+                                <div class="flex items-center justify-end gap-1 text-[9px] opacity-90 text-right mt-1">
                                     <span>${timeStr}</span>
                                     ${statusBadge}
                                 </div>
@@ -3424,7 +3423,6 @@
                         const data = doc.data();
                         messages.push({ id: doc.id, ...data });
 
-                        // Mark private message as seen if current user is recipient and it's unseen
                         if (data.recipientId === currentUser.uid && !data.seen) {
                             batchSeen.update(doc.ref, { seen: true });
                             hasUnseen = true;
@@ -3453,11 +3451,11 @@
                         let statusBadge = '';
                         if (isMe) {
                             if (!data.createdAt) {
-                                statusBadge = `<span class="text-[9px] text-yellow-200 ml-1" title="Belum terkirim ke server">⏳ Belum terkirim</span>`;
+                                statusBadge = `<span class="inline-block px-1.5 py-0.5 rounded bg-yellow-500/30 text-yellow-200 text-[10px] font-bold ml-1" title="Belum terkirim ke server">⏳ Belum terkirim</span>`;
                             } else if (data.seen) {
-                                statusBadge = `<span class="text-[9px] text-green-200 ml-1" title="Sudah dilihat penerima">✓✓ Sudah dilihat</span>`;
+                                statusBadge = `<span class="inline-block px-1.5 py-0.5 rounded bg-green-500/30 text-green-200 text-[10px] font-bold ml-1" title="Sudah dilihat penerima">✓✓ Sudah dilihat</span>`;
                             } else {
-                                statusBadge = `<span class="text-[9px] text-gray-200 ml-1" title="Belum dilihat penerima">✓ Belum dilihat</span>`;
+                                statusBadge = `<span class="inline-block px-1.5 py-0.5 rounded bg-black/20 text-gray-200 text-[10px] font-bold ml-1" title="Belum dilihat penerima">✓ Belum dilihat</span>`;
                             }
                         }
 
@@ -3477,7 +3475,7 @@
                                 <p class="font-bold text-[10px] opacity-80 mb-0.5">${data.senderName || 'User'}</p>
                                 <p class="break-words leading-relaxed">${data.text || ''}</p>
                                 ${imageTag}
-                                <div class="flex items-center justify-end gap-1 text-[9px] opacity-70 text-right mt-1">
+                                <div class="flex items-center justify-end gap-1 text-[9px] opacity-90 text-right mt-1">
                                     <span>${timeStr}</span>
                                     ${statusBadge}
                                 </div>
