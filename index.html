@@ -510,7 +510,10 @@
                     <span class="text-lg">💬</span>
                     <h3 class="font-bold text-sm" id="chat-header-title">Chat Realtime</h3>
                 </div>
-                <button onclick="toggleChatPopup()" class="text-white hover:text-gray-200 font-bold text-lg px-2">✕</button>
+                <div class="flex items-center gap-2">
+                    <button onclick="hapusChatAktif()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded font-semibold transition" title="Hapus semua pesan chat ini">🗑️ Hapus Chat</button>
+                    <button onclick="toggleChatPopup()" class="text-white hover:text-gray-200 font-bold text-lg px-2">✕</button>
+                </div>
             </div>
 
             <div class="flex flex-1 overflow-hidden">
@@ -3224,6 +3227,7 @@
                     senderId: currentUser.uid,
                     text: pesan,
                     imageUrl: base64ImageToSend || '',
+                    seenBy: [currentUser.uid],
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
                     inputEl.value = '';
@@ -3239,6 +3243,7 @@
                     recipientId: activeChatTarget,
                     text: pesan,
                     imageUrl: base64ImageToSend || '',
+                    seen: false,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
                     inputEl.value = '';
@@ -3269,6 +3274,31 @@
             }
         }
 
+        function hapusChatAktif() {
+            if (!confirm(activeChatTarget === 'group' ? "Hapus semua pesan di Grup Keluarga?" : "Hapus semua riwayat pesan di chat privat ini?")) return;
+            const currentUser = auth.currentUser;
+            if (!currentUser) return;
+
+            if (activeChatTarget === 'group') {
+                db.collection("chats").get().then((snapshot) => {
+                    const batch = db.batch();
+                    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+                    return batch.commit();
+                }).then(() => {
+                    alert("Semua pesan grup berhasil dihapus!");
+                }).catch(e => alert("Gagal menghapus chat: " + e.message));
+            } else {
+                const chatId = [currentUser.uid, activeChatTarget].sort().join('_');
+                db.collection("private_chats").where("chatId", "==", chatId).get().then((snapshot) => {
+                    const batch = db.batch();
+                    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+                    return batch.commit();
+                }).then(() => {
+                    alert("Semua pesan privat berhasil dihapus!");
+                }).catch(e => alert("Gagal menghapus chat: " + e.message));
+            }
+        }
+
         function muatDataChat() {
             if (unsubscribeChat) unsubscribeChat();
             listenTypingIndicator();
@@ -3296,9 +3326,25 @@
                 unsubscribeChat = db.collection("chats").onSnapshot((snapshot) => {
                     container.innerHTML = '';
                     let messages = [];
+                    const batchSeen = db.batch();
+                    let hasUnseen = false;
+
                     snapshot.forEach((doc) => {
-                        messages.push({ id: doc.id, ...doc.data() });
+                        const data = doc.data();
+                        messages.push({ id: doc.id, ...data });
+
+                        // Mark group message as seen by current user if not already
+                        if (data.senderId !== currentUser.uid && (!data.seenBy || !data.seenBy.includes(currentUser.uid))) {
+                            batchSeen.update(doc.ref, {
+                                seenBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+                            });
+                            hasUnseen = true;
+                        }
                     });
+
+                    if (hasUnseen) {
+                        batchSeen.commit().catch(() => {});
+                    }
                     
                     messages.sort((a, b) => {
                         const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
@@ -3314,6 +3360,17 @@
                         const align = isMe ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-gray-100';
                         const timeStr = data.createdAt ? formatWaktu(data.createdAt) : 'Baru saja';
                         const imageTag = data.imageUrl ? `<img src="${data.imageUrl}" class="h-32 object-cover rounded mt-2 cursor-pointer border border-slate-600" onclick="bukaModalGambarBesar(this.src)">` : '';
+
+                        let statusBadge = '';
+                        if (isMe) {
+                            if (!data.createdAt) {
+                                statusBadge = `<span class="text-[9px] text-yellow-200 ml-1" title="Belum terkirim ke server">⏳ Belum terkirim</span>`;
+                            } else if (data.seenBy && data.seenBy.length > 1) {
+                                statusBadge = `<span class="text-[9px] text-green-200 ml-1" title="Sudah dilihat anggota lain">✓✓ Sudah dilihat</span>`;
+                            } else {
+                                statusBadge = `<span class="text-[9px] text-gray-200 ml-1" title="Belum dilihat">✓ Belum dilihat</span>`;
+                            }
+                        }
 
                         let actionMenu = '';
                         if (isMe) {
@@ -3331,7 +3388,10 @@
                                 <p class="font-bold text-[10px] opacity-80 mb-0.5">${data.sender || 'User'}</p>
                                 <p class="break-words leading-relaxed">${data.text || ''}</p>
                                 ${imageTag}
-                                <div class="text-[9px] opacity-70 text-right mt-1">${timeStr}</div>
+                                <div class="flex items-center justify-end gap-1 text-[9px] opacity-70 text-right mt-1">
+                                    <span>${timeStr}</span>
+                                    ${statusBadge}
+                                </div>
                                 ${actionMenu}
                             </div>
                         `;
@@ -3357,9 +3417,23 @@
                 unsubscribeChat = db.collection("private_chats").where("chatId", "==", chatId).onSnapshot((snapshot) => {
                     container.innerHTML = '';
                     let messages = [];
+                    const batchSeen = db.batch();
+                    let hasUnseen = false;
+
                     snapshot.forEach((doc) => {
-                        messages.push({ id: doc.id, ...doc.data() });
+                        const data = doc.data();
+                        messages.push({ id: doc.id, ...data });
+
+                        // Mark private message as seen if current user is recipient and it's unseen
+                        if (data.recipientId === currentUser.uid && !data.seen) {
+                            batchSeen.update(doc.ref, { seen: true });
+                            hasUnseen = true;
+                        }
                     });
+
+                    if (hasUnseen) {
+                        batchSeen.commit().catch(() => {});
+                    }
 
                     messages.sort((a, b) => {
                         const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
@@ -3375,6 +3449,17 @@
                         const align = isMe ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-gray-100';
                         const timeStr = data.createdAt ? formatWaktu(data.createdAt) : 'Baru saja';
                         const imageTag = data.imageUrl ? `<img src="${data.imageUrl}" class="h-32 object-cover rounded mt-2 cursor-pointer border border-slate-600" onclick="bukaModalGambarBesar(this.src)">` : '';
+
+                        let statusBadge = '';
+                        if (isMe) {
+                            if (!data.createdAt) {
+                                statusBadge = `<span class="text-[9px] text-yellow-200 ml-1" title="Belum terkirim ke server">⏳ Belum terkirim</span>`;
+                            } else if (data.seen) {
+                                statusBadge = `<span class="text-[9px] text-green-200 ml-1" title="Sudah dilihat penerima">✓✓ Sudah dilihat</span>`;
+                            } else {
+                                statusBadge = `<span class="text-[9px] text-gray-200 ml-1" title="Belum dilihat penerima">✓ Belum dilihat</span>`;
+                            }
+                        }
 
                         let actionMenu = '';
                         if (isMe) {
@@ -3392,7 +3477,10 @@
                                 <p class="font-bold text-[10px] opacity-80 mb-0.5">${data.senderName || 'User'}</p>
                                 <p class="break-words leading-relaxed">${data.text || ''}</p>
                                 ${imageTag}
-                                <div class="text-[9px] opacity-70 text-right mt-1">${timeStr}</div>
+                                <div class="flex items-center justify-end gap-1 text-[9px] opacity-70 text-right mt-1">
+                                    <span>${timeStr}</span>
+                                    ${statusBadge}
+                                </div>
                                 ${actionMenu}
                             </div>
                         `;
