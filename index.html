@@ -3077,6 +3077,10 @@
             activeChatName = targetName;
             document.getElementById('chat-header-title').innerText = targetName;
             initialLoadComplete = false;
+            
+            const chatContainer = document.getElementById('chat-container');
+            if(chatContainer) chatContainer.innerHTML = '<p class="text-center text-xs text-gray-400 animate-pulse">Memuat percakapan...</p>';
+            
             muatSidebarChat();
             muatDataChat();
         }
@@ -3217,6 +3221,7 @@
                 db.collection("chats").add({
                     sender: senderName,
                     email: senderEmail,
+                    senderId: currentUser.uid,
                     text: pesan,
                     imageUrl: base64ImageToSend || '',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -3285,16 +3290,27 @@
 
             const container = document.getElementById('chat-container');
             if (!container) return;
+            container.innerHTML = '<p class="text-center text-xs text-gray-400 animate-pulse">Memuat percakapan...</p>';
 
             if (activeChatTarget === 'group') {
-                unsubscribeChat = db.collection("chats").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+                unsubscribeChat = db.collection("chats").onSnapshot((snapshot) => {
                     container.innerHTML = '';
-                    let count = 0;
+                    let messages = [];
                     snapshot.forEach((doc) => {
+                        messages.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    messages.sort((a, b) => {
+                        const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+                        const tB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+                        return tA - tB;
+                    });
+
+                    let count = 0;
+                    messages.forEach((data) => {
                         count++;
-                        const data = doc.data();
-                        const docId = doc.id;
-                        const isMe = currentUser.email === data.email;
+                        const docId = data.id;
+                        const isMe = (data.senderId && data.senderId === currentUser.uid) || (data.email && data.email === currentUser.email);
                         const align = isMe ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-gray-100';
                         const timeStr = data.createdAt ? formatWaktu(data.createdAt) : 'Baru saja';
                         const imageTag = data.imageUrl ? `<img src="${data.imageUrl}" class="h-32 object-cover rounded mt-2 cursor-pointer border border-slate-600" onclick="bukaModalGambarBesar(this.src)">` : '';
@@ -3321,11 +3337,15 @@
                         `;
                     });
 
+                    if (count === 0) {
+                        container.innerHTML = `<p class="text-center text-xs text-gray-400 py-6">Belum ada pesan di grup. Mulai percakapan sekarang!</p>`;
+                    }
+
                     if (initialLoadComplete && count > lastMessageCount) {
                         playNotificationSound();
-                        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-                        if (lastDoc && lastDoc.data().email !== currentUser.email) {
-                            showChatToast(lastDoc.data().sender, lastDoc.data().text);
+                        const lastMsg = messages[messages.length - 1];
+                        if (lastMsg && lastMsg.email !== currentUser.email) {
+                            showChatToast(lastMsg.sender, lastMsg.text);
                         }
                     }
                     lastMessageCount = count;
@@ -3334,14 +3354,24 @@
                 });
             } else {
                 const chatId = [currentUser.uid, activeChatTarget].sort().join('_');
-                unsubscribeChat = db.collection("private_chats").where("chatId", "==", chatId).orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+                unsubscribeChat = db.collection("private_chats").where("chatId", "==", chatId).onSnapshot((snapshot) => {
                     container.innerHTML = '';
-                    let count = 0;
+                    let messages = [];
                     snapshot.forEach((doc) => {
+                        messages.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    messages.sort((a, b) => {
+                        const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+                        const tB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+                        return tA - tB;
+                    });
+
+                    let count = 0;
+                    messages.forEach((data) => {
                         count++;
-                        const data = doc.data();
-                        const docId = doc.id;
-                        const isMe = data.senderId === currentUser.uid;
+                        const docId = data.id;
+                        const isMe = (data.senderId && data.senderId === currentUser.uid) || (data.senderEmail && data.senderEmail === currentUser.email);
                         const align = isMe ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-gray-100';
                         const timeStr = data.createdAt ? formatWaktu(data.createdAt) : 'Baru saja';
                         const imageTag = data.imageUrl ? `<img src="${data.imageUrl}" class="h-32 object-cover rounded mt-2 cursor-pointer border border-slate-600" onclick="bukaModalGambarBesar(this.src)">` : '';
@@ -3368,11 +3398,15 @@
                         `;
                     });
 
+                    if (count === 0) {
+                        container.innerHTML = `<p class="text-center text-xs text-gray-400 py-6">Belum ada riwayat pesan privat dengan kontak ini.</p>`;
+                    }
+
                     if (initialLoadComplete && count > lastMessageCount) {
                         playNotificationSound();
-                        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-                        if (lastDoc && lastDoc.data().senderId !== currentUser.uid) {
-                            showChatToast(lastDoc.data().senderName, lastDoc.data().text);
+                        const lastMsg = messages[messages.length - 1];
+                        if (lastMsg && lastMsg.senderId !== currentUser.uid) {
+                            showChatToast(lastMsg.senderName, lastMsg.text);
                         }
                     }
                     lastMessageCount = count;
