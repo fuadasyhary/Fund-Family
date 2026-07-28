@@ -1496,14 +1496,19 @@
                         db.collection("transaksi").doc(idEditSekarang).update({
                             kategoriKas: kategoriKas, jenis: jenis, jumlah: jumlah, keterangan: keterangan, status: 'Diupdate',
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: document.getElementById('user-display-name').innerText
-                        }).then(() => batalEdit()).catch(e => alert("Error: " + e.message));
+                        }).then(() => {
+                            alert("Transaksi berhasil diperbarui!");
+                            batalEdit();
+                        }).catch(e => alert("Error: " + e.message));
                     } else {
                         db.collection("transaksi").add({
                             kategoriKas: kategoriKas, jenis: jenis, jumlah: jumlah, keterangan: keterangan, status: 'Baru',
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(), createdBy: document.getElementById('user-display-name').innerText,
                             tanggal: firebase.firestore.FieldValue.serverTimestamp() 
                         }).then(() => {
-                            document.getElementById('jumlah').value = ''; document.getElementById('keterangan').value = '';
+                            alert("Transaksi berhasil disimpan!");
+                            document.getElementById('jumlah').value = ''; 
+                            document.getElementById('keterangan').value = '';
                         }).catch(e => alert("Error: " + e.message));
                     }
                 });
@@ -1549,7 +1554,11 @@
             if (currentUserJenisAkun === 'Anak') {
                 return alert("Akses ditolak: Akun anak tidak diizinkan menghapus transaksi!");
             }
-            if (confirm("Hapus transaksi ini permanen?")) db.collection("transaksi").doc(id).delete();
+            if (confirm("Hapus transaksi ini permanen?")) {
+                db.collection("transaksi").doc(id).delete().then(() => {
+                    alert("Transaksi berhasil dihapus!");
+                });
+            }
         }
 
         let unsubscribeTransaksi = null;
@@ -1719,7 +1728,9 @@
 
         function hapusHutangKeluarga(id) {
             if (confirm("Hapus catatan hutang keluarga ini?")) {
-                db.collection("hutang_keluarga").doc(id).delete();
+                db.collection("hutang_keluarga").doc(id).delete().then(() => {
+                    alert("Catatan hutang internal berhasil dihapus!");
+                });
             }
         }
 
@@ -2085,6 +2096,49 @@
             });
         }
 
+        // Fungsi baru untuk menangani pembayaran dari akun penghutang (Portal Debtor)
+        function prosesBayarOlehPenghutang(docId, sisaTagihan, terbayarLama) {
+            const inputNominalEl = document.getElementById(`debtor-input-bayar-${docId}`);
+            const inputFileEl = document.getElementById(`debtor-file-bukti-${docId}`);
+            const bayarBaru = unformatRupiah(inputNominalEl.value);
+
+            if (!bayarBaru || bayarBaru <= 0) {
+                return alert("Masukkan nominal pembayaran yang valid!");
+            }
+
+            const file = inputFileEl.files[0];
+            const currentUserName = document.getElementById('debtor-display-name')?.innerText || 'Penghutang';
+
+            const executeUpdate = (buktiBase64) => {
+                const logBaru = {
+                    nominal: bayarBaru,
+                    tanggal: new Date().toISOString(),
+                    bukti: buktiBase64 || '',
+                    userName: currentUserName
+                };
+
+                db.collection("hutang").doc(docId).update({
+                    terbayar: terbayarLama + bayarBaru,
+                    riwayatBayar: firebase.firestore.FieldValue.arrayUnion(logBaru),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    alert("Pembayaran dan bukti berhasil dikirim ke admin keluarga!");
+                    inputNominalEl.value = '';
+                    inputFileEl.value = '';
+                }).catch(e => alert("Gagal mengirim pembayaran: " + e.message));
+            };
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    executeUpdate(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                executeUpdate('');
+            }
+        }
+
         function muatDataHutang() {
             if (currentUserJenisAkun === 'Anak') return;
             const filterStatus = document.getElementById('filter-status-hutang') ? document.getElementById('filter-status-hutang').value : 'semua';
@@ -2358,6 +2412,7 @@
                 foto: base64TabunganImage || defaultImage,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp() 
             }).then(() => { 
+                alert("Target tabungan berhasil dibuat!");
                 document.getElementById('nama-tabungan').value = ''; 
                 document.getElementById('target-tabungan').value = ''; 
                 batalTabunganFoto();
@@ -2369,13 +2424,24 @@
             if (nominalStr !== null) {
                 const nominal = unformatRupiah(nominalStr);
                 if (!isNaN(nominal) && nominal > 0) {
-                    db.collection("tabungan").doc(id).update({ terkumpul: terkumpulSekarang + nominal, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                    db.collection("tabungan").doc(id).update({ 
+                        terkumpul: terkumpulSekarang + nominal, 
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                    }).then(() => {
+                        alert("Saldo tabungan berhasil ditambahkan!");
+                    });
+                } else {
+                    alert("Nominal tidak valid.");
                 }
             }
         }
 
         function hapusTabungan(id) {
-            if (confirm("Hapus rencana tabungan ini?")) db.collection("tabungan").doc(id).delete();
+            if (confirm("Hapus rencana tabungan ini?")) {
+                db.collection("tabungan").doc(id).delete().then(() => {
+                    alert("Target tabungan berhasil dihapus!");
+                });
+            }
         }
 
         function muatDataTabungan() {
@@ -2499,6 +2565,7 @@
                 status: 'Hold', 
                 createdAt: firebase.firestore.FieldValue.serverTimestamp() 
             }).then(() => { 
+                alert("Portofolio crypto berhasil dicatat!");
                 document.getElementById('jenis-crypto').value = ''; 
                 document.getElementById('custom-koin').classList.add('hidden');
                 document.getElementById('custom-koin').value = '';
@@ -2516,8 +2583,12 @@
                     db.collection("crypto").doc(id).update({ 
                         hargaSekarang: hargaBaru, 
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                    }).then(() => {
+                        alert("Harga crypto berhasil diperbarui!");
                     });
-                } else alert("Nominal tidak valid.");
+                } else {
+                    alert("Nominal tidak valid.");
+                }
             }
         }
 
@@ -2532,14 +2603,22 @@
                             hargaSekarang: hargaJual, 
                             status: 'Terjual', 
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                        }).then(() => {
+                            alert("Penjualan crypto berhasil dicatat!");
                         });
-                    } else alert("Nominal jual tidak valid. Batal menjual.");
+                    } else {
+                        alert("Nominal jual tidak valid. Batal menjual.");
+                    }
                 }
             }
         }
 
         function hapusCrypto(id) {
-            if (confirm("Hapus data portofolio crypto ini secara permanen?")) db.collection("crypto").doc(id).delete();
+            if (confirm("Hapus data portofolio crypto ini secara permanen?")) {
+                db.collection("crypto").doc(id).delete().then(() => {
+                    alert("Portofolio crypto berhasil dihapus!");
+                });
+            }
         }
 
         function muatDataCrypto() {
