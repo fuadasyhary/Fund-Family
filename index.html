@@ -21,6 +21,13 @@
             pointer-events: none;
             transition: opacity 0.5s ease-out;
         }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-gray-100 font-sans pb-20 transition-colors duration-300" id="body-root">
@@ -30,6 +37,9 @@
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
         <h2 class="text-xl font-semibold text-gray-200 animate-pulse">Memuat Data...</h2>
     </div>
+
+    <!-- TOAST NOTIFIKASI CHAT MASUK -->
+    <div id="chat-toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- BAGIAN LOGIN DENGAN CAPTCHA GAMBAR -->
     <div id="login-section" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 px-4 hidden">
@@ -851,6 +861,7 @@
         let unsubscribeTyping = null;
         let typingTimeout = null;
         let lastMessageCount = 0;
+        let initialLoadComplete = false;
 
         function generateCaptcha() {
             const canvas = document.getElementById('captcha-canvas');
@@ -1111,7 +1122,6 @@
             });
         }
 
-        // BUKA MODAL PROFIL (DISESUAIKAN BERDASARKAN ROLE: ANAK HANYA EDIT DIRINYA SENDIRI)
         function bukaModalProfil() {
             const adminSec = document.getElementById('admin-user-management-section');
             const anakSec = document.getElementById('anak-self-edit-section');
@@ -1671,7 +1681,6 @@
             });
         }
 
-        // ==================== FUNGSI HUTANG KELUARGA (ANTAR ANGGOTA) ====================
         function simpanHutangKeluarga() {
             const pemberi = document.getElementById('family-debt-pemberi').value;
             const penerima = document.getElementById('family-debt-penerima').value;
@@ -1814,7 +1823,6 @@
                 renderFamilyDebtPelunasanChart(latestFamilyDebtSummary);
             });
         }
-        // =========================================================================
 
         function previewHutangJaminanFile(event) {
             const file = event.target.files[0];
@@ -2096,7 +2104,6 @@
             });
         }
 
-        // Fungsi baru untuk menangani pembayaran dari akun penghutang (Portal Debtor)
         function prosesBayarOlehPenghutang(docId, sisaTagihan, terbayarLama) {
             const inputNominalEl = document.getElementById(`debtor-input-bayar-${docId}`);
             const inputFileEl = document.getElementById(`debtor-file-bukti-${docId}`);
@@ -3007,6 +3014,51 @@
             });
         }
 
+        function playNotificationSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.15);
+            } catch(e) {}
+        }
+
+        function showChatToast(senderName, messageText) {
+            const container = document.getElementById('chat-toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = "bg-slate-800 text-white border border-blue-500/50 p-3.5 rounded-xl shadow-2xl flex items-center gap-3 w-72 animate-slide-in pointer-events-auto cursor-pointer";
+            toast.onclick = () => {
+                const popup = document.getElementById('chat-popup-box');
+                if (popup && popup.classList.contains('hidden')) toggleChatPopup();
+                toast.remove();
+            };
+
+            toast.innerHTML = `
+                <div class="text-2xl flex-shrink-0">💬</div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-xs font-bold text-blue-400 truncate">${senderName}</p>
+                    <p class="text-[11px] text-gray-300 truncate">${messageText || 'Mengirim gambar'}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-white font-bold text-xs p-1">✕</button>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => toast.remove(), 500);
+                }
+            }, 4000);
+        }
+
         function toggleChatPopup() {
             const popup = document.getElementById('chat-popup-box');
             const badge = document.getElementById('chat-badge');
@@ -3024,6 +3076,7 @@
             activeChatTarget = targetId;
             activeChatName = targetName;
             document.getElementById('chat-header-title').innerText = targetName;
+            initialLoadComplete = false;
             muatSidebarChat();
             muatDataChat();
         }
@@ -3244,9 +3297,29 @@
             unsubscribeChat = query.onSnapshot((querySnapshot) => {
                 const chatContainer = document.getElementById('chat-container');
                 if(!chatContainer) return;
-                chatContainer.innerHTML = '';
 
+                // Deteksi pesan masuk baru secara realtime dengan docChanges
+                querySnapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added' && initialLoadComplete) {
+                        const data = change.doc.data();
+                        const isMyMessage = isPrivate ? (data.senderId === currentUser.uid) : (data.email === currentUser.email);
+                        if (!isMyMessage) {
+                            playNotificationSound();
+                            showChatToast(data.senderName || data.sender || 'Seseorang', data.text || 'Mengirim gambar');
+                            
+                            const popup = document.getElementById('chat-popup-box');
+                            const badge = document.getElementById('chat-badge');
+                            if (popup && popup.classList.contains('hidden') && badge) {
+                                badge.classList.remove('hidden');
+                            }
+                        }
+                    }
+                });
+                initialLoadComplete = true;
+
+                chatContainer.innerHTML = '';
                 let count = 0;
+
                 querySnapshot.forEach((doc) => {
                     count++;
                     const data = doc.data(); const docId = doc.id;
@@ -3293,12 +3366,6 @@
 
                 if (count === 0) {
                     chatContainer.innerHTML = `<p class="text-center text-xs text-gray-400 py-10">Belum ada pesan. Mulai obrolan!</p>`;
-                } else {
-                    const popup = document.getElementById('chat-popup-box');
-                    const badge = document.getElementById('chat-badge');
-                    if (popup && popup.classList.contains('hidden') && count > lastMessageCount && lastMessageCount !== 0) {
-                        if(badge) badge.classList.remove('hidden');
-                    }
                 }
                 lastMessageCount = count;
                 chatContainer.scrollTop = chatContainer.scrollHeight;
