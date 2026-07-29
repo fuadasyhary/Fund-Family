@@ -88,7 +88,6 @@
             if(themeIcon) themeIcon.innerText = '☀️';
         }
         
-        generateCaptcha();
         fetchCryptoNews();
         inisialisasiRealtimeAset();
     });
