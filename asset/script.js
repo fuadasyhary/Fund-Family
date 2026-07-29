@@ -54,44 +54,6 @@
     let lastMessageCount = 0;
     let initialLoadComplete = false;
 
-    function generateCaptcha() {
-        const canvas = document.getElementById('captcha-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        currentCaptchaText = '';
-        for (let i = 0; i < 4; i++) {
-            currentCaptchaText += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        
-        for (let i = 0; i < 6; i++) {
-            ctx.strokeStyle = `rgba(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}, 0.6)`;
-            ctx.beginPath();
-            ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-            ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-            ctx.stroke();
-        }
-        
-        ctx.font = 'bold 24px monospace';
-        ctx.textBaseline = 'middle';
-        for (let i = 0; i < currentCaptchaText.length; i++) {
-            ctx.save();
-            ctx.translate(22 + i * 26, 21);
-            ctx.rotate((Math.random() - 0.5) * 0.5);
-            ctx.fillStyle = ['#38bdf8', '#facc15', '#4ade80', '#f472b6', '#fb923c'][Math.floor(Math.random() * 5)];
-            ctx.fillText(currentCaptchaText[i], 0, 0);
-            ctx.restore();
-        }
-        
-        const inputEl = document.getElementById('captcha-input');
-        if(inputEl) inputEl.value = '';
-    }
-
     function toggleTheme() {
         const htmlRoot = document.getElementById('html-root');
         const bodyRoot = document.getElementById('body-root');
@@ -141,19 +103,11 @@
     function login() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const captchaInput = document.getElementById('captcha-input').value.trim().toUpperCase();
         const errorText = document.getElementById('login-error');
 
-        if(!email || !password || !captchaInput) {
+        if(!email || !password) {
             errorText.innerText = "Semua field termasuk captcha harus diisi!";
             errorText.classList.remove('hidden');
-            return;
-        }
-
-        if(captchaInput !== currentCaptchaText) {
-            errorText.innerText = "Kode captcha salah! Silakan coba lagi.";
-            errorText.classList.remove('hidden');
-            generateCaptcha();
             return;
         }
 
