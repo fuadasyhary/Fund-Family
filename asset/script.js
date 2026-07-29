@@ -24,7 +24,6 @@
 
     let isEditMode = false;
     let idEditSekarang = '';
-    let currentCaptchaText = '';
 
     let base64ImageToSend = '';
     let base64TabunganImage = '';
@@ -105,7 +104,7 @@
         const errorText = document.getElementById('login-error');
 
         if(!email || !password) {
-            errorText.innerText = "Semua field termasuk captcha harus diisi!";
+            errorText.innerText = "Semua field harus diisi!";
             errorText.classList.remove('hidden');
             return;
         }
@@ -117,7 +116,6 @@
             loader.classList.add('hidden');
             errorText.innerText = "Gagal login: Cek kembali email & password.";
             errorText.classList.remove('hidden');
-            generateCaptcha();
         });
     }
 
@@ -146,7 +144,6 @@
             dashboardSection.classList.add('hidden');
             debtorDashboardSection.classList.add('hidden');
             document.getElementById('floating-chat-wrapper').classList.add('hidden');
-            generateCaptcha();
         }
     });
 
