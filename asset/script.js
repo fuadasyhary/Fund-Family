@@ -2188,13 +2188,29 @@
             updateDashboardAset(cacheDataAset);
         });
     }
-
+    
     function updateDashboardAset(dataList) {
         const kategoriRekap = {};
+        let totalAsetDisesuaikan = 0;
         
         dataList.forEach(item => {
             kategoriRekap[item.kategori] = (kategoriRekap[item.kategori] || 0) + item.nilai;
+            
+            // Perhitungan: Motor, Mobil, Smartphone, Tablet, Smartwatch dihitung 50%
+            const kat = item.kategori;
+            const nilaiItem = item.nilai || 0;
+            if (['Motor', 'Mobil', 'Smartphone', 'Tablet', 'Smartwatch'].includes(kat)) {
+                totalAsetDisesuaikan += nilaiItem * 0.5;
+            } else {
+                totalAsetDisesuaikan += nilaiItem;
+            }
         });
+
+        // Update kartu total aset keluarga
+        const totalAsetEl = document.getElementById('total-aset-keluarga');
+        if (totalAsetEl) {
+            totalAsetEl.innerText = formatRupiah(totalAsetDisesuaikan);
+        }
 
         const labels = Object.keys(kategoriRekap);
         const dataValues = Object.values(kategoriRekap);

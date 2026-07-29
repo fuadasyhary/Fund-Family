@@ -105,8 +105,15 @@
             </div>
         </div>
 
-        <!-- Ringkasan Saldo -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Ringkasan Saldo & Total Aset Keluarga -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Kartu Total Aset Keluarga (Motor/Mobil/Gadget dihitung 50%) -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 text-center border-t-4 border-blue-500 transition-colors duration-300" id="card-aset-keluarga">
+                <h3 class="text-gray-700 dark:text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Aset Keluarga</h3>
+                <p id="total-aset-keluarga" class="text-3xl font-extrabold text-blue-600 dark:text-blue-400 my-2">Rp 0</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Kendaraan & Gadget (50%) + Lainnya</p>
+            </div>
+
             <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 text-center border-t-4 border-emerald-500 transition-colors duration-300" id="card-permanen">
                 <h3 class="text-gray-700 dark:text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Kas Keluarga</h3>
                 <p id="total-kas-permanen" class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 my-2">Rp 0</p>
