@@ -112,8 +112,8 @@
             
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">🏢 Dashboard Keuangan Keluarga</h1>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pantau seluruh data keuangan keluarga secara transparan.</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">📊 Dashboard Keuangan Keluarga</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Analisa seluruh data keuangan keluarga</p>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -377,17 +377,17 @@
         </div>
 
         <!-- BERITA CRYPTO TERBARU -->
-        <div id="page-berita" class="space-y-8">
-            <div class="space-y-4">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 dark:border-slate-700 pb-3 gap-3">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">📡 Berita Crypto Terbaru (Watcher Guru)</h2>
+        <div id="page-berita" class="space-y-8  hidden">
+            <div class="space-y-4">            
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">📰 Berita Crypto</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Update berita crypto terkini</p>
+                    </div>
                 </div>
                 
                 <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl border border-slate-700">
                     <div class="flex items-center justify-between mb-5 border-b border-slate-800 pb-3">
-                        <h3 id="news-section-title" class="font-bold text-yellow-400 flex items-center text-base">
-                            <span class="mr-2">📰</span> Watcher Guru News
-                        </h3>
                         <button onclick="fetchCryptoNews()" class="text-xs bg-slate-800 hover:bg-slate-700 text-yellow-400 border border-yellow-500/30 px-3.5 py-1.5 rounded-xl transition font-semibold">🔄 Refresh</button>
                     </div>
                     
