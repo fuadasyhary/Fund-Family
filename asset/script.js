@@ -2176,9 +2176,11 @@
                             <td class="p-4"><span class="px-3 py-1 text-xs rounded-full ${pemilikBadgeColor} font-bold">👤 ${data.kepemilikan || 'Ayah'}</span></td>
                             <td class="p-4 text-xs">${lokasiDisplay}</td>
                             <td class="p-4 text-right font-bold text-gray-800 dark:text-white">${formatRupiah(data.nilai || 0)}</td>
-                            <td class="p-4 text-center space-x-2">
-                                <button onclick="bukaModalAset('${data.id}', '${safeNama}', '${safeKategori}', '${safeKepemilikan}', ${data.nilai}, '${safeLokasi}')" class="text-blue-500 hover:text-blue-700 font-medium text-xs">Edit</button>
-                                <button onclick="hapusAset('${data.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs">Hapus</button>
+                            <td class="p-4 text-center">
+                                <div class="flex justify-center gap-1.5">
+                                    <button onclick="bukaModalAset('${data.id}', '${safeNama}', '${safeKategori}', '${safeKepemilikan}', ${data.nilai}, '${safeLokasi}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Edit</button>
+                                    <button onclick="hapusAset('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Hapus</button>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -2299,9 +2301,11 @@
                     <td class="p-4"><span class="px-3 py-1 text-xs rounded-full ${pemilikBadgeColor} font-bold">👤 ${data.kepemilikan || 'Ayah'}</span></td>
                     <td class="p-4 text-xs">${lokasiDisplay}</td>
                     <td class="p-4 text-right font-bold text-gray-800 dark:text-white">${formatRupiah(data.nilai || 0)}</td>
-                    <td class="p-4 text-center space-x-2">
-                        <button onclick="bukaModalAset('${data.id}', '${safeNama}', '${safeKategori}', '${safeKepemilikan}', ${data.nilai}, '${safeLokasi}')" class="text-blue-500 hover:text-blue-700 font-medium text-xs">Edit</button>
-                        <button onclick="hapusAset('${data.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs">Hapus</button>
+                    <td class="p-4 text-center">
+                        <div class="flex justify-center gap-1.5">
+                            <button onclick="bukaModalAset('${data.id}', '${safeNama}', '${safeKategori}', '${safeKepemilikan}', ${data.nilai}, '${safeLokasi}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Edit</button>
+                            <button onclick="hapusAset('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Hapus</button>
+                        </div>
                     </td>
                 </tr>
             `;
