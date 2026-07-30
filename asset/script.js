@@ -2949,7 +2949,7 @@
 
     function pindahHalaman(halaman) {
         // Daftar semua halaman
-        const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest'];
+        const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'berita'];
         
         pages.forEach(p => {
             const el = document.getElementById(`page-${p}`);
