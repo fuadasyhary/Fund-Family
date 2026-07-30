@@ -2969,16 +2969,3 @@
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    
-    // Registrasi Service Worker untuk PWA
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => {
-                    console.log('ServiceWorker berhasil didaftarkan dengan scope: ', reg.scope);
-                })
-                .catch(err => {
-                    console.log('ServiceWorker gagal didaftarkan: ', err);
-                });
-        });
-    }
