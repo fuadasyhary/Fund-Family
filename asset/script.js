@@ -2867,3 +2867,43 @@
             });
         }
     }
+
+    // --- MODAL TRANSAKSI KAS ---
+    function bukaModalTransaksi() {
+        document.getElementById('modal-transaksi').classList.remove('hidden');
+    }
+    function tutupModalTransaksi() {
+        document.getElementById('modal-transaksi').classList.add('hidden');
+    }
+
+    // --- MODAL HUTANG INTERNAL ---
+    function bukaModalHutangInternal() {
+        document.getElementById('modal-hutang-internal').classList.remove('hidden');
+    }
+    function tutupModalHutangInternal() {
+        document.getElementById('modal-hutang-internal').classList.add('hidden');
+    }
+
+    // --- MODAL HUTANG ONLINE ---
+    function bukaModalHutangOnline() {
+        document.getElementById('modal-hutang-online').classList.remove('hidden');
+    }
+    function tutupModalHutangOnline() {
+        document.getElementById('modal-hutang-online').classList.add('hidden');
+    }
+
+    // --- MODAL TABUNGAN ---
+    function bukaModalTabungan() {
+        document.getElementById('modal-tabungan').classList.remove('hidden');
+    }
+    function tutupModalTabungan() {
+        document.getElementById('modal-tabungan').classList.add('hidden');
+    }
+
+    // --- MODAL CRYPTO ---
+    function bukaModalCrypto() {
+        document.getElementById('modal-crypto').classList.remove('hidden');
+    }
+    function tutupModalCrypto() {
+        document.getElementById('modal-crypto').classList.add('hidden');
+    }
