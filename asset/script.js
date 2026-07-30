@@ -1799,59 +1799,62 @@
                             </div>
                             ` 
                         : `<div class="mt-4 text-center text-xs text-gray-400 italic">Portofolio Koin Ini Sudah Ditutup</div>`;
-
+                        
                     container.innerHTML += `
-                        <div class="${cardBg} text-white p-6 rounded-2xl shadow-xl border flex flex-col justify-between hover:shadow-2xl transition relative overflow-hidden">
-                            <div class="absolute -right-4 -bottom-4 opacity-10 text-9xl pointer-events-none">${isProfit ? '📈' : '📉'}</div>
-                            
-                            <div class="relative z-10">
-                                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs font-bold px-3 py-1 rounded-full ${ownerBadgeColor}">👤 ${pemilik}</span>
-                                        <h4 class="font-bold text-yellow-400 text-base">🚀 ${data.koin}</h4>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        ${statusBadge}
-                                        <button onclick="hapusCrypto('${docId}')" class="text-slate-400 hover:text-red-400 transition text-sm bg-slate-800 rounded-full h-7 w-7 flex items-center justify-center font-bold shadow border border-slate-600">✖</button>
-                                    </div>
+                    <div class="${cardBg} text-white p-5 sm:p-6 rounded-2xl shadow-xl border flex flex-col justify-between hover:shadow-2xl transition relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 opacity-10 text-9xl pointer-events-none">${isProfit ? '📈' : '📉'}</div>
+                        
+                        <div class="relative z-10">
+                            <!-- Header Koin & Status -->
+                            <div class="flex flex-wrap justify-between items-center gap-2 mb-4 border-b border-slate-700 pb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${ownerBadgeColor}">👤 ${pemilik}</span>
+                                    <h4 class="font-bold text-yellow-400 text-sm sm:text-base">🚀 ${data.koin}</h4>
                                 </div>
-                                
-                                <div class="text-sm text-slate-300 bg-slate-800 p-3.5 rounded-xl mb-4 flex justify-between">
-                                    <span>Jumlah Koin:</span>
-                                    <strong class="text-white">${formatFloat(data.jumlahKoin)} Koin</strong>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4 text-sm mb-4">
-                                    <div>
-                                        <p class="text-slate-400 text-xs">Modal Pembelian</p>
-                                        <p class="font-semibold text-white text-sm">Rp ${totalModal.toLocaleString('id-ID')}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-400 text-xs">${labelNilai}</p>
-                                        <p class="font-semibold text-white text-sm">Rp ${totalSekarang.toLocaleString('id-ID')}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-500 text-[10px] mt-2">Harga Beli/Koin</p>
-                                        <p class="text-slate-300 text-xs">Rp ${data.hargaBeli.toLocaleString('id-ID')}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-500 text-[10px] mt-2">${labelHarga}</p>
-                                        <p class="text-slate-300 text-xs">Rp ${data.hargaSekarang.toLocaleString('id-ID')}</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-4 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                                    <p class="text-slate-400 text-xs mb-1">Profit / Loss (PnL)</p>
-                                    <p class="${pnlColor} font-extrabold text-base tracking-wide">
-                                        ${pnlSimbol} Rp ${Math.abs(pnlRp).toLocaleString('id-ID')} 
-                                        <span class="text-xs font-medium ml-1">(${pnlSimbol}${pnlPersen.toFixed(2)}%)</span>
-                                    </p>
+                                <div class="flex items-center gap-2">
+                                    ${statusBadge}
+                                    <button onclick="hapusCrypto('${docId}')" class="text-slate-400 hover:text-red-400 transition text-sm bg-slate-800 rounded-full h-7 w-7 flex items-center justify-center font-bold shadow border border-slate-600">✖</button>
                                 </div>
                             </div>
                             
-                            ${actionButtons}
+                            <div class="text-xs sm:text-sm text-slate-300 bg-slate-800 p-3 rounded-xl mb-4 flex justify-between items-center">
+                                <span>Jumlah Koin:</span>
+                                <strong class="text-white">${formatFloat(data.jumlahKoin)} Koin</strong>
+                            </div>
+                            
+                            <!-- Grid Rincian Harga -->
+                            <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm mb-4">
+                                <div class="bg-slate-800/50 p-2.5 rounded-xl">
+                                    <p class="text-slate-400 text-[11px]">Modal Pembelian</p>
+                                    <p class="font-semibold text-white truncate">Rp ${totalModal.toLocaleString('id-ID')}</p>
+                                </div>
+                                <div class="bg-slate-800/50 p-2.5 rounded-xl">
+                                    <p class="text-slate-400 text-[11px]">${labelNilai}</p>
+                                    <p class="font-semibold text-white truncate">Rp ${totalSekarang.toLocaleString('id-ID')}</p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-500 text-[10px] mt-1">Harga Beli/Koin</p>
+                                    <p class="text-slate-300 text-xs truncate">Rp ${data.hargaBeli.toLocaleString('id-ID')}</p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-500 text-[10px] mt-1">${labelHarga}</p>
+                                    <p class="text-slate-300 text-xs truncate">Rp ${data.hargaSekarang.toLocaleString('id-ID')}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Kotak PnL Persentase yang Rapih -->
+                            <div class="mt-4 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-center">
+                                <p class="text-slate-400 text-xs mb-1">Profit / Loss (PnL)</p>
+                                <div class="flex flex-wrap justify-center items-center gap-1.5">
+                                    <span class="${pnlColor} font-extrabold text-sm sm:text-base tracking-wide">${pnlSimbol} Rp ${Math.abs(pnlRp).toLocaleString('id-ID')}</span>
+                                    <span class="${pnlColor} text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800">(${pnlSimbol}${pnlPersen.toFixed(2)}%)</span>
+                                </div>
+                            </div>
                         </div>
-                    `;
+                        
+                        ${actionButtons}
+                    </div>
+                `;
                 }
             });
             
