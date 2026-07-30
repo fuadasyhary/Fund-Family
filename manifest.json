@@ -1,0 +1,17 @@
+{
+  "name": "Keuangan & Investasi Keluarga",
+  "short_name": "Keuangan Keluarga",
+  "description": "Sistem manajemen keuangan, pencatatan aset, kas bulanan, dan portofolio crypto real-time keluarga.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><text y=%22.9em%22 font-size=%22400%22>💰</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
