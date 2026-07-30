@@ -1582,17 +1582,15 @@
             });
         }
     }
-
+    
     function muatDataTabungan() {
         const filterUser = document.getElementById('filter-user-tabungan') ? document.getElementById('filter-user-tabungan').value : 'Semua';
 
         db.collection("tabungan").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
             const container = document.getElementById('list-tabungan');
-            const tabelDetail = document.getElementById('tabel-list-tabungan-detail');
-            if(!container || !tabelDetail) return;
+            if(!container) return;
 
             container.innerHTML = ''; 
-            tabelDetail.innerHTML = '';
             let count = 0;
 
             querySnapshot.forEach((doc) => {
@@ -1642,27 +1640,10 @@
                         </div>
                     </div>
                 `;
-
-                tabelDetail.innerHTML += `
-                    <tr class="border-b dark:border-slate-700 hover:bg-gray-50/50 dark:hover:bg-slate-700/50">
-                        <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${ownerBadgeColor}">${pemilik}</span></td>
-                        <td class="p-3.5 font-bold">${data.nama}</td>
-                        <td class="p-3.5">Rp ${data.target.toLocaleString('id-ID')}</td>
-                        <td class="p-3.5 text-emerald-600 dark:text-emerald-400 font-bold">Rp ${data.terkumpul.toLocaleString('id-ID')}</td>
-                        <td class="p-3.5 font-semibold">${persen.toFixed(1)}%</td>
-                        <td class="p-3.5 text-center">
-                            <div class="flex justify-center gap-2">
-                                <button onclick="tambahSaldoTabungan('${docId}', ${data.terkumpul})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition">Tabung</button>
-                                <button onclick="hapusTabungan('${docId}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition">Hapus</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
             });
 
             if (count === 0) {
                 container.innerHTML = `<div class="bg-white dark:bg-slate-800 p-8 rounded-2xl text-center text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700 md:col-span-2">Belum ada data rencana tabungan untuk anggota ini.</div>`;
-                tabelDetail.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-500 dark:text-gray-400">Belum ada data rencana tabungan.</td></tr>`;
             }
         });
     }
