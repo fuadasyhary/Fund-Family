@@ -52,6 +52,9 @@
     let typingTimeout = null;
     let lastMessageCount = 0;
     let initialLoadComplete = false;
+    
+    let mapInstance = null;
+    let markerInstance = null;
 
     function toggleTheme() {
         const htmlRoot = document.getElementById('html-root');
@@ -2910,4 +2913,55 @@
     }
     function tutupModalCrypto() {
         document.getElementById('modal-crypto').classList.add('hidden');
+    }
+
+    function bukaPetaPilihLokasi() {
+        const containerPeta = document.getElementById('container-peta-modal');
+        containerPeta.classList.toggle('hidden');
+
+        // Jika peta terbuka dan belum pernah diinisialisasi
+        setTimeout(() => {
+            if (!containerPeta.classList.contains('hidden')) {
+                // Default koordinat awal (misal: Surabaya / Indonesia atau sesuai GPS perangkat)
+                let initialLat = -7.2575;
+                let initialLng = 112.7521;
+
+                const inputLokasi = document.getElementById('aset-lokasi').value;
+                if (inputLokasi.includes(',')) {
+                    let parts = inputLokasi.split(',');
+                    let parsedLat = parseFloat(parts[0]);
+                    let parsedLng = parseFloat(parts[1]);
+                    if (!isNaN(parsedLat) && !isNaN(parsedLng)) {
+                        initialLat = parsedLat;
+                        initialLng = parsedLng;
+                    }
+                }
+
+                if (!mapInstance) {
+                    mapInstance = L.map('map').setView([initialLat, initialLng], 14);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '© OpenStreetMap'
+                    }).addTo(mapInstance);
+
+                    markerInstance = L.marker([initialLat, initialLng], { draggable: true }).addTo(mapInstance);
+
+                    // Update input saat marker digeser
+                    markerInstance.on('dragend', function (e) {
+                        let pos = markerInstance.getLatLng();
+                        document.getElementById('aset-lokasi').value = `${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}`;
+                    });
+
+                    // Update marker saat peta diklik
+                    mapInstance.on('click', function (e) {
+                        markerInstance.setLatLng(e.latlng);
+                        document.getElementById('aset-lokasi').value = `${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}`;
+                    });
+                } else {
+                    mapInstance.setView([initialLat, initialLng], 14);
+                    markerInstance.setLatLng([initialLat, initialLng]);
+                    mapInstance.invalidateSize(); // Render ulang ukuran peta
+                }
+            }
+        }, 200);
     }

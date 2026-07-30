@@ -10,6 +10,9 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/tailwindcss-cdn@3.4.10/tailwindcss.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet CSS & JS untuk Peta Interaktif -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -774,11 +777,17 @@
                     <input type="text" id="aset-nilai" required oninput="formatInputRupiah(this)" placeholder="Contoh: 50.000.000" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1 uppercase">Lokasi / Koordinat Google Maps</label>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1 uppercase">Lokasi / Koordinat</label>
                     <div class="flex gap-2">
-                        <input type="text" id="aset-lokasi" placeholder="Cth: Brankas Rumah / -6.200, 106.816" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <button type="button" onclick="ambilLokasiGPS()" class="px-3.5 bg-blue-50 dark:bg-slate-700 hover:bg-blue-100 text-blue-600 dark:text-blue-300 rounded-xl text-xs font-bold transition border border-blue-200 dark:border-slate-600 flex-shrink-0" title="Ambil Koordinat GPS Saat Ini">📍 GPS</button>
+                        <input type="text" id="aset-lokasi" placeholder="Cth: -7.2575, 112.7521" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="button" onclick="bukaPetaPilihLokasi()" class="px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex-shrink-0 flex items-center gap-1">🗺️ Pilih di Peta</button>
                     </div>
+                </div>
+                
+                <!-- Container Peta Interaktif (Awalnya Tersembunyi) -->
+                <div id="container-peta-modal" class="hidden mt-2 space-y-2">
+                    <div id="map" class="w-full h-48 rounded-xl border border-slate-600 z-10"></div>
+                    <p class="text-[10px] text-blue-400">💡 Geser pin atau klik pada peta untuk menentukan titik lokasi aset.</p>
                 </div>
                 <div class="pt-2 flex justify-end gap-3">
                     <button type="button" onclick="tutupModalAset()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-slate-700">Batal</button>
