@@ -1582,7 +1582,7 @@
             });
         }
     }
-    
+
     function muatDataTabungan() {
         const filterUser = document.getElementById('filter-user-tabungan') ? document.getElementById('filter-user-tabungan').value : 'Semua';
 
@@ -2945,4 +2945,24 @@
                 }
             }
         }, 200);
+    }
+
+    function pindahHalaman(halaman) {
+        // Daftar semua halaman
+        const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest'];
+        
+        pages.forEach(p => {
+            const el = document.getElementById(`page-${p}`);
+            const btn = document.getElementById(`menu-${p}`);
+            if (el) {
+                if (p === halaman) {
+                    el.classList.remove('hidden');
+                    if (btn) btn.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
+                } else {
+                    el.classList.add('hidden');
+                    if (btn) btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white";
+                }
+            }
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
