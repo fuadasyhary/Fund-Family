@@ -3089,9 +3089,13 @@
                 }
             });
 
-            // Update di halaman Aset
+            // 1. Update di halaman Aset
             const totalAsetEl = document.getElementById('total-aset-keluarga');
             if (totalAsetEl) totalAsetEl.innerText = formatRupiah(totalAsetDisesuaikan);
+
+            // 2. Update di halaman Dashboard Utama (INI YANG SEBELUMNYA KOSONG)
+            const totalAsetDashboardEl = document.getElementById('total-aset-dashboard');
+            if (totalAsetDashboardEl) totalAsetDashboardEl.innerText = formatRupiah(totalAsetDisesuaikan);
 
             const labels = Object.keys(kategoriRekap);
             const dataValues = Object.values(kategoriRekap);
@@ -3101,7 +3105,7 @@
             if (legendContainer) {
                 legendContainer.innerHTML = '';
                 
-                // Tambahkan informasi Total Keseluruhan di bagian atas legend
+                // Total Keseluruhan di legend halaman Aset
                 legendContainer.innerHTML += `
                     <div class="p-3 bg-slate-900 rounded-xl mb-3 border border-slate-700 flex justify-between items-center text-white">
                         <span class="font-bold text-xs">💎 Total Nilai Aset:</span>
