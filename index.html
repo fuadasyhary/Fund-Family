@@ -4,21 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fund Family - Manajemen Keuangan & Aset Keluarga</title>
-    
-    <!-- Tailwind CSS v3 -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -89,15 +76,15 @@
                         <span id="user-account-type" class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-[10px] font-bold px-2 py-0.5 rounded-full">Ayah</span>
                     </div>
                 </div>
-        
+
                 <!-- Kanan: Tombol Tema (☀️/🌙) & Tombol Keluar (Sejajar di Pojok Kanan) -->
                 <div class="flex items-center gap-2">
                     <button onclick="toggleTheme()" id="theme-icon" class="h-10 w-10 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-sm shadow hover:scale-105 transition flex-shrink-0">☀️</button>
                     <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow flex-shrink-0">Keluar</button>
                 </div>
-        
+
             </div>
-        
+
             <!-- Menu Navigasi Utama (Diposisikan di baris bawahnya agar rapi di HP) -->
             <div class="max-w-7xl mx-auto px-4 pb-3">
                 <nav class="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
@@ -863,9 +850,10 @@
     </div>
 
     <!-- ================= FIREBASE & SCRIPT UTAMA ================= -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Firebase v11 -->
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore-compat.js"></script>
     
     <!-- Script logika aplikasi -->
     <script>
@@ -3076,7 +3064,7 @@
                 updateDashboardAset(cacheDataAset);
             });
         }
-        
+
         function updateDashboardAset(dataList) {
             const kategoriRekap = {};
             let totalAsetDisesuaikan = 0;
