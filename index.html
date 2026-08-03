@@ -3305,77 +3305,102 @@
                     return;
                 }
 
-                // Render Bagan Silsilah Lengkap (Dua Sisi Cabang + Inti + Keturunan)
+                // Render Bagan dengan Garis Penghubung Silsilah (Tree Connectors)
                 let html = `
-                    <div class="flex flex-col items-center space-y-6 py-4 w-full overflow-x-auto">
+                    <div class="flex flex-col items-center space-y-4 py-6 w-full overflow-x-auto">
                         
                         <!-- BAGIAN ATAS: CABANG KELUARGA SUAMI & KELUARGA ISTRI -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
                             
-                            <!-- SISI KIRI: KELUARGA SUAMI & SAUDARA -->
-                            <div class="bg-blue-50/50 dark:bg-slate-800/40 p-4 rounded-2xl border border-blue-200 dark:border-slate-700 space-y-4">
-                                <div class="text-center">
-                                    <span class="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm">🛡️ Keluarga Pihak Suami (Saya)</span>
-                                </div>
-                                <div class="space-y-3">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1">Kakek & Nenek:</p>
-                                        <div class="flex flex-wrap gap-2">${renderTreeNodeCards(kakekSuami)}</div>
+                            <!-- SISI KIRI: KELUARGA SUAMI -->
+                            <div class="bg-blue-50/40 dark:bg-slate-800/40 p-5 rounded-3xl border border-blue-200 dark:border-slate-700 flex flex-col items-center relative">
+                                <span class="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-4">🛡️ Keluarga Pihak Suami (Saya)</span>
+                                
+                                <div class="w-full space-y-4 flex flex-col items-center">
+                                    <!-- Kakek/Nenek -->
+                                    <div class="w-full text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Kakek & Nenek --</p>
+                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(kakekSuami)}</div>
                                     </div>
-                                    <div>
-                                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1">Orang Tua / Mertua:</p>
-                                        <div class="flex flex-wrap gap-2">${renderTreeNodeCards(ortuSuami)}</div>
+
+                                    <!-- Garis Cabang Turun -->
+                                    <div class="w-0.5 h-4 bg-blue-300 dark:bg-slate-600"></div>
+
+                                    <!-- Ortu -->
+                                    <div class="w-full text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Orang Tua --</p>
+                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(ortuSuami)}</div>
                                     </div>
-                                    <div>
-                                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1">Saudara Kandung, Ipar & Keturunannya:</p>
-                                        <div class="flex flex-wrap gap-2">${renderTreeNodeCards(saudaraSuami)}</div>
+
+                                    <!-- Garis Cabang Turun -->
+                                    <div class="w-0.5 h-4 bg-blue-300 dark:bg-slate-600"></div>
+
+                                    <!-- Saudara & Ipar -->
+                                    <div class="w-full text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Saudara Kandung & Keponakan --</p>
+                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(saudaraSuami)}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- SISI KANAN: KELUARGA ISTRI & SAUDARA -->
-                            <div class="bg-pink-50/50 dark:bg-slate-800/40 p-4 rounded-2xl border border-pink-200 dark:border-slate-700 space-y-4">
-                                <div class="text-center">
-                                    <span class="bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm">🌸 Keluarga Pihak Istri</span>
-                                </div>
-                                <div class="space-y-3">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1">Kakek & Nenek:</p>
-                                        <div class="flex flex-wrap gap-2">${renderTreeNodeCards(kakekIstri)}</div>
+                            <!-- SISI KANAN: KELUARGA ISTRI -->
+                            <div class="bg-pink-50/40 dark:bg-slate-800/40 p-5 rounded-3xl border border-pink-200 dark:border-slate-700 flex flex-col items-center relative">
+                                <span class="bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-4">🌸 Keluarga Pihak Istri</span>
+                                
+                                <div class="w-full space-y-4 flex flex-col items-center">
+                                    <!-- Kakek/Nenek -->
+                                    <div class="w-full text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Kakek & Nenek --</p>
+                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(kakekIstri)}</div>
                                     </div>
-                                    <div>
-                                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1">Orang Tua / Mertua:</p>
-                                        <div class="flex flex-wrap gap-2">${renderTreeNodeCards(ortuIstri)}</div>
+
+                                    <!-- Garis Cabang Turun -->
+                                    <div class="w-0.5 h-4 bg-pink-300 dark:bg-slate-600"></div>
+
+                                    <!-- Ortu -->
+                                    <div class="w-full text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Orang Tua / Mertua --</p>
+                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(ortuIstri)}</div>
                                     </div>
-                                    <div>
-                                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1">Saudara Kandung, Ipar & Keturunannya:</p>
-                                        <div class="flex flex-wrap gap-2">${renderTreeNodeCards(saudaraIstri)}</div>
+
+                                    <!-- Garis Cabang Turun -->
+                                    <div class="w-0.5 h-4 bg-pink-300 dark:bg-slate-600"></div>
+
+                                    <!-- Saudara & Ipar -->
+                                    <div class="w-full text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Saudara Kandung & Keponakan --</p>
+                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(saudaraIstri)}</div>
                                     </div>
                                 </div>
                             </div>
 
                         </div>
 
-                        <!-- GARIS PENGHUBUNG KE TENGAH -->
-                        <div class="w-0.5 h-6 bg-gray-300 dark:bg-slate-600"></div>
+                        <!-- GARIS PENGHUBUNG UTAMA MENYATU KE TENGAH -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-0.5 h-8 bg-amber-400 dark:bg-amber-500"></div>
+                            <div class="w-24 h-0.5 bg-amber-400 dark:bg-amber-500"></div>
+                            <div class="w-0.5 h-4 bg-amber-400 dark:bg-amber-500"></div>
+                        </div>
 
-                        <!-- TENGAH: SAYA & ISTRI (KELUARGA INTI) -->
-                        <div class="w-full max-w-md bg-amber-50/60 dark:bg-slate-800/80 p-4 rounded-2xl border border-amber-200 dark:border-slate-700 shadow-sm text-center space-y-3">
-                            <span class="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm">💍 Keluarga Inti (Saya & Istri)</span>
-                            <div class="flex flex-wrap justify-center gap-3">
+                        <!-- TENGAH: KELUARGA INTI (SAYA & ISTRI) -->
+                        <div class="w-full max-w-md bg-amber-50/75 dark:bg-slate-800/90 p-5 rounded-3xl border-2 border-amber-300 dark:border-amber-600 shadow-md text-center flex flex-col items-center">
+                            <span class="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-3">💍 Keluarga Inti (Saya & Istri)</span>
+                            <div class="flex flex-wrap justify-center gap-3 w-full">
                                 ${renderTreeNodeCards(pasanganList)}
                             </div>
                         </div>
 
                         <!-- GARIS PENGHUBUNG KE BAWAH -->
-                        ${anakList.length > 0 ? '<div class="w-0.5 h-6 bg-gray-300 dark:bg-slate-600"></div>' : ''}
+                        ${anakList.length > 0 ? `
+                        <div class="flex flex-col items-center">
+                            <div class="w-0.5 h-6 bg-emerald-400 dark:bg-emerald-500"></div>
+                        </div>` : ''}
 
                         <!-- BAGIAN BAWAH: ANAK / KETURUNAN -->
-                        <div class="w-full max-w-2xl bg-emerald-50/50 dark:bg-slate-800/40 p-4 rounded-2xl border border-emerald-200 dark:border-slate-700 space-y-3">
-                            <div class="text-center">
-                                <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm">👶 Generasi Penerus (Anak-anak)</span>
-                            </div>
-                            <div class="flex flex-wrap justify-center gap-3">
+                        <div class="w-full max-w-2xl bg-emerald-50/50 dark:bg-slate-800/40 p-5 rounded-3xl border border-emerald-200 dark:border-slate-700 flex flex-col items-center">
+                            <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-3">👶 Generasi Penerus (Anak-anak)</span>
+                            <div class="flex flex-wrap justify-center gap-3 w-full">
                                 ${renderTreeNodeCards(anakList)}
                             </div>
                         </div>
@@ -3389,25 +3414,37 @@
 
         function renderTreeNodeCards(list) {
             if (list.length === 0) {
-                return `<div class="text-[11px] text-gray-400 italic bg-white/50 dark:bg-slate-900/50 px-3 py-1.5 rounded-xl border border-dashed border-gray-200 dark:border-slate-700 w-full text-center">Belum diisi</div>`;
+                return `<div class="text-[11px] text-gray-400 italic bg-white/40 dark:bg-slate-900/40 px-3 py-2 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700 w-full text-center">Belum ada data</div>`;
             }
 
             let cardsHtml = '';
             list.forEach(item => {
+                // Menentukan ikon atau emoji berdasarkan peran
+                let icon = '👤';
+                if (item.peran && item.peran.includes('Kakek')) icon = '👴';
+                else if (item.peran && item.peran.includes('Nenek')) icon = '👵';
+                else if (item.peran && item.peran.includes('Ortu')) icon = '👨‍👩‍👧';
+                else if (item.peran && item.peran.includes('Saudara')) icon = '👥';
+
                 cardsHtml += `
-                    <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-3 rounded-xl shadow-sm flex items-center space-x-2.5 flex-1 min-w-[170px] max-w-[220px]">
-                        <div class="w-9 h-9 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-base shrink-0 shadow-inner">
-                            👤
+                    <div class="relative bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 p-3 rounded-2xl shadow-sm flex flex-col items-center text-center transition hover:border-amber-400 dark:hover:border-amber-500 min-w-[130px] max-w-[150px] group">
+                        
+                        <!-- Lingkaran Avatar / Foto Silsilah -->
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-100 to-blue-100 dark:from-slate-700 dark:to-slate-800 border-2 border-white dark:border-slate-700 flex items-center justify-center text-2xl shadow-md mb-2">
+                            ${icon}
                         </div>
-                        <div class="overflow-hidden flex-1">
+
+                        <!-- Info Nama & Peran -->
+                        <div class="w-full overflow-hidden">
                             <h5 class="font-bold text-xs text-gray-900 dark:text-white truncate" title="${item.nama}">${item.nama}</h5>
-                            <p class="text-[9px] text-gray-500 dark:text-gray-400 truncate">${item.keterangan || item.peran}</p>
-                            
-                            <div class="flex gap-2 mt-1.5">
-                                <button onclick="editFamilyTree('${item.id}')" class="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline">Edit</button>
-                                <span class="text-gray-300 dark:text-slate-600">|</span>
-                                <button onclick="hapusFamilyTree('${item.id}')" class="text-[10px] text-red-600 dark:text-red-400 font-bold hover:underline">Hapus</button>
-                            </div>
+                            <p class="text-[9px] text-gray-500 dark:text-gray-400 truncate mt-0.5">${item.keterangan || item.peran}</p>
+                        </div>
+
+                        <!-- Tombol Aksi (Muncul rapi di bawah kartu) -->
+                        <div class="flex items-center justify-center gap-2 mt-3 pt-2 border-t border-gray-100 dark:border-slate-700/60 w-full">
+                            <button onclick="editFamilyTree('${item.id}')" class="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline">Edit</button>
+                            <span class="text-gray-300 dark:text-slate-600">|</span>
+                            <button onclick="hapusFamilyTree('${item.id}')" class="text-[10px] text-red-600 dark:text-red-400 font-bold hover:underline">Hapus</button>
                         </div>
                     </div>
                 `;
