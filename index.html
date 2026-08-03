@@ -56,7 +56,7 @@
                     <input type="password" id="password" onkeypress="handleLoginKeyPress(event)" placeholder="••••••••" class="w-full p-3.5 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
                 </div>
                 <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3.5 rounded-xl text-sm transition shadow-lg shadow-blue-600/30">Masuk</button>
-                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">&copy; 2026 Fund Family By Mochamad Fuad Asyhary- All rights reserved.</p>
+                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">&copy; 2026 Fund & Family By Mochamad Fuad Asyhary - All rights reserved.</p>
                 <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">Sistem Manajemen Keuangan & Keluarga Versi 0.5</p>
             </div>
         </div>
@@ -98,7 +98,6 @@
                     <button id="menu-tabungan" onclick="pindahHalaman('tabungan')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🎯 Tabungan</button>
                     <button id="menu-invest" onclick="pindahHalaman('invest')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🚀 Crypto</button>
                     <button id="menu-dokumen" onclick="pindahHalaman('dokumen-keluarga')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📁 Dokumen Keluarga</button>
-                    <button id="menu-berita" onclick="pindahHalaman('berita')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📰 Berita</button>
                 </nav>
             </div>
 
@@ -324,7 +323,7 @@
                 <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <!-- HALAMAN: DOKUMEN KELUarga -->
+            <!-- HALAMAN: DOKUMEN KELUARGA -->
             <div id="page-dokumen-keluarga" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Form Input & Edit Dokumen -->
@@ -344,6 +343,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Akun</label>
                             <select id="doc-jenis-akun" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                                <option value="Keluarga">Keluarga</option>                                
                                 <option value="Ayah">Ayah</option>
                                 <option value="Bunda">Bunda</option>
                                 <option value="Anak">Anak</option>
@@ -368,7 +368,16 @@
 
                     <!-- Daftar Kartu Dokumen Keluarga -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 space-y-4">
-                        <h3 class="font-bold text-sm text-gray-900 dark:text-white">Daftar Arsip Dokumen Keluarga</h3>
+                        <!-- Header Daftar Arsip & Filter di Pojok Kanan -->
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white">Daftar Arsip Dokumen Keluarga</h3>
+                            
+                            <div class="w-full sm:w-auto">
+                                <select id="filter-jenis-akun" onchange="renderFamilyDocuments()" class="w-full sm:w-48 bg-gray-50 dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                    <option value="">Semua Jenis Akun</option>
+                                </select>
+                            </div>
+                        </div>
                         <div id="list-family-documents" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto">
                             <!-- Data dokumen akan dimuat secara otomatis di sini -->
                         </div>
@@ -453,15 +462,6 @@
                     </div>
                 </div>
                 <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </div>
-
-            <!-- HALAMAN 7: BERITA CRYPTO -->
-            <div id="page-berita" class="space-y-6 hidden">
-                <div class="bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700">
-                    <h3 class="text-lg font-bold text-white mb-1">📰 Berita Crypto Terbaru (Watcher Guru)</h3>
-                    <p class="text-xs text-slate-400">Update berita pasar kripto terkini untuk referensi investasi keluarga.</p>
-                </div>
-                <div id="crypto-news-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
             </div>
 
         </main>
@@ -3078,10 +3078,10 @@
                 renderCryptoProfitChart(latestPnlByUser);
             });
         }
-
-        // Variabel penampung file gambar sementara (Base64)
-        let base64FamilyDocImage = '';
+// Variabel penampung file gambar sementara (Base64)
+let base64FamilyDocImage = '';
         let editIdFamilyDoc = null;
+        let allFamilyDocumentsCache = [];
 
         // 1. Preview gambar saat file dipilih
         function previewFamilyDocFile(event) {
@@ -3120,7 +3120,6 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
-                // Jika ada gambar baru yang di-upload saat edit, update juga gambarnya
                 if (base64FamilyDocImage) {
                     updateData.fotoDokumen = base64FamilyDocImage;
                 }
@@ -3153,57 +3152,96 @@
             }
         }
 
-        // 3. Muat Data Dokumen Secara Real-time (Firestore Listener)
-        function muatFamilyDocuments() {
-            const container = document.getElementById('list-family-documents');
-            if (!container) return;
-
+        // 3. Panggil listener ini SEKALI saja untuk inisialisasi data & real-time update
+        function initFamilyDocumentsListener() {
             db.collection("family_documents").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-                container.innerHTML = '';
-                let count = 0;
+                allFamilyDocumentsCache = [];
+                let jenisAkunSet = new Set();
 
-                snapshot.forEach(doc => {
-                    count++;
+                snapshot.forEach((doc) => {
                     const data = doc.data();
-                    const docId = doc.id;
-
-                    let safeNama = (data.namaKeluarga || '').replace(/'/g, "\\'");
-                    let safeJenis = (data.jenisAkun || '').replace(/'/g, "\\'");
-                    let safeDocName = (data.namaDokumen || '').replace(/'/g, "\\'");
-                    let fotoUrl = data.fotoDokumen || '';
-
-                    let gambarTag = fotoUrl 
-                        ? `<img src="${fotoUrl}" alt="Dokumen" class="h-32 w-full object-cover rounded-xl border border-slate-700 cursor-pointer shadow-sm hover:opacity-90 transition" onclick="bukaModalGambarBesar('${fotoUrl}')" title="Klik untuk memperbesar">` 
-                        : `<div class="h-32 w-full bg-slate-900 rounded-xl flex items-center justify-center text-xs text-gray-500 italic">Tidak ada gambar</div>`;
-
-                    container.innerHTML += `
-                        <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 flex flex-col justify-between space-y-3 shadow-sm">
-                            <div>
-                                <div class="flex justify-between items-start mb-2">
-                                    <div>
-                                        <span class="bg-cyan-900 text-cyan-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">${data.jenisAkun}</span>
-                                        <h4 class="font-bold text-white text-base mt-1">${data.namaKeluarga}</h4>
-                                    </div>
-                                    <div class="flex gap-1">
-                                        <button onclick="editFamilyDocument('${docId}', '${safeNama}', '${safeJenis}', '${safeDocName}')" class="bg-slate-700 hover:bg-yellow-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center" title="Edit Dokumen">✏️</button>
-                                        <button onclick="hapusFamilyDocument('${docId}')" class="bg-slate-700 hover:bg-red-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center" title="Hapus Dokumen">✕</button>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-300 font-semibold mb-2">📄 Dokumen: <span class="text-orange-400">${data.namaDokumen}</span></p>
-                                <div class="mt-2">${gambarTag}</div>
-                            </div>
-                            <div class="text-[10px] text-right text-gray-500 italic">Klik gambar untuk melihat ukuran penuh</div>
-                        </div>
-                    `;
+                    const id = doc.id;
+                    allFamilyDocumentsCache.push({ id, ...data });
+                    if (data.jenisAkun) jenisAkunSet.add(data.jenisAkun);
                 });
 
-                if (count === 0) {
-                    container.innerHTML = `<div class="col-span-2 bg-slate-800 p-8 rounded-2xl text-center text-gray-400 border border-slate-700">Belum ada arsip dokumen keluarga yang tersimpan.</div>`;
-                }
+                // Perbarui opsi dropdown filter secara dinamis
+                updateFilterDropdown(jenisAkunSet);
+                
+                // Render tampilan kartu dokumen
+                renderFamilyDocuments();
             });
         }
 
-        // 4. Siapkan Form untuk Edit Dokumen
+        // 4. Fungsi untuk menyaring dan merender tampilan kartu (dipanggil saat filter berubah)
+        function renderFamilyDocuments() {
+            const filterValue = document.getElementById('filter-jenis-akun') ? document.getElementById('filter-jenis-akun').value : '';
+            const container = document.getElementById('list-family-documents');
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            // Filter data berdasarkan pilihan dropdown Jenis Akun
+            let filteredDocs = allFamilyDocumentsCache;
+            if (filterValue) {
+                filteredDocs = allFamilyDocumentsCache.filter(item => item.jenisAkun === filterValue);
+            }
+
+            let count = 0;
+            filteredDocs.forEach((data) => {
+                count++;
+                const docId = data.id;
+                let fotoUrl = data.fotoDokumen || '';
+
+                let gambarTag = fotoUrl 
+                    ? `<img src="${fotoUrl}" alt="Dokumen" class="h-32 w-full object-cover rounded-xl border border-slate-700 cursor-pointer shadow-sm hover:opacity-90 transition" onclick="bukaModalGambarBesar('${fotoUrl}')" title="Klik untuk memperbesar">` 
+                    : `<div class="h-32 w-full bg-slate-900 rounded-xl flex items-center justify-center text-xs text-gray-500 italic">Tidak ada gambar</div>`;
+
+                let safeNama = (data.namaKeluarga || '').replace(/'/g, "\\\'");
+                let safeJenis = (data.jenisAkun || '').replace(/'/g, "\\\'");
+                let safeDocName = (data.namaDokumen || '').replace(/'/g, "\\\'");
+
+                container.innerHTML += `
+                    <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 flex flex-col justify-between space-y-3 shadow-sm">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <span class="bg-cyan-900 text-cyan-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">${data.jenisAkun}</span>
+                                    <h4 class="font-bold text-white text-base mt-1">${data.namaKeluarga}</h4>
+                                </div>
+                                <div class="flex gap-1">
+                                    <button onclick="editFamilyDocument('${docId}', '${safeNama}', '${safeJenis}', '${safeDocName}')" class="bg-slate-700 hover:bg-yellow-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center" title="Edit Dokumen">✏️</button>
+                                    <button onclick="hapusFamilyDocument('${docId}')" class="bg-slate-700 hover:bg-red-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center" title="Hapus Dokumen">✕</button>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-300 font-semibold mb-2">📄 Dokumen: <span class="text-orange-400">${data.namaDokumen}</span></p>
+                            <div class="mt-2">${gambarTag}</div>
+                        </div>
+                        <div class="text-[10px] text-right text-gray-500 italic">Klik gambar untuk melihat ukuran penuh</div>
+                    </div>
+                `;
+            });
+
+            if (count === 0) {
+                container.innerHTML = `<div class="col-span-2 bg-slate-800 p-8 rounded-2xl text-center text-gray-400 border border-slate-700">Tidak ada arsip dokumen dengan filter tersebut.</div>`;
+            }
+        }
+
+        // 5. Fungsi pendukung untuk memperbarui opsi dropdown tanpa merusak pilihan user
+        function updateFilterDropdown(jenisAkunSet) {
+            const select = document.getElementById('filter-jenis-akun');
+            if (!select) return;
+            
+            const currentSelection = select.value;
+            
+            let optionsHtml = `<option value="">Semua Jenis Akun</option>`;
+            jenisAkunSet.forEach(jenis => {
+                optionsHtml += `<option value="${jenis}" ${jenis === currentSelection ? 'selected' : ''}>${jenis}</option>`;
+            });
+            select.innerHTML = optionsHtml;
+        }
+
+        // 6. Siapkan Form untuk Edit Dokumen
         function editFamilyDocument(id, namaKeluarga, jenisAkun, namaDokumen) {
             editIdFamilyDoc = id;
             base64FamilyDocImage = ''; // Reset file baru
@@ -3218,7 +3256,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 5. Batalkan Proses Edit
+        // 7. Batalkan Proses Edit
         function batalEditFamilyDocument() {
             editIdFamilyDoc = null;
             base64FamilyDocImage = '';
@@ -3232,7 +3270,7 @@
             document.getElementById('btn-batal-doc').classList.add('hidden');
         }
 
-        // 6. Hapus Dokumen
+        // 8. Hapus Dokumen
         function hapusFamilyDocument(docId) {
             if (confirm("Apakah Anda yakin ingin menghapus arsip dokumen keluarga ini?")) {
                 db.collection("family_documents").doc(docId).delete()
@@ -3242,6 +3280,11 @@
                 .catch(e => alert("Gagal menghapus dokumen: " + e.message));
             }
         }
+
+        // Jalankan listener saat halaman pertama kali dimuat
+        document.addEventListener("DOMContentLoaded", () => {
+            initFamilyDocumentsListener();
+        });
 
         let editIdFamilyTree = null;
 
@@ -3524,70 +3567,6 @@
                 db.collection("family_tree").doc(id).delete().then(() => {
                     alert("Berhasil dihapus!");
                 }).catch(e => alert("Gagal menghapus: " + e.message));
-            }
-        }
-
-        async function fetchCryptoNews() {
-            const container = document.getElementById('crypto-news-container');
-            if(!container) return;
-            container.innerHTML = `<p class="text-slate-400 text-center py-8 md:col-span-2 animate-pulse text-sm">Menarik 10 berita terbaru Watcher Guru...</p>`;
-
-            let rssUrl = 'https://watcher.guru/news/feed';
-
-            try {
-                const apiRssUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-                const response = await fetch(apiRssUrl);
-                const data = await response.json();
-
-                if (data.status === 'ok' && data.items && data.items.length > 0) {
-                    container.innerHTML = '';
-                    const top10News = data.items.slice(0, 10);
-
-                    top10News.forEach((item, index) => {
-                        let desc = item.description ? item.description.replace(/<[^>]*>?/gm, '') : '';
-                        if (desc.length > 100) desc = desc.substring(0, 100) + '...';
-
-                        let imageUrl = item.thumbnail || (item.enclosure ? item.enclosure.link : '');
-                        if (!imageUrl || imageUrl === '') {
-                            const fallbackImages = [
-                                "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=80",
-                                "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?w=500&auto=format&fit=crop&q=80",
-                                "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500&auto=format&fit=crop&q=80"
-                            ];
-                            imageUrl = fallbackImages[index % fallbackImages.length];
-                        }
-
-                        const dateObj = new Date(item.pubDate);
-                        const tanggalFormatted = !isNaN(dateObj) ? (dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' • ' + dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })) : 'Terbaru';
-
-                        container.innerHTML += `
-                            <div class="bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 hover:border-yellow-500/50 transition flex flex-col justify-between shadow-lg">
-                                <div>
-                                    <div class="h-36 overflow-hidden relative bg-slate-900">
-                                        <img src="${imageUrl}" alt="Thumbnail" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
-                                        <span class="absolute top-3 left-3 bg-black/70 text-yellow-400 text-[10px] font-bold px-2.5 py-1 rounded-full pointer-events-none">#${index + 1} WATCHER</span>
-                                    </div>
-                                    <div class="p-5">
-                                        <div class="text-[11px] text-slate-400 mb-1.5 font-semibold">🕒 ${tanggalFormatted} WIB</div>
-                                        <h4 class="font-bold text-white text-sm mb-2 leading-snug hover:text-yellow-400 transition">
-                                            <a href="${item.link}" target="_blank">${item.title}</a>
-                                        </h4>
-                                        <p class="text-slate-300 text-xs leading-relaxed mb-3">${desc}</p>
-                                    </div>
-                                </div>
-                                <div class="px-5 pb-5 pt-0">
-                                    <a href="${item.link}" target="_blank" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-2 px-4 rounded-xl inline-block transition w-full text-center shadow">
-                                        Baca Artikel Asli ↗
-                                    </a>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    container.innerHTML = `<p class="text-slate-400 text-center text-xs py-8 md:col-span-2">Gagal memuat berita dari Watcher Guru.</p>`;
-                }
-            } catch (err) {
-                container.innerHTML = `<p class="text-slate-400 text-center text-xs py-8 md:col-span-2">Terjadi kesalahan koneksi jaringan.</p>`;
             }
         }
 
@@ -4577,7 +4556,7 @@
         }
 
         function pindahHalaman(halaman) {
-            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'dokumen-keluarga', 'berita'];
+            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'dokumen-keluarga'];
             
             pages.forEach(p => {
                 const el = document.getElementById(`page-${p}`);
@@ -4638,7 +4617,7 @@
     <!-- Footer Web -->
     <footer class="mt-12 py-6 border-t border-gray-200 dark:border-slate-700 text-center text-xs text-gray-500 dark:text-gray-400 transition-colors">
         <div class="max-w-7xl mx-auto px-4 space-y-1">
-            <p>&copy; 2026 Fund Family By Mochamad Fuad Asyhary- All rights reserved.</p>
+            <p>&copy; 2026 Fund & Family By Mochamad Fuad Asyhary - All rights reserved.</p>
             <p>Sistem Manajemen Keuangan & Keluarga Versi 0.5</p>
         </div>
     </footer>
