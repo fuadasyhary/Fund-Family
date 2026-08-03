@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fund Family - Manajemen Keuangan & Aset Keluarga</title>
+    <title>Fund Family</title>
     <!-- Tailwind CSS v4 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     
@@ -207,6 +207,11 @@
                                 <option value="permanen">🟢 Kas Keluarga (Permanen)</option>
                             </select>
                         </div>
+                        <!-- INPUT TANGGAL DITAMBAHKAN DI SINI -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Tanggal Transaksi</label>
+                            <input type="date" id="tanggal" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                        </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis</label>
                             <select id="jenis" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs">
@@ -232,7 +237,7 @@
                         <div class="flex flex-wrap justify-between items-center gap-4">
                             <h3 class="font-bold text-sm text-gray-900 dark:text-white">Riwayat Transaksi Kas</h3>
                             <div class="flex gap-2">
-                                <button onclick="bukaModalSetLimit()" class="bg-purple-600 hover:bg-purple-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow">⚙️ Atur Limit Bulanan</button>
+                                <!-- TOMBOL ATUR LIMIT BULANAN DI SINI SUDAH DIHAPUS -->
                                 <input type="month" id="filter-bulan" onchange="muatDataTransaksi()" class="p-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-xs">
                                 <button onclick="resetFilter()" class="bg-gray-200 dark:bg-slate-700 px-3 py-2 rounded-xl text-xs font-bold">Reset</button>
                             </div>
@@ -258,7 +263,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- HALAMAN 4: HUTANG (ONLINE & INTERNAL) -->
             <div id="page-hutang" class="space-y-6 hidden">
                 <div class="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
@@ -623,6 +628,14 @@
     <div id="modal-hutang-internal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4">
             <h3 class="font-bold text-base">🔄 Catat Hutang Internal Keluarga</h3>
+            <!-- Tambahkan ini di dalam form input hutang keluarga Anda -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Pinjam</label>
+                <select id="family-debt-jenis" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                    <option value="Hutang">🔴 Hutang (Kita yang pinjam)</option>
+                    <option value="Piutang">🟢 Piutang (Kita yang meminjamkan)</option>
+                </select>
+            </div>
             <div>
                 <label class="block text-xs font-semibold mb-1">Pemberi Pinjaman</label>
                 <select id="family-debt-pemberi" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
@@ -658,12 +671,20 @@
     <div id="modal-hutang-online" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-lg border border-gray-100 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-base">➕ Catat Hutang & Buat Akun Penghutang</h3>
+            <!-- Tambahkan di dalam form input hutang eksternal -->
             <div>
-                <label class="block text-xs font-semibold mb-1">Nama Lengkap Debitur</label>
+                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Pinjam Eksternal</label>
+                <select id="hutang-jenis-eksternal" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                    <option value="Hutang">🔴 Hutang (Kita pinjam dari pihak luar)</option>
+                    <option value="Piutang">🟢 Piutang (Pihak luar pinjam ke kita)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1">Nama Lengkap Debitur/Kreditur</label>
                 <input type="text" id="hutang-nama" placeholder="Nama Peminjam" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
             </div>
             <div>
-                <label class="block text-xs font-semibold mb-1">Email Login Debitur (Untuk Akses Portal)</label>
+                <label class="block text-xs font-semibold mb-1">Email Login Debitur/Kreditur (Untuk Akses Portal)</label>
                 <input type="email" id="hutang-email" placeholder="peminjam@email.com" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
             </div>
             <div>
@@ -712,6 +733,14 @@
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4">
             <h3 class="font-bold text-base">✏️ Edit Data Hutang Eksternal</h3>
             <input type="hidden" id="edit-hutang-doc-id">
+            <!-- Tambahkan ini di dalam form modal edit hutang eksternal -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 mb-1">Jenis Pinjam</label>
+                <select id="edit-hutang-jenis" class="w-full p-3 border border-slate-700 rounded-xl bg-slate-900 text-xs text-white">
+                    <option value="Hutang">🔴 Hutang</option>
+                    <option value="Piutang">🟢 Piutang</option>
+                </select>
+            </div>
             <div>
                 <label class="block text-xs font-semibold mb-1">Nama</label>
                 <input type="text" id="edit-hutang-nama" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
@@ -1484,224 +1513,326 @@
             muatDataTransaksi();
         }
 
-        function simpanTransaksi() {
-            if (currentUserJenisAkun === 'Anak') {
-                return alert("Akses ditolak: Akun anak tidak diizinkan menginput kas!");
+        // 1. Fungsi untuk mengatur nilai default tanggal menjadi hari ini (format YYYY-MM-DD)
+        function setTanggalHariIni() {
+            const today = new Date().toISOString().split('T')[0];
+            const inputTgl = document.getElementById('tanggal'); // Sesuai dengan id="tanggal" di HTML Anda
+            if (inputTgl) {
+                inputTgl.value = today;
             }
-
-            const kategoriKas = document.getElementById('kategori-kas').value;
-            let jenis = document.getElementById('jenis').value;
-            if (kategoriKas === 'limit_bulanan') {
-                jenis = 'keluar';
-            }
-            const jumlah = unformatRupiah(document.getElementById('jumlah').value);
-            const keterangan = document.getElementById('keterangan').value;
-            
-            if (!jumlah || !keterangan) return alert("Nominal dan keterangan harus diisi!");
-
-            const currentBulanKey = getCurrentMonthKey();
-            db.collection("settings").doc(`limit_${currentBulanKey}`).get().then((docLimit) => {
-                let monthlyLimit = docLimit.exists ? (docLimit.data().limit || 0) : 0;
-
-                db.collection("transaksi").get().then((querySnapshot) => {
-                    let currentMonthExpense = 0;
-                    querySnapshot.forEach(doc => {
-                        const d = doc.data();
-                        if ((d.kategoriKas || 'limit_bulanan') === 'limit_bulanan' && d.jenis === 'keluar') {
-                            const tObj = d.tanggal ? d.tanggal.toDate() : new Date();
-                            const y = tObj.getFullYear();
-                            const m = String(tObj.getMonth() + 1).padStart(2, '0');
-                            if (`${y}-${m}` === currentBulanKey) {
-                                if (!isEditMode || doc.id !== idEditSekarang) {
-                                    currentMonthExpense += d.jumlah;
-                                }
-                            }
-                        }
-                    });
-
-                    const remainingLimit = Math.max(0, monthlyLimit - currentMonthExpense);
-                    if (kategoriKas === 'limit_bulanan' && monthlyLimit > 0 && jumlah > remainingLimit) {
-                        return alert(`Gagal menyimpan! Nominal pengeluaran melebihi sisa limit bulanan (Rp ${remainingLimit.toLocaleString('id-ID')}).`);
-                    }
-
-                    if (isEditMode) {
-                        db.collection("transaksi").doc(idEditSekarang).update({
-                            kategoriKas: kategoriKas, jenis: jenis, jumlah: jumlah, keterangan: keterangan, status: 'Diupdate',
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: document.getElementById('user-display-name').innerText
-                        }).then(() => {
-                            alert("Transaksi berhasil diperbarui!");
-                            batalEdit();
-                        }).catch(e => alert("Error: " + e.message));
-                    } else {
-                        db.collection("transaksi").add({
-                            kategoriKas: kategoriKas, jenis: jenis, jumlah: jumlah, keterangan: keterangan, status: 'Baru',
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(), createdBy: document.getElementById('user-display-name').innerText,
-                            tanggal: firebase.firestore.FieldValue.serverTimestamp() 
-                        }).then(() => {
-                            alert("Transaksi berhasil disimpan!");
-                            document.getElementById('jumlah').value = ''; 
-                            document.getElementById('keterangan').value = '';
-                        }).catch(e => alert("Error: " + e.message));
-                    }
-                });
-            });
         }
 
-        function siapkanEdit(id, kategoriKas, jenis, jumlah, keterangan) {
-            if (currentUserJenisAkun === 'Anak') {
-                return alert("Akses ditolak: Akun anak tidak diizinkan mengedit transaksi!");
-            }
-            isEditMode = true; idEditSekarang = id;
-            const katEl = document.getElementById('kategori-kas');
-            katEl.value = kategoriKas || 'limit_bulanan';
-            gantiKategoriKas(katEl);
+        // Panggil fungsi ini saat halaman pertama kali dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            setTanggalHariIni();
+        });
 
-            document.getElementById('jenis').value = jenis; 
-            document.getElementById('jumlah').value = jumlah.toLocaleString('id-ID'); 
-            document.getElementById('keterangan').value = keterangan;
+        // Variabel penampung mode edit (jika sedang mengedit transaksi)
+        let currentEditId = null;
+
+        // 2. Fungsi saat tombol Edit diklik (Tanggal & data lain terpanggil ke form)
+        function editTransaksiKas(id) {
+            // Cari data kas berdasarkan ID dari array data Anda (sesuaikan nama array global Anda, misal: dataTransaksi)
+            const item = dataTransaksi.find(d => d.id === id);
+            if (!item) return;
+
+            currentEditId = item.id; // Simpan ID yang sedang diedit
             
-            document.getElementById('form-title').innerText = "Edit Transaksi (Update)";
+            document.getElementById('tanggal').value = item.tanggal; 
+            document.getElementById('kategori-kas').value = item.kategori || 'limit_bulanan';
+            document.getElementById('jenis').value = item.nominal < 0 ? 'keluar' : 'masuk';
+            
+            // Format nominal ke string untuk input
+            document.getElementById('jumlah').value = Math.abs(item.nominal).toLocaleString('id-ID');
+            document.getElementById('keterangan').value = item.keterangan;
+
+            // Ubah teks tombol jadi Update / tampilkan tombol Batal jika ada
             const btnSimpan = document.getElementById('btn-simpan');
-            btnSimpan.innerText = "Update Data"; btnSimpan.className = "bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-xl transition flex-1 font-bold shadow-md text-xs";
-            document.getElementById('btn-batal').classList.remove('hidden');
+            if (btnSimpan) btnSimpan.innerText = 'Update';
+            const btnBatal = document.getElementById('btn-batal');
+            if (btnBatal) btnBatal.classList.remove('hidden');
+        }
+
+        // 3. Fungsi batal edit// Variabel global untuk menampung ID dokumen Firebase yang sedang diedit
+        let editIdTransaksi = null;
+
+        // 1. Fungsi saat tombol Edit diklik (Memasukkan data ke form termasuk tanggal)
+        function siapkanEdit(docId, kategori, jenis, jumlah, keterangan, tanggalStr) {
+            editIdTransaksi = docId;
+            
+            // Masukkan data ke form HTML
+            document.getElementById('tanggal').value = tanggalStr || new Date().toISOString().split('T')[0];
+            document.getElementById('kategori-kas').value = kategori;
+            document.getElementById('jenis').value = jenis;
+            document.getElementById('jumlah').value = jumlah.toLocaleString('id-ID');
+            document.getElementById('keterangan').value = keterangan;
+
+            // Ubah teks tombol simpan jadi Update
+            const btnSimpan = document.getElementById('btn-simpan');
+            if(btnSimpan) btnSimpan.innerText = 'Update Transaksi';
+            
+            const btnBatal = document.getElementById('btn-batal');
+            if(btnBatal) btnBatal.classList.remove('hidden');
+
+            // Scroll otomatis ke form atas
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // 2. Fungsi Batal Edit
         function batalEdit() {
-            isEditMode = false; idEditSekarang = '';
-            document.getElementById('jumlah').value = ''; document.getElementById('keterangan').value = '';
-            const katEl = document.getElementById('kategori-kas');
-            katEl.value = 'limit_bulanan';
-            gantiKategoriKas(katEl);
+            editIdTransaksi = null;
+            document.getElementById('kategori-kas').value = 'limit_bulanan';
+            document.getElementById('jenis').value = 'keluar';
+            document.getElementById('jumlah').value = '';
+            document.getElementById('keterangan').value = '';
+            setTanggalHariIni(); // Kembalikan tanggal ke hari ini
             
-            document.getElementById('form-title').innerText = "Tambah Transaksi Baru";
             const btnSimpan = document.getElementById('btn-simpan');
-            btnSimpan.innerText = "Simpan"; btnSimpan.className = "bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl transition flex-1 font-bold shadow-md text-sm";
-            document.getElementById('btn-batal').classList.add('hidden');
+            if(btnSimpan) btnSimpan.innerText = 'Simpan';
+            
+            const btnBatal = document.getElementById('btn-batal');
+            if(btnBatal) btnBatal.classList.add('hidden');
         }
 
-        function hapusTransaksi(id) {
-            if (currentUserJenisAkun === 'Anak') {
-                return alert("Akses ditolak: Akun anak tidak diizinkan menghapus transaksi!");
+        // 3. FUNGSI SIMPAN / UPDATE KE FIREBASE (Memperbaiki error tidak bisa simpan)
+        function simpanTransaksi() {
+            const tanggalVal = document.getElementById('tanggal').value;
+            const kategoriKas = document.getElementById('kategori-kas').value;
+            const jenis = document.getElementById('jenis').value;
+            const keterangan = document.getElementById('keterangan').value;
+            
+            // Ambil angka mentah dari input jumlah (bersihkan titik/koma)
+            const rawJumlah = document.getElementById('jumlah').value.replace(/\./g, '').replace(/,/g, '');
+            const jumlah = Number(rawJumlah) || 0;
+
+            if (!tanggalVal || !keterangan || jumlah === 0) {
+                alert('Mohon lengkapi tanggal, keterangan, dan jumlah nominal dengan benar!');
+                return;
             }
-            if (confirm("Hapus transaksi ini permanen?")) {
-                db.collection("transaksi").doc(id).delete().then(() => {
-                    alert("Transaksi berhasil dihapus!");
+
+            // Konversi tanggal string form ke Firebase Timestamp
+            const tanggalTimestamp = firebase.firestore.Timestamp.fromDate(new Date(tanggalVal));
+            const userPembuat = (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) ? currentUser.displayName : "Pengguna";
+
+            if (editIdTransaksi !== null) {
+                // LOGIKA UPDATE DATA KE FIREBASE
+                db.collection("transaksi").doc(editIdTransaksi).update({
+                    tanggal: tanggalTimestamp,
+                    kategoriKas: kategoriKas,
+                    jenis: jenis,
+                    jumlah: jumlah,
+                    keterangan: keterangan,
+                    status: 'Diupdate',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    alert('Transaksi berhasil di-update!');
+                    batalEdit();
+                })
+                .catch((error) => {
+                    console.error("Gagal mengupdate transaksi: ", error);
+                    alert('Gagal mengupdate data.');
+                });
+
+            } else {
+                // LOGIKA TAMBAH DATA BARU KE FIREBASE
+                db.collection("transaksi").add({
+                    tanggal: tanggalTimestamp,
+                    kategoriKas: kategoriKas,
+                    jenis: jenis,
+                    jumlah: jumlah,
+                    keterangan: keterangan,
+                    createdBy: userPembuat,
+                    status: 'Baru',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    // Reset form setelah berhasil simpan
+                    document.getElementById('keterangan').value = '';
+                    document.getElementById('jumlah').value = '';
+                    setTanggalHariIni();
+                })
+                .catch((error) => {
+                    console.error("Gagal menyimpan transaksi: ", error);
+                    alert('Gagal menyimpan data ke database.');
                 });
             }
         }
 
+        // 5. Fungsi Kalkulator Limit Otomatis Bulanan di Dashboard
+        function updateDashboardLimitAuto(dataList) {
+            const dateNow = new Date();
+            const currentMonthKey = `${dateNow.getFullYear()}-${String(dateNow.getMonth() + 1).padStart(2, '0')}`;
+
+            // Filter transaksi untuk bulan berjalan
+            const transaksiBulanIni = dataList.filter(item => {
+                if (!item.tanggal) return false;
+                const itemMonthKey = item.tanggal.substring(0, 7); // Format 'YYYY-MM'
+                return itemMonthKey === currentMonthKey;
+            });
+
+            let autoLimit = 0;   // Akumulasi uang masuk (pemasukan/limit awal)
+            let totalKeluar = 0; // Akumulasi uang keluar (pengurangan limit)
+
+            transaksiBulanIni.forEach(item => {
+                const val = Number(item.nominal) || 0;
+                if (val >= 0) {
+                    autoLimit += val;
+                } else {
+                    totalKeluar += Math.abs(val);
+                }
+            });
+
+            const sisaLimit = autoLimit - totalKeluar;
+
+            // Update ke elemen Dashboard Anda (sesuaikan ID elemen di dashboard Anda)
+            const elLimitTotal = document.getElementById('dashboard-limit-total');
+            const elLimitTerpakai = document.getElementById('dashboard-limit-terpakai');
+            const elLimitSisa = document.getElementById('dashboard-limit-sisa');
+
+            if (elLimitTotal) elLimitTotal.innerText = `Rp ${autoLimit.toLocaleString('id-ID')}`;
+            if (elLimitTerpakai) elLimitTerpakai.innerText = `Rp ${totalKeluar.toLocaleString('id-ID')}`;
+            if (elLimitSisa) elLimitSisa.innerText = `Rp ${sisaLimit.toLocaleString('id-ID')}`;
+        }
+
+        // Fungsi untuk mengisi default filter bulan dengan bulan berjalan (YYYY-MM)
+        function setDefaultFilterBulan() {
+            const filterEl = document.getElementById('filter-bulan');
+            if (filterEl && !filterEl.value) {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                filterEl.value = `${yyyy}-${mm}`;
+            }
+        }
+
+        // Panggil fungsi ini saat dokumen selesai dimuat (bersamaan dengan setTanggalHariIni)
+        document.addEventListener('DOMContentLoaded', () => {
+            setTanggalHariIni();
+            setDefaultFilterBulan();
+            muatDataTransaksi(); // Panggil muat data setelah filter ter-set
+        });
+        
         let unsubscribeTransaksi = null;
         function muatDataTransaksi() {
             if (unsubscribeTransaksi) unsubscribeTransaksi();
             const filterValue = document.getElementById('filter-bulan').value; 
             const currentBulanKey = getCurrentMonthKey();
 
-            db.collection("settings").doc(`limit_${currentBulanKey}`).get().then((docLimit) => {
-                let monthlyLimit = docLimit.exists ? (docLimit.data().limit || 0) : 0;
+            unsubscribeTransaksi = db.collection("transaksi").orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
+                const tabel = document.getElementById('tabel-transaksi');
+                if(!tabel) return;
+                tabel.innerHTML = ''; 
+                
+                let totalKeluargaMasuk = 0, totalKeluargaKeluar = 0;
+                let filterTabelMasuk = 0, filterTabelKeluar = 0;
+                let rowCount = 0;
 
-                unsubscribeTransaksi = db.collection("transaksi").orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
-                    const tabel = document.getElementById('tabel-transaksi');
-                    if(!tabel) return;
-                    tabel.innerHTML = ''; 
+                // Variabel untuk menghitung Auto Limit Bulan Berjalan
+                let autoLimitMasuk = 0;
+                let autoLimitKeluar = 0;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data(); 
+                    const docId = doc.id;
+                    const kategori = data.kategoriKas || 'limit_bulanan'; 
                     
-                    let totalKeluargaMasuk = 0, totalKeluargaKeluar = 0;
-                    let filterTabelMasuk = 0, filterTabelKeluar = 0;
-                    let rowCount = 0;
+                    const waktuTransaksiObj = data.tanggal ? data.tanggal.toDate() : new Date();
+                    const yyyyTrans = waktuTransaksiObj.getFullYear();
+                    const mmTrans = String(waktuTransaksiObj.getMonth() + 1).padStart(2, '0');
+                    const bulanTahunTransaksi = `${yyyyTrans}-${mmTrans}`;
 
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data(); const docId = doc.id;
-                        const kategori = data.kategoriKas || 'limit_bulanan'; 
-                        
-                        const waktuTransaksiObj = data.tanggal ? data.tanggal.toDate() : new Date();
-                        const yyyyTrans = waktuTransaksiObj.getFullYear();
-                        const mmTrans = String(waktuTransaksiObj.getMonth() + 1).padStart(2, '0');
-                        const bulanTahunTransaksi = `${yyyyTrans}-${mmTrans}`;
-
-                        if (kategori === 'permanen') {
-                            if(data.jenis === 'masuk') totalKeluargaMasuk += data.jumlah;
-                            if(data.jenis === 'keluar') totalKeluargaKeluar += data.jumlah;
-                        }
-
-                        if (filterValue === '' || filterValue === bulanTahunTransaksi) {
-                            rowCount++;
-                            if(data.jenis === 'masuk') filterTabelMasuk += data.jumlah;
-                            if(data.jenis === 'keluar') filterTabelKeluar += data.jumlah;
-
-                            let statusBadge = "";
-                            const pembuat = data.createdBy || data.user || "Anonim";
-                            if (data.status === 'Diupdate' && data.updatedAt) {
-                                statusBadge = `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)}</div>`;
-                            } else {
-                                statusBadge = `<div class="mt-1 inline-block bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)}</div>`;
-                            }
-
-                            const textColor = data.jenis === 'masuk' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
-                            const simbol = data.jenis === 'masuk' ? '+' : '-';
-                            const ketAman = data.keterangan.replace(/'/g, "\\'");
-                            const badgeKategori = kategori === 'permanen' 
-                                ? `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟢 Kas Keluarga</span>` 
-                                : `<span class="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟣 Limit Bulanan</span>`;
-
-                            let actionButtonsHtml = '';
-                            if (currentUserJenisAkun !== 'Anak') {
-                                actionButtonsHtml = `
-                                    <div class="flex justify-center space-x-2">
-                                        <button onclick="siapkanEdit('${docId}', '${kategori}', '${data.jenis}', ${data.jumlah}, '${ketAman}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Edit</button>
-                                        <button onclick="hapusTransaksi('${docId}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Hapus</button>
-                                    </div>
-                                `;
-                            } else {
-                                actionButtonsHtml = `<span class="text-xs text-gray-400 italic">Hanya Baca</span>`;
-                            }
-
-                            tabel.innerHTML += `
-                                <tr class="border-b dark:border-slate-700 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td class="p-4 text-sm text-gray-700 dark:text-gray-300 font-medium">
-                                        ${formatWaktu(data.tanggal).split(',')[0]}
-                                        ${badgeKategori}
-                                    </td>
-                                    <td class="p-4 text-gray-900 dark:text-gray-200"><span class="font-bold">${data.keterangan}</span><br>${statusBadge}</td>
-                                    <td class="p-4 capitalize text-sm font-semibold">${data.jenis}</td>
-                                    <td class="p-4 font-bold ${textColor} text-base">${simbol} Rp ${data.jumlah.toLocaleString('id-ID')}</td>
-                                    <td class="p-4 text-center">
-                                        ${actionButtonsHtml}
-                                    </td>
-                                </tr>
-                            `;
-                        }
-                    });
-
-                    if (rowCount === 0) {
-                        tabel.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400 font-medium">Belum ada catatan transaksi pada bulan/filter ini.</td></tr>`;
+                    // Hitung Kas Keluarga Permanen
+                    if (kategori === 'permanen') {
+                        if(data.jenis === 'masuk') totalKeluargaMasuk += data.jumlah;
+                        if(data.jenis === 'keluar') totalKeluargaKeluar += data.jumlah;
                     }
 
-                    const saldoKeluarga = totalKeluargaMasuk - totalKeluargaKeluar;
-                    
-                    let currentMonthExpense = 0;
-                    querySnapshot.forEach(doc => {
-                        const d = doc.data();
-                        if ((d.kategoriKas || 'limit_bulanan') === 'limit_bulanan' && d.jenis === 'keluar') {
-                            const tObj = d.tanggal ? d.tanggal.toDate() : new Date();
-                            const y = tObj.getFullYear();
-                            const m = String(tObj.getMonth() + 1).padStart(2, '0');
-                            if (`${y}-${m}` === currentBulanKey) {
-                                currentMonthExpense += d.jumlah;
-                            }
+                    // Hitung Auto Limit Bulanan untuk bulan BERJALAN saat ini
+                    if (kategori === 'limit_bulanan' && bulanTahunTransaksi === currentBulanKey) {
+                        if (data.jenis === 'masuk') {
+                            autoLimitMasuk += data.jumlah;
+                        } else if (data.jenis === 'keluar') {
+                            autoLimitKeluar += data.jumlah;
                         }
-                    });
-                    const remainingLimit = Math.max(0, monthlyLimit - currentMonthExpense);
+                    }
 
-                    document.getElementById('total-kas-permanen').innerText = 'Rp ' + saldoKeluarga.toLocaleString('id-ID');
-                    document.getElementById('total-kas-bulanan').innerText = 'Rp ' + remainingLimit.toLocaleString('id-ID');
-                    document.getElementById('info-limit-bulanan').innerText = `Batasan Limit: Rp ${monthlyLimit.toLocaleString('id-ID')}`;
-                    document.getElementById('filter-masuk').innerText = 'Rp ' + filterTabelMasuk.toLocaleString('id-ID');
-                    document.getElementById('filter-keluar').innerText = 'Rp ' + filterTabelKeluar.toLocaleString('id-ID');
+                    // Filter untuk Tabel Riwayat
+                    if (filterValue === '' || filterValue === bulanTahunTransaksi) {
+                        rowCount++;
+                        if(data.jenis === 'masuk') filterTabelMasuk += data.jumlah;
+                        if(data.jenis === 'keluar') filterTabelKeluar += data.jumlah;
+
+                        let statusBadge = "";
+                        if (data.status === 'Diupdate' && data.updatedAt) {
+                            statusBadge = `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)}</div>`;
+                        } else {
+                            statusBadge = `<div class="mt-1 inline-block bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)}</div>`;
+                        }
+
+                        const textColor = data.jenis === 'masuk' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+                        const simbol = data.jenis === 'masuk' ? '+' : '-';
+                        const ketAman = data.keterangan ? data.keterangan.replace(/'/g, "\\'") : '';
+                        const badgeKategori = kategori === 'permanen' 
+                            ? `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟢 Kas Keluarga</span>` 
+                            : `<span class="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟣 Limit Bulanan</span>`;
+
+                        // Format tanggal string ke YYYY-MM-DD agar input date di form edit bisa membacanya
+                        const tglFormatYMD = waktuTransaksiObj.toISOString().split('T')[0];
+
+                        let actionButtonsHtml = '';
+                        if (currentUserJenisAkun !== 'Anak') {
+                            // Perbaikan: Menyertakan tglFormatYMD ke dalam parameter fungsi siapkanEdit
+                            actionButtonsHtml = `
+                                <div class="flex justify-center space-x-2">
+                                    <button onclick="siapkanEdit('${docId}', '${kategori}', '${data.jenis}', ${data.jumlah}, '${ketAman}', '${tglFormatYMD}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Edit</button>
+                                    <button onclick="hapusTransaksi('${docId}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Hapus</button>
+                                </div>
+                            `;
+                        } else {
+                            actionButtonsHtml = `<span class="text-xs text-gray-400 italic">Hanya Baca</span>`;
+                        }
+
+                        tabel.innerHTML += `
+                            <tr class="border-b dark:border-slate-700 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
+                                <td class="p-4 text-sm text-gray-700 dark:text-gray-300 font-medium">
+                                    ${formatWaktu(data.tanggal).split(',')[0]}
+                                    ${badgeKategori}
+                                </td>
+                                <td class="p-4 text-gray-900 dark:text-gray-200"><span class="font-bold">${data.keterangan}</span><br>${statusBadge}</td>
+                                <td class="p-4 capitalize text-sm font-semibold">${data.jenis}</td>
+                                <td class="p-4 font-bold ${textColor} text-base">${simbol} Rp ${data.jumlah.toLocaleString('id-ID')}</td>
+                                <td class="p-4 text-center">
+                                    ${actionButtonsHtml}
+                                </td>
+                            </tr>
+                        `;
+                    }
                 });
+
+                if (rowCount === 0) {
+                    tabel.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400 font-medium">Belum ada catatan transaksi pada bulan/filter ini.</td></tr>`;
+                }
+
+                const saldoKeluarga = totalKeluargaMasuk - totalKeluargaKeluar;
+                const sisaLimitAuto = autoLimitMasuk - autoLimitKeluar;
+
+                // Update tampilan dashboard
+                document.getElementById('total-kas-permanen').innerText = 'Rp ' + saldoKeluarga.toLocaleString('id-ID');
+                document.getElementById('total-kas-bulanan').innerText = 'Rp ' + sisaLimitAuto.toLocaleString('id-ID');
+                
+                const infoLimitEl = document.getElementById('info-limit-bulanan');
+                if (infoLimitEl) {
+                    infoLimitEl.innerText = `Limit Masuk Bulan Ini: Rp ${autoLimitMasuk.toLocaleString('id-ID')}`;
+                }
+
+                document.getElementById('filter-masuk').innerText = 'Rp ' + filterTabelMasuk.toLocaleString('id-ID');
+                document.getElementById('filter-keluar').innerText = 'Rp ' + filterTabelKeluar.toLocaleString('id-ID');
             });
         }
-
+        
         function simpanHutangKeluarga() {
+            const jenisPinjam = document.getElementById('family-debt-jenis').value; // 'Hutang' atau 'Piutang'
             const pemberi = document.getElementById('family-debt-pemberi').value;
             const penerima = document.getElementById('family-debt-penerima').value;
             const nominal = unformatRupiah(document.getElementById('family-debt-nominal').value);
@@ -1715,6 +1846,7 @@
             }
 
             db.collection("hutang_keluarga").add({
+                jenisPinjam: jenisPinjam, // Menyimpan status Hutang atau Piutang
                 pemberi: pemberi,
                 penerima: penerima,
                 nominal: nominal,
@@ -1724,7 +1856,7 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 createdBy: document.getElementById('user-display-name')?.innerText || 'Keluarga'
             }).then(() => {
-                alert("Berhasil mencatat hutang internal keluarga!");
+                alert(`Berhasil mencatat ${jenisPinjam} internal keluarga!`);
                 document.getElementById('family-debt-nominal').value = '';
                 document.getElementById('family-debt-keterangan').value = '';
             }).catch(e => alert("Gagal menyimpan: " + e.message));
@@ -1797,37 +1929,50 @@
                     let badgeStatus = isLunas 
                         ? '<span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-3 py-1 rounded-full text-[10px] font-bold">LUNAS ✓</span>' 
                         : '<span class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300 px-3 py-1 rounded-full text-[10px] font-bold">Belum Lunas</span>';
+                // Di dalam perulangan snapshot.forEach di fungsi muatDataHutangKeluarga:
+                const jenisPinjam = data.jenisPinjam || 'Hutang'; // Fallback jika data lama belum ada jenisnya
 
-                    container.innerHTML += `
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="bg-cyan-100 dark:bg-cyan-900 text-cyan-800 dark:text-cyan-200 px-3 py-1 rounded-full text-xs font-bold">🔄 ${data.penerima} berhutang ke ${data.pemberi}</span>
-                                    </div>
-                                    <button onclick="hapusHutangKeluarga('${id}')" class="text-gray-400 hover:text-red-500 font-bold text-xs bg-gray-100 dark:bg-slate-700 h-7 w-7 rounded-full flex items-center justify-center transition">✕</button>
-                                </div>
-                                <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">${data.keterangan}</p>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">Dicatat oleh: ${data.createdBy || 'Keluarga'}</div>
-                                <div class="mb-3">${badgeStatus}</div>
+                // Tentukan warna dan ikon berdasarkan jenis pinjam
+                let badgeJenisStyle = jenisPinjam === 'Hutang' 
+                    ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' 
+                    : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
 
-                                <div class="my-4 p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700 text-xs space-y-1.5">
-                                    <div class="flex justify-between"><span class="text-gray-500">Total Pinjaman:</span> <strong class="text-gray-900 dark:text-white">Rp ${nominal.toLocaleString('id-ID')}</strong></div>
-                                    <div class="flex justify-between"><span class="text-gray-500">Sudah Dibayar:</span> <strong class="text-green-600 dark:text-green-400">Rp ${terbayar.toLocaleString('id-ID')}</strong></div>
-                                    <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-1.5 mt-1.5"><span class="text-gray-700 dark:text-gray-300 font-bold">Sisa Hutang:</span> <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisa.toLocaleString('id-ID')}</strong></div>
-                                </div>
+                let teksLabel = jenisPinjam === 'Hutang' 
+                    ? `🔴 ${data.penerima} berhutang ke ${data.pemberi}` 
+                    : `🟢 ${data.pemberi} memberikan piutang ke ${data.penerima}`;
 
-                                <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-1.5">
-                                    <div class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: ${persen}%"></div>
+                // Pada bagian template HTML kartu riwayat, tampilkan badge jenis pinjam ini:
+                container.innerHTML += `
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="${badgeJenisStyle} px-3 py-1 rounded-full text-xs font-bold">${jenisPinjam}</span>
+                                    <span class="bg-cyan-100 dark:bg-cyan-900 text-cyan-800 dark:text-cyan-200 px-3 py-1 rounded-full text-xs font-bold">🔄 ${teksLabel}</span>
                                 </div>
-                                <div class="text-[10px] text-right text-gray-400 font-semibold mb-4">${persen.toFixed(1)}% Lunas</div>
+                                <button onclick="hapusHutangKeluarga('${id}')" class="text-gray-400 hover:text-red-500 font-bold text-xs bg-gray-100 dark:bg-slate-700 h-7 w-7 rounded-full flex items-center justify-center transition">✕</button>
+                            </div>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">${data.keterangan}</p>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">Dicatat oleh: ${data.createdBy || 'Keluarga'}</div>
+                            <div class="mb-3">${badgeStatus}</div>
+
+                            <div class="my-4 p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700 text-xs space-y-1.5">
+                                <div class="flex justify-between"><span class="text-gray-500">Total ${jenisPinjam}:</span> <strong class="text-gray-900 dark:text-white">Rp ${nominal.toLocaleString('id-ID')}</strong></div>
+                                <div class="flex justify-between"><span class="text-gray-500">Sudah Dibayar:</span> <strong class="text-green-600 dark:text-green-400">Rp ${terbayar.toLocaleString('id-ID')}</strong></div>
+                                <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-1.5 mt-1.5"><span class="text-gray-700 dark:text-gray-300 font-bold">Sisa ${jenisPinjam}:</span> <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisa.toLocaleString('id-ID')}</strong></div>
                             </div>
 
-                            <button onclick="bayarHutangKeluarga('${id}')" class="w-full bg-cyan-50 dark:bg-slate-700 hover:bg-cyan-100 dark:hover:bg-cyan-600 text-cyan-700 dark:text-cyan-300 font-bold py-2.5 rounded-xl text-xs transition border border-cyan-200 dark:border-slate-600 shadow-sm">
-                                💸 Cicil / Bayar Hutang
-                            </button>
+                            <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-1.5">
+                                <div class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: ${persen}%"></div>
+                            </div>
+                            <div class="text-[10px] text-right text-gray-400 font-semibold mb-4">${persen.toFixed(1)}% Terbayar</div>
                         </div>
-                    `;
+
+                        <button onclick="bayarHutangKeluarga('${id}')" class="w-full bg-cyan-50 dark:bg-slate-700 hover:bg-cyan-100 dark:hover:bg-cyan-600 text-cyan-700 dark:text-cyan-300 font-bold py-2.5 rounded-xl text-xs transition border border-cyan-200 dark:border-slate-600 shadow-sm">
+                            💸 Catat Pelunasan / Pembayaran
+                        </button>
+                    </div>
+                `;
                 });
 
                 if (count === 0) {
@@ -1935,8 +2080,11 @@
         }
 
         function simpanDataHutangKeDb(authUid, nama, emailPenghutang, total, jaminan, tempo) {
+            const jenisPinjam = document.getElementById('hutang-jenis-eksternal') ? document.getElementById('hutang-jenis-eksternal').value : 'Hutang';
+
             db.collection("hutang").add({ 
                 authUid: authUid || '',
+                jenisPinjam: jenisPinjam, // Menyimpan status 'Hutang' atau 'Piutang'
                 nama: nama, 
                 email: emailPenghutang,
                 total: total, 
@@ -1948,7 +2096,8 @@
                 riwayatBayar: [],
                 createdAt: firebase.firestore.FieldValue.serverTimestamp() 
             }).then(() => { 
-                alert("Berhasil mencatat hutang dan mengaktifkan akun login penghutang (Password default: 12345678)!");
+                alert(`Berhasil mencatat ${jenisPinjam} Eksternal dan mengaktifkan akun login!`);
+                // Reset form input
                 document.getElementById('hutang-nama').value = ''; 
                 document.getElementById('hutang-email').value = '';
                 document.getElementById('hutang-total').value = ''; 
@@ -1970,15 +2119,23 @@
                 }).catch(e => alert("Gagal menghapus: " + e.message));
             }
         }
-
-        function bukaModalEditHutang(id, nama, email, total, jaminan, jatuhTempo) {
+        
+        function bukaModalEditHutang(id, nama, email, total, jaminan, jatuhTempo, jenisPinjam) {
             if (currentUserJenisAkun === 'Anak') return alert("Akses ditolak!");
+            
             document.getElementById('edit-hutang-doc-id').value = id;
             document.getElementById('edit-hutang-nama').value = nama;
             document.getElementById('edit-hutang-email').value = email;
             document.getElementById('edit-hutang-total').value = total.toLocaleString('id-ID');
             document.getElementById('edit-hutang-jaminan').value = jaminan;
             document.getElementById('edit-hutang-tempo').value = jatuhTempo;
+            
+            // Set dropdown jenis pinjam di modal edit jika elemennya ada
+            const jenisSelect = document.getElementById('edit-hutang-jenis');
+            if (jenisSelect) {
+                jenisSelect.value = jenisPinjam || 'Hutang';
+            }
+
             document.getElementById('modal-edit-hutang').classList.remove('hidden');
         }
 
@@ -1993,12 +2150,17 @@
             const total = unformatRupiah(document.getElementById('edit-hutang-total').value);
             const jaminan = document.getElementById('edit-hutang-jaminan').value.trim();
             const jatuhTempo = document.getElementById('edit-hutang-tempo').value;
+            
+            // Ambil nilai jenis pinjam yang baru dari modal edit
+            const jenisPinjamEl = document.getElementById('edit-hutang-jenis');
+            const jenisPinjam = jenisPinjamEl ? jenisPinjamEl.value : 'Hutang';
 
             if(!nama || !total || !jatuhTempo) {
                 return alert("Nama, Total, dan Jatuh Tempo wajib diisi!");
             }
 
             db.collection("hutang").doc(id).update({
+                jenisPinjam: jenisPinjam, // Update jenis pinjam
                 nama: nama,
                 email: email,
                 total: total,
@@ -2006,7 +2168,7 @@
                 jatuhTempo: jatuhTempo,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                alert("Data hutang berhasil diperbarui!");
+                alert("Data hutang eksternal berhasil diperbarui!");
                 tutupModalEditHutang();
             }).catch(e => alert("Gagal mengupdate hutang: " + e.message));
         }
@@ -2227,12 +2389,19 @@
                     let safeNama = (data.nama || '').replace(/'/g, "\\'");
                     let safeEmail = (data.email || '').replace(/'/g, "\\'");
                     let safeJaminan = (data.jaminan || '').replace(/'/g, "\\'");
+                    // Di dalam querySnapshot.forEach di fungsi muatDataHutang():
+                    const jenisPinjam = data.jenisPinjam || 'Hutang';
 
+                    // Buat badge tampilannya agar kelihatan di kartu
+                    let badgeJenisEksternal = jenisPinjam === 'Piutang'
+                        ? '<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">🟢 Piutang Eksternal</span>'
+                        : '<span class="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">🔴 Hutang Eksternal</span>';
+                        
                     container.innerHTML += `
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between overflow-hidden relative">
                             <div class="absolute top-4 right-4 flex gap-1.5">
                                 <button onclick="bukaModalDetailHutang('${docId}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-blue-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Detail Lengkap">👁️</button>
-                                <button onclick="bukaModalEditHutang('${docId}', '${safeNama}', '${safeEmail}', ${totalHutang}, '${safeJaminan}', '${data.jatuhTempo || ''}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-yellow-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Edit Data">✏️</button>
+                                <button onclick="bukaModalEditHutang('${docId}', '${safeNama}', '${safeEmail}', ${totalHutang}, '${safeJaminan}', '${data.jatuhTempo || ''}', '${jenisPinjam}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-yellow-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Edit Data">✏️</button>
                                 <button onclick="hapusHutang('${docId}', '${data.authUid || ''}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-red-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Hapus Hutang & Akun">✖</button>
                             </div>
                             
