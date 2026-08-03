@@ -97,7 +97,7 @@
                     <button id="menu-hutang" onclick="pindahHalaman('hutang')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">💳 Hutang</button>
                     <button id="menu-tabungan" onclick="pindahHalaman('tabungan')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🎯 Tabungan</button>
                     <button id="menu-invest" onclick="pindahHalaman('invest')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🚀 Crypto</button>
-                    <button id="menu-dokumen" onclick="pindahHalaman('dokumen-keluarga')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📁 Dokumen Keluarga</button>
+<button id="menu-dokumen-keluarga" onclick="pindahHalaman('dokumen-keluarga')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📁 Dokumen Keluarga</button>
                 </nav>
             </div>
 
@@ -323,7 +323,7 @@
                 <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <!-- HALAMAN: DOKUMEN KELUarga -->
+            <!-- HALAMAN: DOKUMEN KELUARGA-->
             <div id="page-dokumen-keluarga" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Form Input & Edit Dokumen -->
@@ -4526,7 +4526,7 @@
         }
 
         function pindahHalaman(halaman) {
-            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'dokumen-keluarga', 'berita'];
+            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'dokumen-keluarga'];
             
             pages.forEach(p => {
                 const el = document.getElementById(`page-${p}`);
