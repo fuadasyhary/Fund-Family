@@ -39,7 +39,7 @@
         <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-slate-700">
             <div class="text-center mb-8">
                 <div class="inline-block p-3 bg-blue-600/10 text-blue-500 dark:text-blue-400 rounded-2xl text-3xl mb-3">🏡</div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Fund Family Portal</h1>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Fund Family</h1>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Masuk dengan akun terdaftar Anda</p>
             </div>
             
@@ -55,6 +55,8 @@
                     <input type="password" id="password" onkeypress="handleLoginKeyPress(event)" placeholder="••••••••" class="w-full p-3.5 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
                 </div>
                 <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3.5 rounded-xl text-sm transition shadow-lg shadow-blue-600/30">Masuk Sistem</button>
+                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">&copy; 2026 Fund Family By Mochamad Fuad Asyhary- All rights reserved.</p>
+                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">Sistem Manajemen Keuangan & Keluarga Versi 0.3</p>
             </div>
         </div>
     </div>
@@ -94,6 +96,7 @@
                     <button id="menu-hutang" onclick="pindahHalaman('hutang')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📊 Hutang</button>
                     <button id="menu-tabungan" onclick="pindahHalaman('tabungan')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🎯 Tabungan</button>
                     <button id="menu-invest" onclick="pindahHalaman('invest')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🚀 Crypto</button>
+                    <button id="menu-dokumen" onclick="pindahHalaman('dokumen-keluarga')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📁 Dokumen Keluarga</button>
                     <button id="menu-berita" onclick="pindahHalaman('berita')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📰 Berita</button>
                 </nav>
             </div>
@@ -320,6 +323,52 @@
                 <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
+            <!-- HALAMAN: DOKUMEN KELUarga -->
+            <div id="page-dokumen-keluarga" class="space-y-6 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Form Input & Edit Dokumen -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-1 space-y-4">
+                        <h3 id="form-title-doc" class="font-bold text-sm text-gray-900 dark:text-white">Tambah Dokumen Keluarga</h3>
+                        <input type="hidden" id="edit-doc-id" value="">
+                        
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Keluarga</label>
+                            <input type="text" id="doc-nama-keluarga" placeholder="Contoh: Budi Santoso" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Akun</label>
+                            <select id="doc-jenis-akun" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                                <option value="Ayah">Ayah</option>
+                                <option value="Bunda">Bunda</option>
+                                <option value="Anak">Anak</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Dokumen</label>
+                            <input type="text" id="doc-nama-dokumen" placeholder="Contoh: KTP / KK / Sertifikat" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Upload Dokumen (Gambar)</label>
+                            <input type="file" id="doc-file-input" accept="image/*" onchange="previewFamilyDocFile(event)" class="w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-950 file:text-cyan-300">
+                            <div id="doc-preview-container" class="mt-2 hidden">
+                                <img id="doc-preview-img" class="h-28 w-full object-cover rounded-xl border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                            </div>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button onclick="simpanFamilyDocument()" id="btn-simpan-doc" class="bg-cyan-600 hover:bg-cyan-700 text-white p-3 rounded-xl transition flex-1 font-bold shadow text-xs">Simpan Dokumen</button>
+                            <button onclick="batalEditFamilyDocument()" id="btn-batal-doc" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded-xl transition font-bold text-xs hidden">Batal</button>
+                        </div>
+                    </div>
+
+                    <!-- Daftar Kartu Dokumen Keluarga -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 space-y-4">
+                        <h3 class="font-bold text-sm text-gray-900 dark:text-white">Daftar Arsip Dokumen Keluarga</h3>
+                        <div id="list-family-documents" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto">
+                            <!-- Data dokumen akan dimuat secara otomatis di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- HALAMAN 6: CRYPTO INVESTOR -->
             <div id="page-invest" class="space-y-6 hidden">
                 <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700">
@@ -609,21 +658,6 @@
         </div>
     </div>
 
-    <!-- Modal Set Limit Kas Bulanan -->
-    <div id="modal-set-limit" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-sm border border-gray-100 dark:border-slate-700 space-y-4">
-            <h3 class="font-bold text-base">⚙️ Atur Limit Pengeluaran Bulanan</h3>
-            <div>
-                <label class="block text-xs font-semibold mb-1">Nominal Limit (Rp)</label>
-                <input type="text" id="input-limit-bulanan" oninput="formatInputRupiah(this)" placeholder="Contoh: 3.000.000" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
-            </div>
-            <div class="flex gap-2">
-                <button onclick="simpanLimitBulanan()" class="flex-1 bg-purple-600 text-white font-bold py-3 rounded-xl text-xs">Simpan Limit</button>
-                <button onclick="tutupModalSetLimit()" class="flex-1 bg-gray-500 text-white font-bold py-3 rounded-xl text-xs">Batal</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal Hutang Internal -->
     <div id="modal-hutang-internal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4">
@@ -885,6 +919,49 @@
             <div class="flex gap-2">
                 <button onclick="simpanCrypto()" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3 rounded-xl text-xs">Simpan Portofolio</button>
                 <button onclick="tutupModalCrypto()" class="flex-1 bg-gray-500 text-white font-bold py-3 rounded-xl text-xs">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN: DOKUMEN KELUarga -->
+    <div id="page-dokumen-keluarga" class="space-y-6 hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form Input & Edit Dokumen -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-1 space-y-4">
+                <h3 id="form-title-doc" class="font-bold text-sm text-gray-900 dark:text-white">Tambah Dokumen Keluarga</h3>
+                <input type="hidden" id="edit-doc-id" value="">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Keluarga</label>
+                    <input type="text" id="doc-nama-keluarga" placeholder="Contoh: Budi Santoso" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Akun</label>
+                    <input type="text" id="doc-jenis-akun" placeholder="Contoh: Ayah / Ibu / Anak" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Dokumen</label>
+                    <input type="text" id="doc-nama-dokumen" placeholder="Contoh: KTP / KK / Sertifikat" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Upload Dokumen (Gambar)</label>
+                    <input type="file" id="doc-file-input" accept="image/*" onchange="previewFamilyDocFile(event)" class="w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-950 file:text-cyan-300">
+                    <div id="doc-preview-container" class="mt-2 hidden">
+                        <img id="doc-preview-img" class="h-28 w-full object-cover rounded-xl border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="simpanFamilyDocument()" id="btn-simpan-doc" class="bg-cyan-600 hover:bg-cyan-700 text-white p-3 rounded-xl transition flex-1 font-bold shadow text-xs">Simpan Dokumen</button>
+                    <button onclick="batalEditFamilyDocument()" id="btn-batal-doc" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded-xl transition font-bold text-xs hidden">Batal</button>
+                </div>
+            </div>
+
+            <!-- Daftar Kartu Dokumen Keluarga -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 space-y-4">
+                <h3 class="font-bold text-sm text-gray-900 dark:text-white">Daftar Arsip Dokumen Keluarga</h3>
+                <div id="list-family-documents" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto">
+                    <!-- Data dokumen akan dimuat secara otomatis di sini -->
+                </div>
             </div>
         </div>
     </div>
@@ -2446,6 +2523,15 @@
             });
         }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fungsi-fungsi awal yang sudah ada sebelumnya
+            setTanggalHariIni();
+            muatDataTransaksi();
+            muatDataHutang();
+            
+            // Tambahkan fungsi ini di dalam sini agar otomatis berjalan saat halaman siap:
+            muatFamilyDocuments(); 
+        });
         function muatDataHutangPenghutang(userEmail, namaUser) {
             db.collection("hutang").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('debtor-portal-content');
@@ -2923,6 +3009,170 @@
 
                 renderCryptoProfitChart(latestPnlByUser);
             });
+        }
+
+        // Variabel penampung file gambar sementara (Base64)
+        let base64FamilyDocImage = '';
+        let editIdFamilyDoc = null;
+
+        // 1. Preview gambar saat file dipilih
+        function previewFamilyDocFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64FamilyDocImage = e.target.result;
+                    const previewImg = document.getElementById('doc-preview-img');
+                    const previewContainer = document.getElementById('doc-preview-container');
+                    if (previewImg && previewContainer) {
+                        previewImg.src = base64FamilyDocImage;
+                        previewContainer.classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 2. Simpan atau Update Dokumen Keluarga ke Firestore
+        function simpanFamilyDocument() {
+            const namaKeluarga = document.getElementById('doc-nama-keluarga').value.trim();
+            const jenisAkun = document.getElementById('doc-jenis-akun').value.trim();
+            const namaDokumen = document.getElementById('doc-nama-dokumen').value.trim();
+
+            if (!namaKeluarga || !jenisAkun || !namaDokumen) {
+                return alert("Mohon lengkapi Nama Keluarga, Jenis Akun, dan Nama Dokumen!");
+            }
+
+            if (editIdFamilyDoc !== null) {
+                // Proses Update Data
+                const updateData = {
+                    namaKeluarga: namaKeluarga,
+                    jenisAkun: jenisAkun,
+                    namaDokumen: namaDokumen,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                // Jika ada gambar baru yang di-upload saat edit, update juga gambarnya
+                if (base64FamilyDocImage) {
+                    updateData.fotoDokumen = base64FamilyDocImage;
+                }
+
+                db.collection("family_documents").doc(editIdFamilyDoc).update(updateData)
+                .then(() => {
+                    alert("Dokumen keluarga berhasil diperbarui!");
+                    batalEditFamilyDocument();
+                })
+                .catch(e => alert("Gagal mengupdate dokumen: " + e.message));
+
+            } else {
+                // Proses Tambah Baru
+                if (!base64FamilyDocImage) {
+                    return alert("Mohon sertakan / upload gambar dokumen!");
+                }
+
+                db.collection("family_documents").add({
+                    namaKeluarga: namaKeluarga,
+                    jenisAkun: jenisAkun,
+                    namaDokumen: namaDokumen,
+                    fotoDokumen: base64FamilyDocImage,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    alert("Dokumen keluarga berhasil disimpan!");
+                    batalEditFamilyDocument();
+                })
+                .catch(e => alert("Gagal menyimpan dokumen: " + e.message));
+            }
+        }
+
+        // 3. Muat Data Dokumen Secara Real-time (Firestore Listener)
+        function muatFamilyDocuments() {
+            const container = document.getElementById('list-family-documents');
+            if (!container) return;
+
+            db.collection("family_documents").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                container.innerHTML = '';
+                let count = 0;
+
+                snapshot.forEach(doc => {
+                    count++;
+                    const data = doc.data();
+                    const docId = doc.id;
+
+                    let safeNama = (data.namaKeluarga || '').replace(/'/g, "\\'");
+                    let safeJenis = (data.jenisAkun || '').replace(/'/g, "\\'");
+                    let safeDocName = (data.namaDokumen || '').replace(/'/g, "\\'");
+                    let fotoUrl = data.fotoDokumen || '';
+
+                    let gambarTag = fotoUrl 
+                        ? `<img src="${fotoUrl}" alt="Dokumen" class="h-32 w-full object-cover rounded-xl border border-slate-700 cursor-pointer shadow-sm hover:opacity-90 transition" onclick="bukaModalGambarBesar('${fotoUrl}')" title="Klik untuk memperbesar">` 
+                        : `<div class="h-32 w-full bg-slate-900 rounded-xl flex items-center justify-center text-xs text-gray-500 italic">Tidak ada gambar</div>`;
+
+                    container.innerHTML += `
+                        <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 flex flex-col justify-between space-y-3 shadow-sm">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <span class="bg-cyan-900 text-cyan-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">${data.jenisAkun}</span>
+                                        <h4 class="font-bold text-white text-base mt-1">${data.namaKeluarga}</h4>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button onclick="editFamilyDocument('${docId}', '${safeNama}', '${safeJenis}', '${safeDocName}')" class="bg-slate-700 hover:bg-yellow-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center" title="Edit Dokumen">✏️</button>
+                                        <button onclick="hapusFamilyDocument('${docId}')" class="bg-slate-700 hover:bg-red-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center" title="Hapus Dokumen">✕</button>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-300 font-semibold mb-2">📄 Dokumen: <span class="text-orange-400">${data.namaDokumen}</span></p>
+                                <div class="mt-2">${gambarTag}</div>
+                            </div>
+                            <div class="text-[10px] text-right text-gray-500 italic">Klik gambar untuk melihat ukuran penuh</div>
+                        </div>
+                    `;
+                });
+
+                if (count === 0) {
+                    container.innerHTML = `<div class="col-span-2 bg-slate-800 p-8 rounded-2xl text-center text-gray-400 border border-slate-700">Belum ada arsip dokumen keluarga yang tersimpan.</div>`;
+                }
+            });
+        }
+
+        // 4. Siapkan Form untuk Edit Dokumen
+        function editFamilyDocument(id, namaKeluarga, jenisAkun, namaDokumen) {
+            editIdFamilyDoc = id;
+            base64FamilyDocImage = ''; // Reset file baru
+
+            document.getElementById('doc-nama-keluarga').value = namaKeluarga;
+            document.getElementById('doc-jenis-akun').value = jenisAkun;
+            document.getElementById('doc-nama-dokumen').value = namaDokumen;
+            document.getElementById('form-title-doc').innerText = 'Edit Dokumen Keluarga';
+            document.getElementById('btn-simpan-doc').innerText = 'Update Dokumen';
+            document.getElementById('btn-batal-doc').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 5. Batalkan Proses Edit
+        function batalEditFamilyDocument() {
+            editIdFamilyDoc = null;
+            base64FamilyDocImage = '';
+            document.getElementById('doc-nama-keluarga').value = '';
+            document.getElementById('doc-jenis-akun').value = '';
+            document.getElementById('doc-nama-dokumen').value = '';
+            document.getElementById('doc-file-input').value = '';
+            document.getElementById('doc-preview-container').classList.add('hidden');
+            document.getElementById('form-title-doc').innerText = 'Tambah Dokumen Keluarga';
+            document.getElementById('btn-simpan-doc').innerText = 'Simpan Dokumen';
+            document.getElementById('btn-batal-doc').classList.add('hidden');
+        }
+
+        // 6. Hapus Dokumen
+        function hapusFamilyDocument(docId) {
+            if (confirm("Apakah Anda yakin ingin menghapus arsip dokumen keluarga ini?")) {
+                db.collection("family_documents").doc(docId).delete()
+                .then(() => {
+                    alert("Dokumen berhasil dihapus!");
+                })
+                .catch(e => alert("Gagal menghapus dokumen: " + e.message));
+            }
         }
 
         async function fetchCryptoNews() {
@@ -3975,7 +4225,7 @@
         }
 
         function pindahHalaman(halaman) {
-            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'berita'];
+            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'dokumen-keluarga', 'berita'];
             
             pages.forEach(p => {
                 const el = document.getElementById(`page-${p}`);
@@ -4026,5 +4276,12 @@
         }
         
     </script>
+    <!-- Footer Web -->
+    <footer class="mt-12 py-6 border-t border-gray-200 dark:border-slate-700 text-center text-xs text-gray-500 dark:text-gray-400 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 space-y-1">
+            <p>&copy; 2026 Fund Family By Mochamad Fuad Asyhary- All rights reserved.</p>
+            <p>Sistem Manajemen Keuangan & Keluarga Versi 0.3</p>
+        </div>
+    </footer>
 </body>
 </html>
