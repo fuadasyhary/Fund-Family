@@ -2817,12 +2817,37 @@
             }).catch(e => alert("Error: " + e.message));
         }
 
+        // Fungsi pembantu khusus untuk membaca angka desimal/kripto dari prompt
+        function parseInputDesimalPrompt(inputStr) {
+            if (!inputStr) return NaN;
+            // Ganti titik pemisah ribuan jika ada, lalu ganti koma (,) menjadi titik (.)
+            let bersih = inputStr.trim().replace(/\./g, '').replace(',', '.');
+            return parseFloat(bersih);
+        }
+
+        function updateHargaCrypto(id, hargaLama) {
+            const nominalStr = prompt("Masukkan harga pasar terbaru per koin (Rp):", hargaLama);
+            if (nominalStr !== null) {
+                // Gunakan parser desimal agar koma (0,6) terbaca dengan benar
+                const hargaBaru = parseInputDesimalPrompt(nominalStr);
+                if (!isNaN(hargaBaru) && hargaBaru > 0) {
+                    db.collection("crypto").doc(id).update({ 
+                        hargaSekarang: hargaBaru, 
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                    }).then(() => alert("Harga pasar crypto berhasil diperbarui!"));
+                } else {
+                    alert("Nominal harga tidak valid.");
+                }
+            }
+        }
+
         function jualCrypto(id, jumlahKoin) {
             const konfirmasi = confirm(`Apakah Anda yakin telah MENJUAL ${jumlahKoin} koin ini dan ingin mengunci profit/loss portofolio ini?`);
             if (konfirmasi) {
                 const nominalStr = prompt("Masukkan harga JUAL FINAL per koin (Rp):");
                 if (nominalStr !== null) {
-                    const hargaJual = unformatRupiah(nominalStr);
+                    // Gunakan parser desimal agar koma (0,6) terbaca dengan benar
+                    const hargaJual = parseInputDesimalPrompt(nominalStr);
                     if (!isNaN(hargaJual) && hargaJual > 0) {
                         db.collection("crypto").doc(id).update({ 
                             hargaSekarang: hargaJual, 
@@ -2832,21 +2857,6 @@
                     } else {
                         alert("Nominal jual tidak valid. Batal menjual.");
                     }
-                }
-            }
-        }
-
-        function updateHargaCrypto(id, hargaLama) {
-            const nominalStr = prompt("Masukkan harga pasar terbaru per koin (Rp):", hargaLama);
-            if (nominalStr !== null) {
-                const hargaBaru = unformatRupiah(nominalStr);
-                if (!isNaN(hargaBaru) && hargaBaru > 0) {
-                    db.collection("crypto").doc(id).update({ 
-                        hargaSekarang: hargaBaru, 
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-                    }).then(() => alert("Harga pasar crypto berhasil diperbarui!"));
-                } else {
-                    alert("Nominal harga tidak valid.");
                 }
             }
         }
