@@ -57,7 +57,7 @@
                 </div>
                 <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3.5 rounded-xl text-sm transition shadow-lg shadow-blue-600/30">Masuk</button>
                 <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">&copy; 2026 Fund & Family By Mochamad Fuad Asyhary - All rights reserved.</p>
-                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">Sistem Manajemen Keuangan & Keluarga Versi 0.5</p>
+                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">Sistem Manajemen Keuangan & Keluarga Versi 0.7</p>
             </div>
         </div>
     </div>
@@ -914,6 +914,43 @@
             <div class="flex gap-2">
                 <button onclick="simpanTabungan()" class="flex-1 bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs">Simpan Tabungan</button>
                 <button onclick="tutupModalTabungan()" class="flex-1 bg-gray-500 text-white font-bold py-3 rounded-xl text-xs">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Target Tabungan -->
+    <div id="modal-edit-tabungan" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold text-base text-gray-900 dark:text-white">✏️ Edit Rencana Tabungan</h3>
+            <input type="hidden" id="edit-tabungan-id">
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Pemilik Tabungan</label>
+                <select id="edit-pemilik-tabungan" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+                    <option value="Keluarga Bersama">Keluarga Bersama</option>
+                    <option value="Ayah">Ayah</option>
+                    <option value="Bunda">Bunda</option>
+                    <option value="Anak">Anak</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama Target Tabungan</label>
+                <input type="text" id="edit-nama-tabungan" placeholder="Contoh: Liburan ke Bali" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nominal Target Baru (Rp)</label>
+                <input type="text" id="edit-target-tabungan" oninput="formatInputRupiah(this)" placeholder="Misal: 5.000.000" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Ganti Foto Target (Opsional)</label>
+                <input type="file" id="edit-tabungan-file-input" accept="image/*" onchange="previewEditTabunganFile(event)" class="w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-gray-200 dark:file:bg-slate-700 file:text-xs">
+                <div id="edit-tabungan-preview-container" class="mt-2 relative w-20 h-20">
+                    <img id="edit-tabungan-preview" class="w-full h-full object-cover rounded-xl border">
+                    <button type="button" onclick="batalEditTabunganFoto()" class="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] rounded-full h-4 w-4">✕</button>
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="prosesSimpanEditTabungan()" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-xl text-xs transition">Update Tabungan</button>
+                <button onclick="tutupModalEditTabungan()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-xs transition">Batal</button>
             </div>
         </div>
     </div>
@@ -2593,6 +2630,7 @@
                     if (pemilik === 'Anak') ownerBadgeColor = 'bg-emerald-900 text-emerald-200';
                     if (pemilik === 'Keluarga Bersama') ownerBadgeColor = 'bg-purple-900 text-purple-200';
 
+                    // Di dalam loop muatDataTabungan():
                     container.innerHTML += `
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between overflow-hidden hover:shadow-md transition">
                             <div>
@@ -2601,7 +2639,12 @@
                                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent pointer-events-none"></div>
                                     <span class="absolute top-3 left-3 text-[10px] font-bold px-3 py-1 rounded-full ${ownerBadgeColor} shadow">👤 ${pemilik}</span>
                                     <h4 class="absolute bottom-3 left-4 right-4 font-bold text-white text-base drop-shadow-md truncate pointer-events-none">${data.nama}</h4>
-                                    <button onclick="hapusTabungan('${docId}')" class="absolute top-3 right-3 bg-black/60 hover:bg-red-600 text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow">✖</button>
+                                    
+                                    <!-- Tombol Edit & Hapus -->
+                                    <div class="absolute top-3 right-3 flex gap-1">
+                                        <button onclick="bukaModalEditTabungan('${docId}', '${pemilik.replace(/'/g, "\\'")}', '${data.nama.replace(/'/g, "\\'")}', ${data.target}, '${fotoUrl}')" class="bg-black/60 hover:bg-yellow-500 text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Edit Tabungan">✏️</button>
+                                        <button onclick="hapusTabungan('${docId}')" class="bg-black/60 hover:bg-red-600 text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Hapus Tabungan">✖</button>
+                                    </div>
                                 </div>
                                 
                                 <div class="p-6">
@@ -2629,6 +2672,79 @@
                     container.innerHTML = `<div class="bg-white dark:bg-slate-800 p-8 rounded-2xl text-center text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700 md:col-span-2">Belum ada data rencana tabungan untuk anggota ini.</div>`;
                 }
             });
+        }
+
+        let base64EditTabunganImage = '';
+
+        function bukaModalEditTabungan(id, pemilik, nama, target, fotoLama) {
+            document.getElementById('edit-tabungan-id').value = id;
+            document.getElementById('edit-pemilik-tabungan').value = pemilik;
+            document.getElementById('edit-nama-tabungan').value = nama;
+            document.getElementById('edit-target-tabungan').value = target.toLocaleString('id-ID');
+            
+            base64EditTabunganImage = fotoLama;
+            const previewContainer = document.getElementById('edit-tabungan-preview-container');
+            const previewImg = document.getElementById('edit-tabungan-preview');
+            
+            if (fotoLama) {
+                previewImg.src = fotoLama;
+                previewContainer.classList.remove('hidden');
+            } else {
+                previewContainer.classList.add('hidden');
+            }
+
+            document.getElementById('modal-edit-tabungan').classList.remove('hidden');
+        }
+
+        function tutupModalEditTabungan() {
+            document.getElementById('modal-edit-tabungan').classList.add('hidden');
+        }
+
+        function previewEditTabunganFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64EditTabunganImage = e.target.result;
+                    const previewImg = document.getElementById('edit-tabungan-preview');
+                    const previewContainer = document.getElementById('edit-tabungan-preview-container');
+                    previewImg.src = base64EditTabunganImage;
+                    previewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function batalEditTabunganFoto() {
+            base64EditTabunganImage = '';
+            document.getElementById('edit-tabungan-preview-container').classList.add('hidden');
+            document.getElementById('edit-tabungan-file-input').value = '';
+        }
+
+        function prosesSimpanEditTabungan() {
+            const id = document.getElementById('edit-tabungan-id').value;
+            const pemilik = document.getElementById('edit-pemilik-tabungan').value;
+            const nama = document.getElementById('edit-nama-tabungan').value.trim();
+            const target = unformatRupiah(document.getElementById('edit-target-tabungan').value);
+
+            if (!nama || !target || target <= 0) {
+                return alert("Nama dan Nominal Target harus diisi dengan benar!");
+            }
+
+            const updateData = {
+                pemilik: pemilik,
+                nama: nama,
+                target: target,
+                foto: base64EditTabunganImage,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            db.collection("tabungan").doc(id).update(updateData)
+                .then(() => {
+                    alert("Rencana tabungan berhasil diperbarui!");
+                    tutupModalEditTabungan();
+                })
+                .catch(e => alert("Gagal mengupdate tabungan: " + e.message));
         }
         
         function cekPilihanKoin(select) {
@@ -2952,19 +3068,31 @@
             }
 
             const container = document.getElementById('list-family-documents');
+            const filterJenisEl = document.getElementById('filter-jenis-akun');
             if (!container) return;
+
+            // Ambil nilai pilihan filter saat ini
+            const filterJenisVal = filterJenisEl ? filterJenisEl.value : '';
 
             unsubscribeDokumen = db.collection("family_documents").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
                 container.innerHTML = '';
                 let count = 0;
+                let setJenisAkunUnik = new Set(); // Untuk mengumpulkan opsi filter otomatis
 
                 snapshot.forEach(doc => {
-                    count++;
                     const data = doc.data();
-                    const docId = doc.id;
+                    const jenisAkunDoc = data.jenisAkun || 'Keluarga';
+                    setJenisAkunUnik.add(jenisAkunDoc);
 
+                    // Cek apakah data cocok dengan filter yang dipilih user
+                    if (filterJenisVal !== '' && jenisAkunDoc !== filterJenisVal) {
+                        return; // Lewati jika tidak cocok dengan filter
+                    }
+
+                    count++;
+                    const docId = doc.id;
                     let safeNama = (data.namaKeluarga || '').replace(/'/g, "\\'");
-                    let safeJenis = (data.jenisAkun || '').replace(/'/g, "\\'");
+                    let safeJenis = jenisAkunDoc.replace(/'/g, "\\'");
                     let safeDocName = (data.namaDokumen || '').replace(/'/g, "\\'");
                     let fotoUrl = data.fotoDokumen || '';
 
@@ -2977,7 +3105,7 @@
                             <div>
                                 <div class="flex justify-between items-start mb-2">
                                     <div>
-                                        <span class="bg-cyan-900 text-cyan-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">${data.jenisAkun}</span>
+                                        <span class="bg-cyan-900 text-cyan-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">${jenisAkunDoc}</span>
                                         <h4 class="font-bold text-white text-base mt-1">${data.namaKeluarga}</h4>
                                     </div>
                                     <div class="flex gap-1">
@@ -2993,8 +3121,18 @@
                     `;
                 });
 
+                // Update pilihan dropdown filter secara dinamis agar opsi jenis akun ikut terisi
+                if (filterJenisEl) {
+                    let currentSelection = filterJenisEl.value;
+                    filterJenisEl.innerHTML = `<option value="">Semua Jenis Akun</option>`;
+                    setJenisAkunUnik.forEach(jenis => {
+                        let selectedAttr = jenis === currentSelection ? 'selected' : '';
+                        filterJenisEl.innerHTML += `<option value="${jenis}" ${selectedAttr}>${jenis}</option>`;
+                    });
+                }
+
                 if (count === 0) {
-                    container.innerHTML = `<div class="col-span-2 bg-slate-800 p-8 rounded-2xl text-center text-gray-400 border border-slate-700">Belum ada arsip dokumen keluarga yang tersimpan.</div>`;
+                    container.innerHTML = `<div class="col-span-2 bg-slate-800 p-8 rounded-2xl text-center text-gray-400 border border-slate-700">Belum ada arsip dokumen keluarga yang sesuai dengan filter ini.</div>`;
                 }
             });
         }
@@ -4225,7 +4363,7 @@
     <footer class="mt-12 py-6 border-t border-gray-200 dark:border-slate-700 text-center text-xs text-gray-500 dark:text-gray-400 transition-colors">
         <div class="max-w-7xl mx-auto px-4 space-y-1">
             <p>&copy; 2026 Fund & Family By Mochamad Fuad Asyhary - All rights reserved.</p>
-            <p>Sistem Manajemen Keuangan & Keluarga Versi 0.5</p>
+            <p>Sistem Manajemen Keuangan & Keluarga Versi 0.7</p>
         </div>
     </footer>
 </body>
