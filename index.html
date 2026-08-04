@@ -68,7 +68,6 @@
     <header class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-4">
             
-            <!-- Kiri: Profil User & Nama & Menu Navigasi (Digabung agar rapi di Desktop & HP) -->
             <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 w-full sm:w-auto">
                 <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
                     <div class="flex items-center gap-3">
@@ -82,14 +81,12 @@
                         </div>
                     </div>
 
-                    <!-- Tombol Tema & Keluar khusus tampilan mobile agar sejajar di kanan atas -->
                     <div class="flex items-center gap-2 sm:hidden">
                         <button onclick="toggleTheme()" id="theme-icon-mob" class="h-9 w-9 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-xs shadow flex-shrink-0">☀️</button>
                         <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow flex-shrink-0">Keluar</button>
                     </div>
                 </div>
 
-                <!-- Menu Navigasi Utama (Menyesuaikan di samping profil pada layar besar) -->
                 <nav class="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none w-full sm:w-auto">
                     <button id="menu-dashboard" onclick="pindahHalaman('dashboard')" class="px-3 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow whitespace-nowrap">📊 Dashboard</button>
                     <button id="menu-aset" onclick="pindahHalaman('aset')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">💎 Aset</button>
@@ -97,11 +94,11 @@
                     <button id="menu-hutang" onclick="pindahHalaman('hutang')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">💳 Hutang</button>
                     <button id="menu-tabungan" onclick="pindahHalaman('tabungan')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🎯 Tabungan</button>
                     <button id="menu-invest" onclick="pindahHalaman('invest')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🚀 Crypto</button>
-<button id="menu-dokumen-keluarga" onclick="pindahHalaman('dokumen-keluarga')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📁 Dokumen Keluarga</button>
+                    <button id="menu-dokumen" onclick="pindahHalaman('dokumen')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📁 Dokumen</button>
+                    <button id="menu-silsilah" onclick="pindahHalaman('silsilah')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">👨‍👩‍👧‍👦 Keluarga</button>
                 </nav>
             </div>
 
-            <!-- Kanan: Tombol Tema (☀️/🌙) & Tombol Keluar (Khusus Layar Besar / Desktop) -->
             <div class="hidden sm:flex items-center gap-2">
                 <button onclick="toggleTheme()" id="theme-icon" class="h-10 w-10 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-sm shadow hover:scale-105 transition flex-shrink-0">☀️</button>
                 <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow flex-shrink-0">Keluar</button>
@@ -210,7 +207,6 @@
                                 <option value="permanen">🟢 Kas Keluarga (Permanen)</option>
                             </select>
                         </div>
-                        <!-- INPUT TANGGAL DITAMBAHKAN DI SINI -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Tanggal Transaksi</label>
                             <input type="date" id="tanggal" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
@@ -240,7 +236,6 @@
                         <div class="flex flex-wrap justify-between items-center gap-4">
                             <h3 class="font-bold text-sm text-gray-900 dark:text-white">Riwayat Transaksi Kas</h3>
                             <div class="flex gap-2">
-                                <!-- TOMBOL ATUR LIMIT BULANAN DI SINI SUDAH DIHAPUS -->
                                 <input type="month" id="filter-bulan" onchange="muatDataTransaksi()" class="p-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-xs">
                                 <button onclick="resetFilter()" class="bg-gray-200 dark:bg-slate-700 px-3 py-2 rounded-xl text-xs font-bold">Reset</button>
                             </div>
@@ -322,11 +317,31 @@
                 </div>
                 <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
+            
+            <!-- HALAMAN 6: CRYPTO INVESTOR -->
+            <div id="page-invest" class="space-y-6 hidden">
+                <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Portofolio Crypto Keluarga</h3>
+                        <p class="text-xs text-slate-400">Pantau PnL real-time aset kripto seluruh anggota.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div id="total-crypto-pnl-badge" class="bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">Total PnL: Rp 0 (0%)</div>
+                        <select id="filter-user-crypto" onchange="muatDataCrypto()" class="p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+                            <option value="Semua">Semua Anggota</option>
+                            <option value="Ayah">Ayah</option>
+                            <option value="Bunda">Bunda</option>
+                            <option value="Anak">Anak</option>
+                        </select>
+                        <button onclick="bukaModalCrypto()" class="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow">+ Tambah Koin</button>
+                    </div>
+                </div>
+                <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
 
-            <!-- HALAMAN: DOKUMEN KELUARGA-->
-            <div id="page-dokumen-keluarga" class="space-y-6 hidden">
+            <!-- HALAMAN 7: DOKUMEN KELUARGA (Hanya ada 1 blok yang bersih dan rapi di sini) -->
+            <div id="page-dokumen" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Form Input & Edit Dokumen -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-1 space-y-4">
                         <h3 id="form-title-doc" class="font-bold text-sm text-gray-900 dark:text-white">Tambah Dokumen Keluarga</h3>
                         <input type="hidden" id="edit-doc-id" value="">
@@ -366,25 +381,24 @@
                         </div>
                     </div>
 
-                    <!-- Daftar Kartu Dokumen Keluarga -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 space-y-4">
-                        <!-- Header Daftar Arsip & Filter di Pojok Kanan -->
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                             <h3 class="text-base font-bold text-gray-900 dark:text-white">Daftar Arsip Dokumen Keluarga</h3>
-                            
                             <div class="w-full sm:w-auto">
                                 <select id="filter-jenis-akun" onchange="muatFamilyDocuments()" class="w-full sm:w-48 bg-gray-50 dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
                                     <option value="">Semua Jenis Akun</option>
                                 </select>
                             </div>
                         </div>
-                        <div id="list-family-documents" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto">
-                            <!-- Data dokumen akan dimuat secara otomatis di sini -->
-                        </div>
+                        <div id="list-family-documents" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto"></div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- BAGIAN: SILSILAH KELUARGA (FAMILY TREE) -->
-                    <div class="mt-8 bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 space-y-6">
+            <!-- HALAMAN 8: SILSILAH KELUARGA-->
+            <div id="page-silsilah" class="space-y-6 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="mt-8 bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 space-y-6 lg:col-span-3">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
                                 <h3 class="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">🌳 <span>Silsilah Keluarga (Family Tree)</span></h3>
@@ -395,7 +409,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Form Input & Edit Anggota Silsilah -->
                     <div class="bg-gray-50 dark:bg-slate-900 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 space-y-4 lg:col-span-1">
                         <h4 id="form-title-tree" class="font-bold text-sm text-gray-900 dark:text-white">➕ Tambah Anggota Silsilah</h4>
                         <input type="hidden" id="edit-tree-id" value="">
@@ -434,34 +447,11 @@
                         </div>
                     </div>
 
-                    <!-- Tampilan Hirarki Tree Visual -->
                     <div class="bg-gray-50 dark:bg-slate-900 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 lg:col-span-2 space-y-6 overflow-x-auto">
                         <h4 class="font-bold text-sm text-gray-900 dark:text-white">📊 Bagan Hirarki Silsilah</h4>
-                        <div id="visual-family-tree" class="space-y-6 min-w-[300px]">
-                            <!-- Bagan silsilah akan dirender otomatis di sini -->
-                        </div>
+                        <div id="visual-family-tree" class="space-y-6 min-w-[300px]"></div>
                     </div>
                 </div>
-            </div>
-            <!-- HALAMAN 6: CRYPTO INVESTOR -->
-            <div id="page-invest" class="space-y-6 hidden">
-                <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700">
-                    <div>
-                        <h3 class="text-lg font-bold text-white">Portofolio Crypto Keluarga</h3>
-                        <p class="text-xs text-slate-400">Pantau PnL real-time aset kripto seluruh anggota.</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div id="total-crypto-pnl-badge" class="bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">Total PnL: Rp 0 (0%)</div>
-                        <select id="filter-user-crypto" onchange="muatDataCrypto()" class="p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
-                            <option value="Semua">Semua Anggota</option>
-                            <option value="Ayah">Ayah</option>
-                            <option value="Bunda">Bunda</option>
-                            <option value="Anak">Anak</option>
-                        </select>
-                        <button onclick="bukaModalCrypto()" class="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow">+ Tambah Koin</button>
-                    </div>
-                </div>
-                <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
         </main>
@@ -483,16 +473,12 @@
     
     <!-- ================= FLOATING CHAT WIDGET ================= -->
     <div id="floating-chat-wrapper" class="fixed bottom-4 right-4 z-40 hidden">
-        <!-- Tombol Mengambang (Floating Button) -->
         <button onclick="toggleChatPopup()" class="bg-blue-600 hover:bg-blue-700 text-white h-14 w-14 rounded-full shadow-2xl flex items-center justify-center text-2xl transition hover:scale-110 relative">
             💬
             <span id="chat-badge" class="absolute -top-1 -right-1 bg-red-500 h-4 w-4 rounded-full text-[9px] font-bold flex items-center justify-center hidden">1</span>
         </button>
 
-        <!-- Box Chat Utama -->
         <div id="chat-popup-box" class="absolute bottom-16 right-0 w-[92vw] sm:w-[440px] bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[520px] hidden animate-fade-in">
-            
-            <!-- Header Chat -->
             <div class="bg-blue-600 text-white px-4 py-3 flex justify-between items-center shadow-md flex-shrink-0">
                 <div class="overflow-hidden pr-2">
                     <h4 id="chat-header-title" class="font-bold text-sm truncate">Chat Keluarga Realtime</h4>
@@ -504,23 +490,17 @@
                 </div>
             </div>
 
-            <!-- Body Chat (Sidebar + Area Pesan) -->
             <div class="flex flex-1 overflow-hidden">
-                <!-- Sidebar Daftar Kontak/Grup -->
                 <div id="chat-sidebar-list" class="w-1/3 sm:w-2/5 border-r border-gray-200 dark:border-slate-800 overflow-y-auto bg-gray-50 dark:bg-slate-950 text-xs divide-y divide-gray-100 dark:divide-slate-800/50 flex-shrink-0"></div>
                 
-                <!-- Area Percakapan -->
                 <div class="w-2/3 sm:w-3/5 flex flex-col bg-white dark:bg-slate-950 overflow-hidden">
-                    <!-- Daftar Pesan Masuk/Keluar -->
                     <div id="chat-container" class="flex-1 p-3 overflow-y-auto space-y-3 text-xs scroll-smooth"></div>
                     
-                    <!-- Preview Gambar -->
                     <div id="image-preview-container" class="px-3 pt-2 hidden relative bg-gray-50 dark:bg-slate-900 flex-shrink-0">
                         <img id="image-preview" class="h-14 w-14 object-cover rounded-xl border border-slate-300 dark:border-slate-700 shadow-sm">
                         <button onclick="batalKirimFoto()" class="absolute top-1 left-2 bg-red-600 hover:bg-red-700 text-white h-5 w-5 rounded-full text-[10px] font-bold flex items-center justify-center transition">✕</button>
                     </div>
 
-                    <!-- Bagian Input Pesan (Diperbaiki agar pas di dalam box) -->
                     <div class="p-2.5 border-t border-gray-200 dark:border-slate-800 flex items-center gap-1.5 bg-gray-50 dark:bg-slate-900 flex-shrink-0">
                         <label class="cursor-pointer text-base p-1 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition flex-shrink-0">
                             📷
@@ -537,7 +517,7 @@
     <!-- Chat Toast Notifikasi Pop-up -->
     <div id="chat-toast-container" class="fixed top-20 right-4 z-50 space-y-2 pointer-events-none"></div>
 
-    <!-- ================= MODAL MODAL PENDUKUNG ================= -->
+    <!-- ================= MODAL-MODAL PENDUKUNG ================= -->
 
     <!-- Modal Profil / Manajemen Anggota Keluarga -->
     <div id="modal-profil" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
@@ -547,7 +527,6 @@
                 <button onclick="tutupModalProfil()" class="font-bold text-lg">✕</button>
             </div>
 
-            <!-- Tampilan Khusus Anak (Self Edit) -->
             <div id="anak-self-edit-section" class="space-y-4 hidden">
                 <div class="flex items-center gap-4">
                     <div class="relative">
@@ -570,7 +549,6 @@
                 <button onclick="simpanAnakSelfProfile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs">Simpan Perubahan Profil</button>
             </div>
 
-            <!-- Tampilan Khusus Ayah/Bunda (Admin Keluarga) -->
             <div id="admin-user-management-section" class="space-y-6">
                 <div class="bg-gray-50 dark:bg-slate-900 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 space-y-4">
                     <h4 class="font-bold text-sm text-blue-500">✨ Tambah Akun Keluarga Baru (Anak / Anggota)</h4>
@@ -709,7 +687,6 @@
                     </div>
                     <input type="text" id="aset-lokasi" placeholder="Contoh: -7.2575, 112.7521 atau Rumah Utama" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
                     
-                    <!-- Container Peta Interaktif -->
                     <div id="container-peta-modal" class="mt-3 hidden space-y-2">
                         <div id="map"></div>
                         <p class="text-[10px] text-gray-400 text-center">Geser marker merah pada peta untuk menentukan lokasi aset.</p>
@@ -727,7 +704,6 @@
     <div id="modal-hutang-internal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4">
             <h3 class="font-bold text-base">🔄 Catat Hutang Internal Keluarga</h3>
-            <!-- Tambahkan ini di dalam form input hutang keluarga Anda -->
             <div>
                 <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Pinjam</label>
                 <select id="family-debt-jenis" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
@@ -770,7 +746,6 @@
     <div id="modal-hutang-online" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-lg border border-gray-100 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-base">➕ Catat Hutang & Buat Akun Penghutang</h3>
-            <!-- Tambahkan di dalam form input hutang eksternal -->
             <div>
                 <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Pinjam Eksternal</label>
                 <select id="hutang-jenis-eksternal" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
@@ -832,7 +807,6 @@
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4">
             <h3 class="font-bold text-base">✏️ Edit Data Hutang Eksternal</h3>
             <input type="hidden" id="edit-hutang-doc-id">
-            <!-- Tambahkan ini di dalam form modal edit hutang eksternal -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 mb-1">Jenis Pinjam</label>
                 <select id="edit-hutang-jenis" class="w-full p-3 border border-slate-700 rounded-xl bg-slate-900 text-xs text-white">
@@ -971,62 +945,19 @@
             </div>
             <div>
                 <label class="block text-xs font-semibold mb-1">Jumlah Koin</label>
-                <input type="number" step="any" id="jumlah-koin" placeholder="Contoh: 0.5 atau 100" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
+                <input type="text" id="jumlah-koin" oninput="formatInputAngkaDesimal(this)" placeholder="Contoh: 1,4 atau 1.000" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
             </div>
             <div>
                 <label class="block text-xs font-semibold mb-1">Harga Beli Rata-Rata per Koin (Rp)</label>
-                <input type="text" id="harga-beli-crypto" oninput="formatInputRupiah(this)" placeholder="Misal: 500.000" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
+                <input type="text" id="harga-beli-crypto" oninput="formatInputAngkaDesimal(this)" placeholder="Misal: 500.000,50" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
             </div>
             <div>
                 <label class="block text-xs font-semibold mb-1">Harga Pasar Saat Ini per Koin (Rp)</label>
-                <input type="text" id="harga-sekarang-crypto" oninput="formatInputRupiah(this)" placeholder="Misal: 550.000" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
+                <input type="text" id="harga-sekarang-crypto" oninput="formatInputAngkaDesimal(this)" placeholder="Misal: 550.000,75" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs">
             </div>
             <div class="flex gap-2">
                 <button onclick="simpanCrypto()" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3 rounded-xl text-xs">Simpan Portofolio</button>
                 <button onclick="tutupModalCrypto()" class="flex-1 bg-gray-500 text-white font-bold py-3 rounded-xl text-xs">Batal</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- HALAMAN: DOKUMEN KELUarga -->
-    <div id="page-dokumen-keluarga" class="space-y-6 hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Form Input & Edit Dokumen -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-1 space-y-4">
-                <h3 id="form-title-doc" class="font-bold text-sm text-gray-900 dark:text-white">Tambah Dokumen Keluarga</h3>
-                <input type="hidden" id="edit-doc-id" value="">
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Keluarga</label>
-                    <input type="text" id="doc-nama-keluarga" placeholder="Contoh: Budi Santoso" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Akun</label>
-                    <input type="text" id="doc-jenis-akun" placeholder="Contoh: Ayah / Ibu / Anak" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Dokumen</label>
-                    <input type="text" id="doc-nama-dokumen" placeholder="Contoh: KTP / KK / Sertifikat" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Upload Dokumen (Gambar)</label>
-                    <input type="file" id="doc-file-input" accept="image/*" onchange="previewFamilyDocFile(event)" class="w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-950 file:text-cyan-300">
-                    <div id="doc-preview-container" class="mt-2 hidden">
-                        <img id="doc-preview-img" class="h-28 w-full object-cover rounded-xl border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
-                    </div>
-                </div>
-                <div class="flex gap-2 pt-2">
-                    <button onclick="simpanFamilyDocument()" id="btn-simpan-doc" class="bg-cyan-600 hover:bg-cyan-700 text-white p-3 rounded-xl transition flex-1 font-bold shadow text-xs">Simpan Dokumen</button>
-                    <button onclick="batalEditFamilyDocument()" id="btn-batal-doc" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded-xl transition font-bold text-xs hidden">Batal</button>
-                </div>
-            </div>
-
-            <!-- Daftar Kartu Dokumen Keluarga -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 space-y-4">
-                <h3 class="font-bold text-sm text-gray-900 dark:text-white">Daftar Arsip Dokumen Keluarga</h3>
-                <div id="list-family-documents" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto">
-                    <!-- Data dokumen akan dimuat secara otomatis di sini -->
-                </div>
             </div>
         </div>
     </div>
@@ -1040,12 +971,10 @@
     </div>
 
     <!-- ================= FIREBASE & SCRIPT UTAMA ================= -->
-    <!-- Firebase v11 -->
     <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore-compat.js"></script>
     
-    <!-- Script logika aplikasi -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDt0WscAnI4LJSRXMUqEabrIkYDBPt4qfA",
@@ -1104,6 +1033,14 @@
         
         let mapInstance = null;
         let markerInstance = null;
+        let unsubscribeTransaksi = null;
+        let unsubscribeAset = null;
+        let unsubscribeHutang = null;
+        let unsubscribeTabungan = null;
+        let unsubscribeCrypto = null;
+        let unsubscribeDokumen = null;
+        let unsubscribeTree = null;
+        let unsubscribeHutangKeluarga = null;
 
         function toggleTheme() {
             const htmlRoot = document.getElementById('html-root');
@@ -1139,6 +1076,12 @@
             }
             
             inisialisasiRealtimeAset();
+            setTanggalHariIni();
+            setDefaultFilterBulan();
+            muatDataTransaksi();
+            muatDataHutang();
+            muatFamilyDocuments(); 
+            muatFamilyTree();
         });
 
         function handleLoginKeyPress(event) {
@@ -1171,7 +1114,6 @@
 
         function logout() {
             firebase.auth().signOut().then(() => {
-                // Langsung muat ulang halaman secara otomatis setelah berhasil keluar
                 location.reload();
             }).catch((error) => {
                 alert("Gagal keluar: " + error.message);
@@ -1589,36 +1531,13 @@
             const mm = String(d.getMonth() + 1).padStart(2, '0');
             return `${yyyy}-${mm}`;
         }
-
-        function bukaModalSetLimit() {
-            document.getElementById('input-limit-bulanan').value = '';
-            document.getElementById('modal-set-limit').classList.remove('hidden');
-        }
-
-        function tutupModalSetLimit() {
-            document.getElementById('modal-set-limit').classList.add('hidden');
-        }
-
-        function simpanLimitBulanan() {
-            const limitVal = unformatRupiah(document.getElementById('input-limit-bulanan').value);
-            if (isNaN(limitVal) || limitVal < 0) return alert("Masukkan nominal limit yang valid!");
-            
-            const bulanKey = getCurrentMonthKey();
-            db.collection("settings").doc(`limit_${bulanKey}`).set({
-                limit: limitVal,
-                bulan: bulanKey,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                tutupModalSetLimit();
-                alert("Limit kas bulanan berhasil disimpan untuk bulan ini!");
-                muatDataTransaksi();
-            }).catch(e => alert("Gagal menyimpan limit: " + e.message));
-        }
-
         function formatInputRupiah(input) {
             let val = input.value.replace(/[^0-9]/g, '');
-            if(val !== "") input.value = parseInt(val, 10).toLocaleString('id-ID');
-            else input.value = "";
+            if (val !== "") {
+                input.value = parseInt(val, 10).toLocaleString('id-ID');
+            } else {
+                input.value = "";
+            }
         }
         function unformatRupiah(str) {
             if(!str) return 0;
@@ -1656,79 +1575,50 @@
             muatDataTransaksi();
         }
 
-        // 1. Fungsi untuk mengatur nilai default tanggal menjadi hari ini (format YYYY-MM-DD)
         function setTanggalHariIni() {
             const today = new Date().toISOString().split('T')[0];
-            const inputTgl = document.getElementById('tanggal'); // Sesuai dengan id="tanggal" di HTML Anda
+            const inputTgl = document.getElementById('tanggal');
             if (inputTgl) {
                 inputTgl.value = today;
             }
         }
 
-        // Panggil fungsi ini saat halaman pertama kali dimuat
-        document.addEventListener('DOMContentLoaded', () => {
-            setTanggalHariIni();
-        });
-
-        // Variabel penampung mode edit (jika sedang mengedit transaksi)
-        let currentEditId = null;
-
-        // 2. Fungsi saat tombol Edit diklik (Tanggal & data lain terpanggil ke form)
-        function editTransaksiKas(id) {
-            // Cari data kas berdasarkan ID dari array data Anda (sesuaikan nama array global Anda, misal: dataTransaksi)
-            const item = dataTransaksi.find(d => d.id === id);
-            if (!item) return;
-
-            currentEditId = item.id; // Simpan ID yang sedang diedit
-            
-            document.getElementById('tanggal').value = item.tanggal; 
-            document.getElementById('kategori-kas').value = item.kategori || 'limit_bulanan';
-            document.getElementById('jenis').value = item.nominal < 0 ? 'keluar' : 'masuk';
-            
-            // Format nominal ke string untuk input
-            document.getElementById('jumlah').value = Math.abs(item.nominal).toLocaleString('id-ID');
-            document.getElementById('keterangan').value = item.keterangan;
-
-            // Ubah teks tombol jadi Update / tampilkan tombol Batal jika ada
-            const btnSimpan = document.getElementById('btn-simpan');
-            if (btnSimpan) btnSimpan.innerText = 'Update';
-            const btnBatal = document.getElementById('btn-batal');
-            if (btnBatal) btnBatal.classList.remove('hidden');
+        function setDefaultFilterBulan() {
+            const filterEl = document.getElementById('filter-bulan');
+            if (filterEl && !filterEl.value) {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                filterEl.value = `${yyyy}-${mm}`;
+            }
         }
 
-        // 3. Fungsi batal edit// Variabel global untuk menampung ID dokumen Firebase yang sedang diedit
         let editIdTransaksi = null;
 
-        // 1. Fungsi saat tombol Edit diklik (Memasukkan data ke form termasuk tanggal)
         function siapkanEdit(docId, kategori, jenis, jumlah, keterangan, tanggalStr) {
             editIdTransaksi = docId;
-            
-            // Masukkan data ke form HTML
             document.getElementById('tanggal').value = tanggalStr || new Date().toISOString().split('T')[0];
             document.getElementById('kategori-kas').value = kategori;
             document.getElementById('jenis').value = jenis;
             document.getElementById('jumlah').value = jumlah.toLocaleString('id-ID');
             document.getElementById('keterangan').value = keterangan;
 
-            // Ubah teks tombol simpan jadi Update
             const btnSimpan = document.getElementById('btn-simpan');
             if(btnSimpan) btnSimpan.innerText = 'Update Transaksi';
             
             const btnBatal = document.getElementById('btn-batal');
             if(btnBatal) btnBatal.classList.remove('hidden');
 
-            // Scroll otomatis ke form atas
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 2. Fungsi Batal Edit
         function batalEdit() {
             editIdTransaksi = null;
             document.getElementById('kategori-kas').value = 'limit_bulanan';
             document.getElementById('jenis').value = 'keluar';
             document.getElementById('jumlah').value = '';
             document.getElementById('keterangan').value = '';
-            setTanggalHariIni(); // Kembalikan tanggal ke hari ini
+            setTanggalHariIni();
             
             const btnSimpan = document.getElementById('btn-simpan');
             if(btnSimpan) btnSimpan.innerText = 'Simpan';
@@ -1737,14 +1627,12 @@
             if(btnBatal) btnBatal.classList.add('hidden');
         }
 
-        // 3. FUNGSI SIMPAN / UPDATE KE FIREBASE (Memperbaiki error tidak bisa simpan)
         function simpanTransaksi() {
             const tanggalVal = document.getElementById('tanggal').value;
             const kategoriKas = document.getElementById('kategori-kas').value;
             const jenis = document.getElementById('jenis').value;
             const keterangan = document.getElementById('keterangan').value;
             
-            // Ambil angka mentah dari input jumlah (bersihkan titik/koma)
             const rawJumlah = document.getElementById('jumlah').value.replace(/\./g, '').replace(/,/g, '');
             const jumlah = Number(rawJumlah) || 0;
 
@@ -1753,12 +1641,10 @@
                 return;
             }
 
-            // Konversi tanggal string form ke Firebase Timestamp
             const tanggalTimestamp = firebase.firestore.Timestamp.fromDate(new Date(tanggalVal));
-            const userPembuat = (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) ? currentUser.displayName : "Pengguna";
+            const userPembuat = document.getElementById('user-display-name')?.innerText || "Pengguna";
 
             if (editIdTransaksi !== null) {
-                // LOGIKA UPDATE DATA KE FIREBASE
                 db.collection("transaksi").doc(editIdTransaksi).update({
                     tanggal: tanggalTimestamp,
                     kategoriKas: kategoriKas,
@@ -1773,12 +1659,9 @@
                     batalEdit();
                 })
                 .catch((error) => {
-                    console.error("Gagal mengupdate transaksi: ", error);
-                    alert('Gagal mengupdate data.');
+                    alert('Gagal mengupdate data: ' + error.message);
                 });
-
             } else {
-                // LOGIKA TAMBAH DATA BARU KE FIREBASE
                 db.collection("transaksi").add({
                     tanggal: tanggalTimestamp,
                     kategoriKas: kategoriKas,
@@ -1790,78 +1673,28 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 })
                 .then(() => {
-                    // Reset form setelah berhasil simpan
                     document.getElementById('keterangan').value = '';
                     document.getElementById('jumlah').value = '';
                     setTanggalHariIni();
                 })
                 .catch((error) => {
-                    console.error("Gagal menyimpan transaksi: ", error);
-                    alert('Gagal menyimpan data ke database.');
+                    alert('Gagal menyimpan data ke database: ' + error.message);
                 });
             }
         }
+        // ------------------------------------------
 
-        // 5. Fungsi Kalkulator Limit Otomatis Bulanan di Dashboard
-        function updateDashboardLimitAuto(dataList) {
-            const dateNow = new Date();
-            const currentMonthKey = `${dateNow.getFullYear()}-${String(dateNow.getMonth() + 1).padStart(2, '0')}`;
-
-            // Filter transaksi untuk bulan berjalan
-            const transaksiBulanIni = dataList.filter(item => {
-                if (!item.tanggal) return false;
-                const itemMonthKey = item.tanggal.substring(0, 7); // Format 'YYYY-MM'
-                return itemMonthKey === currentMonthKey;
-            });
-
-            let autoLimit = 0;   // Akumulasi uang masuk (pemasukan/limit awal)
-            let totalKeluar = 0; // Akumulasi uang keluar (pengurangan limit)
-
-            transaksiBulanIni.forEach(item => {
-                const val = Number(item.nominal) || 0;
-                if (val >= 0) {
-                    autoLimit += val;
-                } else {
-                    totalKeluar += Math.abs(val);
-                }
-            });
-
-            const sisaLimit = autoLimit - totalKeluar;
-
-            // Update ke elemen Dashboard Anda (sesuaikan ID elemen di dashboard Anda)
-            const elLimitTotal = document.getElementById('dashboard-limit-total');
-            const elLimitTerpakai = document.getElementById('dashboard-limit-terpakai');
-            const elLimitSisa = document.getElementById('dashboard-limit-sisa');
-
-            if (elLimitTotal) elLimitTotal.innerText = `Rp ${autoLimit.toLocaleString('id-ID')}`;
-            if (elLimitTerpakai) elLimitTerpakai.innerText = `Rp ${totalKeluar.toLocaleString('id-ID')}`;
-            if (elLimitSisa) elLimitSisa.innerText = `Rp ${sisaLimit.toLocaleString('id-ID')}`;
-        }
-
-        // Fungsi untuk mengisi default filter bulan dengan bulan berjalan (YYYY-MM)
-        function setDefaultFilterBulan() {
-            const filterEl = document.getElementById('filter-bulan');
-            if (filterEl && !filterEl.value) {
-                const now = new Date();
-                const yyyy = now.getFullYear();
-                const mm = String(now.getMonth() + 1).padStart(2, '0');
-                filterEl.value = `${yyyy}-${mm}`;
-            }
-        }
-
-        // Panggil fungsi ini saat dokumen selesai dimuat (bersamaan dengan setTanggalHariIni)
-        document.addEventListener('DOMContentLoaded', () => {
-            setTanggalHariIni();
-            setDefaultFilterBulan();
-            muatDataTransaksi(); // Panggil muat data setelah filter ter-set
-        });
-        
-        let unsubscribeTransaksi = null;
         function muatDataTransaksi() {
-            if (unsubscribeTransaksi) unsubscribeTransaksi();
+            // 1. Bersihkan listener lama yang masih aktif
+            if (unsubscribeTransaksi) {
+                unsubscribeTransaksi();
+                unsubscribeTransaksi = null;
+            }
+
             const filterValue = document.getElementById('filter-bulan').value; 
             const currentBulanKey = getCurrentMonthKey();
 
+            // 2. Buat listener baru dan simpan referensinya ke variabel global
             unsubscribeTransaksi = db.collection("transaksi").orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
                 const tabel = document.getElementById('tabel-transaksi');
                 if(!tabel) return;
@@ -1870,8 +1703,6 @@
                 let totalKeluargaMasuk = 0, totalKeluargaKeluar = 0;
                 let filterTabelMasuk = 0, filterTabelKeluar = 0;
                 let rowCount = 0;
-
-                // Variabel untuk menghitung Auto Limit Bulan Berjalan
                 let autoLimitMasuk = 0;
                 let autoLimitKeluar = 0;
 
@@ -1885,33 +1716,24 @@
                     const mmTrans = String(waktuTransaksiObj.getMonth() + 1).padStart(2, '0');
                     const bulanTahunTransaksi = `${yyyyTrans}-${mmTrans}`;
 
-                    // Hitung Kas Keluarga Permanen
                     if (kategori === 'permanen') {
                         if(data.jenis === 'masuk') totalKeluargaMasuk += data.jumlah;
                         if(data.jenis === 'keluar') totalKeluargaKeluar += data.jumlah;
                     }
 
-                    // Hitung Auto Limit Bulanan untuk bulan BERJALAN saat ini
                     if (kategori === 'limit_bulanan' && bulanTahunTransaksi === currentBulanKey) {
-                        if (data.jenis === 'masuk') {
-                            autoLimitMasuk += data.jumlah;
-                        } else if (data.jenis === 'keluar') {
-                            autoLimitKeluar += data.jumlah;
-                        }
+                        if (data.jenis === 'masuk') autoLimitMasuk += data.jumlah;
+                        else if (data.jenis === 'keluar') autoLimitKeluar += data.jumlah;
                     }
 
-                    // Filter untuk Tabel Riwayat
                     if (filterValue === '' || filterValue === bulanTahunTransaksi) {
                         rowCount++;
                         if(data.jenis === 'masuk') filterTabelMasuk += data.jumlah;
                         if(data.jenis === 'keluar') filterTabelKeluar += data.jumlah;
 
-                        let statusBadge = "";
-                        if (data.status === 'Diupdate' && data.updatedAt) {
-                            statusBadge = `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)}</div>`;
-                        } else {
-                            statusBadge = `<div class="mt-1 inline-block bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)}</div>`;
-                        }
+                        let statusBadge = data.status === 'Diupdate' && data.updatedAt 
+                            ? `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)}</div>`
+                            : `<div class="mt-1 inline-block bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)}</div>`;
 
                         const textColor = data.jenis === 'masuk' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
                         const simbol = data.jenis === 'masuk' ? '+' : '-';
@@ -1920,34 +1742,22 @@
                             ? `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟢 Kas Keluarga</span>` 
                             : `<span class="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟣 Limit Bulanan</span>`;
 
-                        // Format tanggal string ke YYYY-MM-DD agar input date di form edit bisa membacanya
                         const tglFormatYMD = waktuTransaksiObj.toISOString().split('T')[0];
 
-                        let actionButtonsHtml = '';
-                        if (currentUserJenisAkun !== 'Anak') {
-                            // Perbaikan: Menyertakan tglFormatYMD ke dalam parameter fungsi siapkanEdit
-                            actionButtonsHtml = `
-                                <div class="flex justify-center space-x-2">
+                        let actionButtonsHtml = currentUserJenisAkun !== 'Anak' 
+                            ? `<div class="flex justify-center space-x-2">
                                     <button onclick="siapkanEdit('${docId}', '${kategori}', '${data.jenis}', ${data.jumlah}, '${ketAman}', '${tglFormatYMD}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Edit</button>
                                     <button onclick="hapusTransaksi('${docId}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Hapus</button>
-                                </div>
-                            `;
-                        } else {
-                            actionButtonsHtml = `<span class="text-xs text-gray-400 italic">Hanya Baca</span>`;
-                        }
+                            </div>`
+                            : `<span class="text-xs text-gray-400 italic">Hanya Baca</span>`;
 
                         tabel.innerHTML += `
                             <tr class="border-b dark:border-slate-700 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
-                                <td class="p-4 text-sm text-gray-700 dark:text-gray-300 font-medium">
-                                    ${formatWaktu(data.tanggal).split(',')[0]}
-                                    ${badgeKategori}
-                                </td>
+                                <td class="p-4 text-sm text-gray-700 dark:text-gray-300 font-medium">${formatWaktu(data.tanggal).split(',')[0]}${badgeKategori}</td>
                                 <td class="p-4 text-gray-900 dark:text-gray-200"><span class="font-bold">${data.keterangan}</span><br>${statusBadge}</td>
                                 <td class="p-4 capitalize text-sm font-semibold">${data.jenis}</td>
                                 <td class="p-4 font-bold ${textColor} text-base">${simbol} Rp ${data.jumlah.toLocaleString('id-ID')}</td>
-                                <td class="p-4 text-center">
-                                    ${actionButtonsHtml}
-                                </td>
+                                <td class="p-4 text-center">${actionButtonsHtml}</td>
                             </tr>
                         `;
                     }
@@ -1957,39 +1767,35 @@
                     tabel.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400 font-medium">Belum ada catatan transaksi pada bulan/filter ini.</td></tr>`;
                 }
 
-                const saldoKeluarga = totalKeluargaMasuk - totalKeluargaKeluar;
-                const sisaLimitAuto = autoLimitMasuk - autoLimitKeluar;
-
-                // Update tampilan dashboard
-                document.getElementById('total-kas-permanen').innerText = 'Rp ' + saldoKeluarga.toLocaleString('id-ID');
-                document.getElementById('total-kas-bulanan').innerText = 'Rp ' + sisaLimitAuto.toLocaleString('id-ID');
+                document.getElementById('total-kas-permanen').innerText = 'Rp ' + (totalKeluargaMasuk - totalKeluargaKeluar).toLocaleString('id-ID');
+                document.getElementById('total-kas-bulanan').innerText = 'Rp ' + (autoLimitMasuk - autoLimitKeluar).toLocaleString('id-ID');
                 
                 const infoLimitEl = document.getElementById('info-limit-bulanan');
-                if (infoLimitEl) {
-                    infoLimitEl.innerText = `Limit Masuk Bulan Ini: Rp ${autoLimitMasuk.toLocaleString('id-ID')}`;
-                }
+                if (infoLimitEl) infoLimitEl.innerText = `Limit Masuk Bulan Ini: Rp ${autoLimitMasuk.toLocaleString('id-ID')}`;
 
                 document.getElementById('filter-masuk').innerText = 'Rp ' + filterTabelMasuk.toLocaleString('id-ID');
                 document.getElementById('filter-keluar').innerText = 'Rp ' + filterTabelKeluar.toLocaleString('id-ID');
             });
         }
+
+        function hapusTransaksi(id) {
+            if (confirm("Hapus transaksi ini?")) {
+                db.collection("transaksi").doc(id).delete().catch(e => alert("Gagal menghapus: " + e.message));
+            }
+        }
         
         function simpanHutangKeluarga() {
-            const jenisPinjam = document.getElementById('family-debt-jenis').value; // 'Hutang' atau 'Piutang'
+            const jenisPinjam = document.getElementById('family-debt-jenis').value;
             const pemberi = document.getElementById('family-debt-pemberi').value;
             const penerima = document.getElementById('family-debt-penerima').value;
             const nominal = unformatRupiah(document.getElementById('family-debt-nominal').value);
             const keterangan = document.getElementById('family-debt-keterangan').value.trim();
 
-            if (pemberi === penerima) {
-                return alert("Pemberi dan penerima pinjaman tidak boleh orang yang sama!");
-            }
-            if (!nominal || nominal <= 0 || !keterangan) {
-                return alert("Nominal dan keterangan harus diisi dengan benar!");
-            }
+            if (pemberi === penerima) return alert("Pemberi dan penerima pinjaman tidak boleh orang yang sama!");
+            if (!nominal || nominal <= 0 || !keterangan) return alert("Nominal dan keterangan harus diisi dengan benar!");
 
             db.collection("hutang_keluarga").add({
-                jenisPinjam: jenisPinjam, // Menyimpan status Hutang atau Piutang
+                jenisPinjam: jenisPinjam,
                 pemberi: pemberi,
                 penerima: penerima,
                 nominal: nominal,
@@ -2002,6 +1808,7 @@
                 alert(`Berhasil mencatat ${jenisPinjam} internal keluarga!`);
                 document.getElementById('family-debt-nominal').value = '';
                 document.getElementById('family-debt-keterangan').value = '';
+                tutupModalHutangInternal();
             }).catch(e => alert("Gagal menyimpan: " + e.message));
         }
 
@@ -2020,9 +1827,7 @@
                             terbayar: terbayarBaru,
                             status: statusBaru,
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(() => {
-                            alert("Pembayaran berhasil dicatat!");
-                        });
+                        }).then(() => alert("Pembayaran berhasil dicatat!"));
                     });
                 } else {
                     alert("Nominal tidak valid.");
@@ -2032,17 +1837,20 @@
 
         function hapusHutangKeluarga(id) {
             if (confirm("Hapus catatan hutang keluarga ini?")) {
-                db.collection("hutang_keluarga").doc(id).delete().then(() => {
-                    alert("Catatan hutang internal berhasil dihapus!");
-                });
+                db.collection("hutang_keluarga").doc(id).delete().then(() => alert("Catatan hutang internal berhasil dihapus!"));
             }
         }
 
         function muatDataHutangKeluarga() {
+            if (unsubscribeHutangKeluarga) {
+                unsubscribeHutangKeluarga();
+                unsubscribeHutangKeluarga = null;
+            }
+
             const container = document.getElementById('list-family-debt');
             if (!container) return;
 
-            db.collection("hutang_keluarga").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            unsubscribeHutangKeluarga = db.collection("hutang_keluarga").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
                 container.innerHTML = '';
                 let count = 0;
                 let sumTotalHutang = 0;
@@ -2072,50 +1880,47 @@
                     let badgeStatus = isLunas 
                         ? '<span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-3 py-1 rounded-full text-[10px] font-bold">LUNAS ✓</span>' 
                         : '<span class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300 px-3 py-1 rounded-full text-[10px] font-bold">Belum Lunas</span>';
-                // Di dalam perulangan snapshot.forEach di fungsi muatDataHutangKeluarga:
-                const jenisPinjam = data.jenisPinjam || 'Hutang'; // Fallback jika data lama belum ada jenisnya
+                    
+                    const jenisPinjam = data.jenisPinjam || 'Hutang';
+                    let badgeJenisStyle = jenisPinjam === 'Hutang' 
+                        ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' 
+                        : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
 
-                // Tentukan warna dan ikon berdasarkan jenis pinjam
-                let badgeJenisStyle = jenisPinjam === 'Hutang' 
-                    ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' 
-                    : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
+                    let teksLabel = jenisPinjam === 'Hutang' 
+                        ? `🔴 ${data.penerima} berhutang ke ${data.pemberi}` 
+                        : `🟢 ${data.pemberi} memberikan piutang ke ${data.penerima}`;
 
-                let teksLabel = jenisPinjam === 'Hutang' 
-                    ? `🔴 ${data.penerima} berhutang ke ${data.pemberi}` 
-                    : `🟢 ${data.pemberi} memberikan piutang ke ${data.penerima}`;
-
-                // Pada bagian template HTML kartu riwayat, tampilkan badge jenis pinjam ini:
-                container.innerHTML += `
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <div class="flex items-center gap-2">
-                                    <span class="${badgeJenisStyle} px-3 py-1 rounded-full text-xs font-bold">${jenisPinjam}</span>
-                                    <span class="bg-cyan-100 dark:bg-cyan-900 text-cyan-800 dark:text-cyan-200 px-3 py-1 rounded-full text-xs font-bold">🔄 ${teksLabel}</span>
+                    container.innerHTML += `
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="${badgeJenisStyle} px-3 py-1 rounded-full text-xs font-bold">${jenisPinjam}</span>
+                                        <span class="bg-cyan-100 dark:bg-cyan-900 text-cyan-800 dark:text-cyan-200 px-3 py-1 rounded-full text-xs font-bold">🔄 ${teksLabel}</span>
+                                    </div>
+                                    <button onclick="hapusHutangKeluarga('${id}')" class="text-gray-400 hover:text-red-500 font-bold text-xs bg-gray-100 dark:bg-slate-700 h-7 w-7 rounded-full flex items-center justify-center transition">✕</button>
                                 </div>
-                                <button onclick="hapusHutangKeluarga('${id}')" class="text-gray-400 hover:text-red-500 font-bold text-xs bg-gray-100 dark:bg-slate-700 h-7 w-7 rounded-full flex items-center justify-center transition">✕</button>
-                            </div>
-                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">${data.keterangan}</p>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">Dicatat oleh: ${data.createdBy || 'Keluarga'}</div>
-                            <div class="mb-3">${badgeStatus}</div>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">${data.keterangan}</p>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">Dicatat oleh: ${data.createdBy || 'Keluarga'}</div>
+                                <div class="mb-3">${badgeStatus}</div>
 
-                            <div class="my-4 p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700 text-xs space-y-1.5">
-                                <div class="flex justify-between"><span class="text-gray-500">Total ${jenisPinjam}:</span> <strong class="text-gray-900 dark:text-white">Rp ${nominal.toLocaleString('id-ID')}</strong></div>
-                                <div class="flex justify-between"><span class="text-gray-500">Sudah Dibayar:</span> <strong class="text-green-600 dark:text-green-400">Rp ${terbayar.toLocaleString('id-ID')}</strong></div>
-                                <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-1.5 mt-1.5"><span class="text-gray-700 dark:text-gray-300 font-bold">Sisa ${jenisPinjam}:</span> <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisa.toLocaleString('id-ID')}</strong></div>
+                                <div class="my-4 p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700 text-xs space-y-1.5">
+                                    <div class="flex justify-between"><span class="text-gray-500">Total ${jenisPinjam}:</span> <strong class="text-gray-900 dark:text-white">Rp ${nominal.toLocaleString('id-ID')}</strong></div>
+                                    <div class="flex justify-between"><span class="text-gray-500">Sudah Dibayar:</span> <strong class="text-green-600 dark:text-green-400">Rp ${terbayar.toLocaleString('id-ID')}</strong></div>
+                                    <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-1.5 mt-1.5"><span class="text-gray-700 dark:text-gray-300 font-bold">Sisa ${jenisPinjam}:</span> <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisa.toLocaleString('id-ID')}</strong></div>
+                                </div>
+
+                                <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-1.5">
+                                    <div class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: ${persen}%"></div>
+                                </div>
+                                <div class="text-[10px] text-right text-gray-400 font-semibold mb-4">${persen.toFixed(1)}% Terbayar</div>
                             </div>
 
-                            <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-1.5">
-                                <div class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: ${persen}%"></div>
-                            </div>
-                            <div class="text-[10px] text-right text-gray-400 font-semibold mb-4">${persen.toFixed(1)}% Terbayar</div>
+                            <button onclick="bayarHutangKeluarga('${id}')" class="w-full bg-cyan-50 dark:bg-slate-700 hover:bg-cyan-100 dark:hover:bg-cyan-600 text-cyan-700 dark:text-cyan-300 font-bold py-2.5 rounded-xl text-xs transition border border-cyan-200 dark:border-slate-600 shadow-sm">
+                                💸 Catat Pelunasan / Pembayaran
+                            </button>
                         </div>
-
-                        <button onclick="bayarHutangKeluarga('${id}')" class="w-full bg-cyan-50 dark:bg-slate-700 hover:bg-cyan-100 dark:hover:bg-cyan-600 text-cyan-700 dark:text-cyan-300 font-bold py-2.5 rounded-xl text-xs transition border border-cyan-200 dark:border-slate-600 shadow-sm">
-                            💸 Catat Pelunasan / Pembayaran
-                        </button>
-                    </div>
-                `;
+                    `;
                 });
 
                 if (count === 0) {
@@ -2227,7 +2032,7 @@
 
             db.collection("hutang").add({ 
                 authUid: authUid || '',
-                jenisPinjam: jenisPinjam, // Menyimpan status 'Hutang' atau 'Piutang'
+                jenisPinjam: jenisPinjam,
                 nama: nama, 
                 email: emailPenghutang,
                 total: total, 
@@ -2240,7 +2045,6 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp() 
             }).then(() => { 
                 alert(`Berhasil mencatat ${jenisPinjam} Eksternal dan mengaktifkan akun login!`);
-                // Reset form input
                 document.getElementById('hutang-nama').value = ''; 
                 document.getElementById('hutang-email').value = '';
                 document.getElementById('hutang-total').value = ''; 
@@ -2248,6 +2052,7 @@
                 document.getElementById('hutang-tempo').value = '';
                 batalHutangJaminanFoto();
                 batalHutangKtpFoto();
+                tutupModalHutangOnline();
             }).catch(e => alert("Error database: " + e.message));
         }
 
@@ -2273,11 +2078,8 @@
             document.getElementById('edit-hutang-jaminan').value = jaminan;
             document.getElementById('edit-hutang-tempo').value = jatuhTempo;
             
-            // Set dropdown jenis pinjam di modal edit jika elemennya ada
             const jenisSelect = document.getElementById('edit-hutang-jenis');
-            if (jenisSelect) {
-                jenisSelect.value = jenisPinjam || 'Hutang';
-            }
+            if (jenisSelect) jenisSelect.value = jenisPinjam || 'Hutang';
 
             document.getElementById('modal-edit-hutang').classList.remove('hidden');
         }
@@ -2293,17 +2095,13 @@
             const total = unformatRupiah(document.getElementById('edit-hutang-total').value);
             const jaminan = document.getElementById('edit-hutang-jaminan').value.trim();
             const jatuhTempo = document.getElementById('edit-hutang-tempo').value;
-            
-            // Ambil nilai jenis pinjam yang baru dari modal edit
             const jenisPinjamEl = document.getElementById('edit-hutang-jenis');
             const jenisPinjam = jenisPinjamEl ? jenisPinjamEl.value : 'Hutang';
 
-            if(!nama || !total || !jatuhTempo) {
-                return alert("Nama, Total, dan Jatuh Tempo wajib diisi!");
-            }
+            if(!nama || !total || !jatuhTempo) return alert("Nama, Total, dan Jatuh Tempo wajib diisi!");
 
             db.collection("hutang").doc(id).update({
-                jenisPinjam: jenisPinjam, // Update jenis pinjam
+                jenisPinjam: jenisPinjam,
                 nama: nama,
                 email: email,
                 total: total,
@@ -2434,9 +2232,7 @@
             const inputFileEl = document.getElementById(`debtor-file-bukti-${docId}`);
             const bayarBaru = unformatRupiah(inputNominalEl.value);
 
-            if (!bayarBaru || bayarBaru <= 0) {
-                return alert("Masukkan nominal pembayaran yang valid!");
-            }
+            if (!bayarBaru || bayarBaru <= 0) return alert("Masukkan nominal pembayaran yang valid!");
 
             const file = inputFileEl.files[0];
             const currentUserName = document.getElementById('debtor-display-name')?.innerText || 'Penghutang';
@@ -2462,9 +2258,7 @@
 
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    executeUpdate(e.target.result);
-                };
+                reader.onload = function(e) { executeUpdate(e.target.result); };
                 reader.readAsDataURL(file);
             } else {
                 executeUpdate('');
@@ -2473,9 +2267,15 @@
 
         function muatDataHutang() {
             if (currentUserJenisAkun === 'Anak') return;
+            
+            if (unsubscribeHutang) {
+                unsubscribeHutang();
+                unsubscribeHutang = null;
+            }
+
             const filterStatus = document.getElementById('filter-status-hutang') ? document.getElementById('filter-status-hutang').value : 'semua';
 
-            db.collection("hutang").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+            unsubscribeHutang = db.collection("hutang").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('list-hutang');
                 if(!container) return;
                 container.innerHTML = ''; 
@@ -2532,14 +2332,8 @@
                     let safeNama = (data.nama || '').replace(/'/g, "\\'");
                     let safeEmail = (data.email || '').replace(/'/g, "\\'");
                     let safeJaminan = (data.jaminan || '').replace(/'/g, "\\'");
-                    // Di dalam querySnapshot.forEach di fungsi muatDataHutang():
                     const jenisPinjam = data.jenisPinjam || 'Hutang';
 
-                    // Buat badge tampilannya agar kelihatan di kartu
-                    let badgeJenisEksternal = jenisPinjam === 'Piutang'
-                        ? '<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">🟢 Piutang Eksternal</span>'
-                        : '<span class="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">🔴 Hutang Eksternal</span>';
-                        
                     container.innerHTML += `
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between overflow-hidden relative">
                             <div class="absolute top-4 right-4 flex gap-1.5">
@@ -2557,7 +2351,7 @@
                                 <div class="mt-4 mb-2 p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700 text-xs space-y-1.5">
                                     <div class="flex justify-between"><span class="text-gray-500">Total:</span> <strong class="text-gray-900 dark:text-white">Rp ${totalHutang.toLocaleString('id-ID')}</strong></div>
                                     <div class="flex justify-between"><span class="text-gray-500">Terbayar:</span> <strong class="text-green-600 dark:text-green-400">Rp ${terbayarHutang.toLocaleString('id-ID')}</strong></div>
-                                    <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-1.5 mt-1.5"><span class="text-gray-700 dark:text-gray-300 font-bold">Sisa:</span> <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisa.toLocaleString('id-ID')}</strong></div>
+                                    <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-1.5 mt-1.5"><span class="text-gray-700 dark:text-gray-300 font-bold">Sisa:</span> <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisaHutang.toLocaleString('id-ID')}</strong></div>
                                 </div>
                                 
                                 <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-1 mt-4">
@@ -2589,16 +2383,6 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Fungsi-fungsi awal yang sudah ada sebelumnya
-            setTanggalHariIni();
-            muatDataTransaksi();
-            muatDataHutang();
-            
-            // Tambahkan fungsi ini di dalam sini agar otomatis berjalan saat halaman siap:
-            muatFamilyDocuments(); 
-            muatFamilyTree();
-        });
         function muatDataHutangPenghutang(userEmail, namaUser) {
             db.collection("hutang").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('debtor-portal-content');
@@ -2619,8 +2403,8 @@
                         let sisa = data.total - data.terbayar;
                         if(sisa < 0) sisa = 0;
 
-                        let fotoJaminanTag = data.fotoJaminan ? `<div class="mt-2"><p class="text-[11px] text-gray-400 font-semibold mb-1">Foto Jaminan:</p><img src="${data.fotoJaminan}" alt="Foto Jaminan" class="h-32 w-full object-cover rounded-xl border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)"></div>` : '';
-                        let fotoKtpTag = data.fotoKtp ? `<div class="mt-2"><p class="text-[11px] text-blue-400 font-semibold mb-1">Foto KTP:</p><img src="${data.fotoKtp}" alt="Foto KTP" class="h-32 w-full object-cover rounded-xl border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)"></div>` : '';
+                        let fotoJaminanTag = data.fotoJaminan ? `<div class="mt-2"><p class="text-[11px] text-gray-400 font-semibold mb-1">Foto Jaminan:</p><img src="${data.fotoJaminan}" class="h-32 w-full object-cover rounded-xl border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)"></div>` : '';
+                        let fotoKtpTag = data.fotoKtp ? `<div class="mt-2"><p class="text-[11px] text-blue-400 font-semibold mb-1">Foto KTP:</p><img src="${data.fotoKtp}" class="h-32 w-full object-cover rounded-xl border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)"></div>` : '';
 
                         let riwayatHtml = '';
                         if(data.riwayatBayar && data.riwayatBayar.length > 0) {
@@ -2697,9 +2481,7 @@
 
                                 <div class="border-t border-slate-700 pt-4">
                                     <h4 class="font-bold text-sm text-yellow-400 mb-3">📜 Log / Riwayat Pembayaran Hutang</h4>
-                                    <div class="space-y-2">
-                                        ${riwayatHtml}
-                                    </div>
+                                    <div class="space-y-2">${riwayatHtml}</div>
                                 </div>
                             </div>
                         `;
@@ -2754,6 +2536,7 @@
                 document.getElementById('nama-tabungan').value = ''; 
                 document.getElementById('target-tabungan').value = ''; 
                 batalTabunganFoto();
+                tutupModalTabungan();
             }).catch(e => alert("Error: " + e.message));
         }
 
@@ -2765,9 +2548,7 @@
                     db.collection("tabungan").doc(id).update({ 
                         terkumpul: terkumpulSekarang + nominal, 
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-                    }).then(() => {
-                        alert("Saldo tabungan berhasil ditambahkan!");
-                    });
+                    }).then(() => alert("Saldo tabungan berhasil ditambahkan!"));
                 } else {
                     alert("Nominal tidak valid.");
                 }
@@ -2776,16 +2557,19 @@
 
         function hapusTabungan(id) {
             if (confirm("Hapus rencana tabungan ini?")) {
-                db.collection("tabungan").doc(id).delete().then(() => {
-                    alert("Target tabungan berhasil dihapus!");
-                });
+                db.collection("tabungan").doc(id).delete().then(() => alert("Target tabungan berhasil dihapus!"));
             }
         }
 
         function muatDataTabungan() {
+            if (unsubscribeTabungan) {
+                unsubscribeTabungan();
+                unsubscribeTabungan = null;
+            }
+
             const filterUser = document.getElementById('filter-user-tabungan') ? document.getElementById('filter-user-tabungan').value : 'Semua';
 
-            db.collection("tabungan").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+            unsubscribeTabungan = db.collection("tabungan").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('list-tabungan');
                 if(!container) return;
 
@@ -2833,7 +2617,7 @@
                             </div>
                             
                             <div class="px-6 pb-6 pt-0">
-                                <button onclick="tambahSaldoTabungan('${docId}', ${data.terkumpul})" class="w-full bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-slate-600 text-indigo-700 dark:text-indigo-300 font-semibold py-2.5 rounded-xl transition border border-indigo-200 dark:border-slate-600 shadow-sm text-xs">
+                                <button onclick="bukaModalInputKustom('tambah_tabungan', '${docId}', '', 'Tambah Saldo Tabungan', 'Nominal Tabungan (Rp)')" class="w-full bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-slate-600 text-indigo-700 dark:text-indigo-300 font-semibold py-2.5 rounded-xl transition border border-indigo-200 dark:border-slate-600 shadow-sm text-xs">
                                     + Tambah Saldo Tabungan
                                 </button>
                             </div>
@@ -2846,7 +2630,7 @@
                 }
             });
         }
-
+        
         function cekPilihanKoin(select) {
             const customInput = document.getElementById('custom-koin');
             if (select.value === 'Lainnya') {
@@ -2855,6 +2639,23 @@
             } else {
                 customInput.classList.add('hidden');
                 customInput.value = '';
+            }
+        }
+
+        function formatInputAngkaDesimal(input) {
+            let val = input.value;
+            let cleanVal = val.replace(/[^0-9,]/g, '');
+            let parts = cleanVal.split(',');
+            let integerPart = parts[0].replace(/\./g, '');
+            
+            if (integerPart !== "") {
+                integerPart = parseInt(integerPart, 10).toLocaleString('id-ID');
+            }
+            
+            if (parts.length > 1) {
+                input.value = integerPart + ',' + parts[1];
+            } else {
+                input.value = integerPart;
             }
         }
 
@@ -2867,12 +2668,17 @@
                 if (!koin) return alert("Silakan ketik nama koin custom terlebih dahulu!");
             }
 
-            const jumlahKoin = parseFloat(document.getElementById('jumlah-koin').value);
-            const hargaBeli = unformatRupiah(document.getElementById('harga-beli-crypto').value);
-            const hargaSekarang = unformatRupiah(document.getElementById('harga-sekarang-crypto').value);
+            let jumlahKoinStr = document.getElementById('jumlah-koin').value.replace(/\./g, '').replace(',', '.');
+            const jumlahKoin = parseFloat(jumlahKoinStr);
+
+            let hargaBeliStr = document.getElementById('harga-beli-crypto').value.replace(/\./g, '').replace(',', '.');
+            const hargaBeli = parseFloat(hargaBeliStr);
+
+            let hargaSekarangStr = document.getElementById('harga-sekarang-crypto').value.replace(/\./g, '').replace(',', '.');
+            const hargaSekarang = parseFloat(hargaSekarangStr);
             
-            if (!koin || !jumlahKoin || !hargaBeli || !hargaSekarang) {
-                return alert("Mohon lengkapi semua data pembelian Koin Crypto!");
+            if (!koin || isNaN(jumlahKoin) || isNaN(hargaBeli) || isNaN(hargaSekarang)) {
+                return alert("Mohon lengkapi semua data pembelian Koin Crypto dengan benar!");
             }
 
             db.collection("crypto").add({ 
@@ -2891,24 +2697,8 @@
                 document.getElementById('jumlah-koin').value = ''; 
                 document.getElementById('harga-beli-crypto').value = ''; 
                 document.getElementById('harga-sekarang-crypto').value = ''; 
+                tutupModalCrypto();
             }).catch(e => alert("Error: " + e.message));
-        }
-
-        function updateHargaCrypto(id, hargaLama) {
-            const nominalStr = prompt("Masukkan harga market koin SAAT INI per koin (Rp):", hargaLama);
-            if (nominalStr !== null) {
-                const hargaBaru = unformatRupiah(nominalStr);
-                if (!isNaN(hargaBaru) && hargaBaru > 0) {
-                    db.collection("crypto").doc(id).update({ 
-                        hargaSekarang: hargaBaru, 
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-                    }).then(() => {
-                        alert("Harga crypto berhasil diperbarui!");
-                    });
-                } else {
-                    alert("Nominal tidak valid.");
-                }
-            }
         }
 
         function jualCrypto(id, jumlahKoin) {
@@ -2922,9 +2712,7 @@
                             hargaSekarang: hargaJual, 
                             status: 'Terjual', 
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-                        }).then(() => {
-                            alert("Penjualan crypto berhasil dicatat!");
-                        });
+                        }).then(() => alert("Penjualan crypto berhasil dicatat!"));
                     } else {
                         alert("Nominal jual tidak valid. Batal menjual.");
                     }
@@ -2932,18 +2720,36 @@
             }
         }
 
+        function updateHargaCrypto(id, hargaLama) {
+            const nominalStr = prompt("Masukkan harga pasar terbaru per koin (Rp):", hargaLama);
+            if (nominalStr !== null) {
+                const hargaBaru = unformatRupiah(nominalStr);
+                if (!isNaN(hargaBaru) && hargaBaru > 0) {
+                    db.collection("crypto").doc(id).update({ 
+                        hargaSekarang: hargaBaru, 
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                    }).then(() => alert("Harga pasar crypto berhasil diperbarui!"));
+                } else {
+                    alert("Nominal harga tidak valid.");
+                }
+            }
+        }
+
         function hapusCrypto(id) {
             if (confirm("Hapus data portofolio crypto ini secara permanen?")) {
-                db.collection("crypto").doc(id).delete().then(() => {
-                    alert("Portofolio crypto berhasil dihapus!");
-                });
+                db.collection("crypto").doc(id).delete().then(() => alert("Portofolio crypto berhasil dihapus!"));
             }
         }
 
         function muatDataCrypto() {
+            if (unsubscribeCrypto) {
+                unsubscribeCrypto();
+                unsubscribeCrypto = null;
+            }
+
             const filterUser = document.getElementById('filter-user-crypto').value;
 
-            db.collection("crypto").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+            unsubscribeCrypto = db.collection("crypto").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('list-crypto');
                 if(!container) return;
                 container.innerHTML = ''; 
@@ -2991,12 +2797,10 @@
                         if (pemilik === 'Anak') ownerBadgeColor = 'bg-emerald-900 text-emerald-200';
 
                         const actionButtons = isHold 
-                            ? `
-                                <div class="grid grid-cols-2 gap-2 mt-5 relative z-10">
+                            ? `<div class="grid grid-cols-2 gap-2 mt-5 relative z-10">
                                     <button onclick="updateHargaCrypto('${docId}', ${data.hargaSekarang})" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2.5 rounded-xl text-xs transition border border-slate-500 shadow">🔄 Update Harga</button>
                                     <button onclick="jualCrypto('${docId}', ${data.jumlahKoin})" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg">💰 Jual Koin</button>
-                                </div>
-                                ` 
+                            </div>` 
                             : `<div class="mt-4 text-center text-xs text-gray-400 italic">Portofolio Koin Ini Sudah Ditutup</div>`;
                             
                         container.innerHTML += `
@@ -3078,11 +2882,9 @@
             });
         }
 
-        // Variabel penampung file gambar sementara (Base64)
         let base64FamilyDocImage = '';
         let editIdFamilyDoc = null;
 
-        // 1. Preview gambar saat file dipilih
         function previewFamilyDocFile(event) {
             const file = event.target.files[0];
             if (file) {
@@ -3100,7 +2902,6 @@
             }
         }
 
-        // 2. Simpan atau Update Dokumen Keluarga ke Firestore
         function simpanFamilyDocument() {
             const namaKeluarga = document.getElementById('doc-nama-keluarga').value.trim();
             const jenisAkun = document.getElementById('doc-jenis-akun').value.trim();
@@ -3111,7 +2912,6 @@
             }
 
             if (editIdFamilyDoc !== null) {
-                // Proses Update Data
                 const updateData = {
                     namaKeluarga: namaKeluarga,
                     jenisAkun: jenisAkun,
@@ -3119,10 +2919,7 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
-                // Jika ada gambar baru yang di-upload saat edit, update juga gambarnya
-                if (base64FamilyDocImage) {
-                    updateData.fotoDokumen = base64FamilyDocImage;
-                }
+                if (base64FamilyDocImage) updateData.fotoDokumen = base64FamilyDocImage;
 
                 db.collection("family_documents").doc(editIdFamilyDoc).update(updateData)
                 .then(() => {
@@ -3130,12 +2927,8 @@
                     batalEditFamilyDocument();
                 })
                 .catch(e => alert("Gagal mengupdate dokumen: " + e.message));
-
             } else {
-                // Proses Tambah Baru
-                if (!base64FamilyDocImage) {
-                    return alert("Mohon sertakan / upload gambar dokumen!");
-                }
+                if (!base64FamilyDocImage) return alert("Mohon sertakan / upload gambar dokumen!");
 
                 db.collection("family_documents").add({
                     namaKeluarga: namaKeluarga,
@@ -3152,12 +2945,16 @@
             }
         }
 
-        // 3. Muat Data Dokumen Secara Real-time (Firestore Listener)
         function muatFamilyDocuments() {
+            if (unsubscribeDokumen) {
+                unsubscribeDokumen();
+                unsubscribeDokumen = null;
+            }
+
             const container = document.getElementById('list-family-documents');
             if (!container) return;
 
-            db.collection("family_documents").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            unsubscribeDokumen = db.collection("family_documents").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
                 container.innerHTML = '';
                 let count = 0;
 
@@ -3172,7 +2969,7 @@
                     let fotoUrl = data.fotoDokumen || '';
 
                     let gambarTag = fotoUrl 
-                        ? `<img src="${fotoUrl}" alt="Dokumen" class="h-32 w-full object-cover rounded-xl border border-slate-700 cursor-pointer shadow-sm hover:opacity-90 transition" onclick="bukaModalGambarBesar('${fotoUrl}')" title="Klik untuk memperbesar">` 
+                        ? `<img src="${fotoUrl}" alt="Dokumen" class="h-32 w-full object-cover rounded-xl border border-slate-700 cursor-pointer shadow-sm hover:opacity-95 transition" onclick="bukaModalGambarBesar('${fotoUrl}')" title="Klik untuk memperbesar">` 
                         : `<div class="h-32 w-full bg-slate-900 rounded-xl flex items-center justify-center text-xs text-gray-500 italic">Tidak ada gambar</div>`;
 
                     container.innerHTML += `
@@ -3202,24 +2999,9 @@
             });
         }
 
-        // Fungsi pendukung untuk memperbarui opsi dropdown secara dinamis
-        function updateFilterDropdown(jenisAkunSet, currentValue) {
-            const select = document.getElementById('filter-jenis-akun');
-            if (!select) return;
-            
-            const selectedNow = currentValue || select.value;
-            
-            let optionsHtml = `<option value="">Semua Jenis Akun</option>`;
-            jenisAkunSet.forEach(jenis => {
-                optionsHtml += `<option value="${jenis}" ${jenis === selectedNow ? 'selected' : ''}>${jenis}</option>`;
-            });
-            select.innerHTML = optionsHtml;
-        }
-        
-        // 4. Siapkan Form untuk Edit Dokumen
         function editFamilyDocument(id, namaKeluarga, jenisAkun, namaDokumen) {
             editIdFamilyDoc = id;
-            base64FamilyDocImage = ''; // Reset file baru
+            base64FamilyDocImage = '';
 
             document.getElementById('doc-nama-keluarga').value = namaKeluarga;
             document.getElementById('doc-jenis-akun').value = jenisAkun;
@@ -3231,12 +3013,9 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 5. Batalkan Proses Edit
         function batalEditFamilyDocument() {
             editIdFamilyDoc = null;
             base64FamilyDocImage = '';
-            document.getElementById('doc-nama-keluarga').value = '';
-            document.getElementById('doc-jenis-akun').value = '';
             document.getElementById('doc-nama-dokumen').value = '';
             document.getElementById('doc-file-input').value = '';
             document.getElementById('doc-preview-container').classList.add('hidden');
@@ -3245,31 +3024,24 @@
             document.getElementById('btn-batal-doc').classList.add('hidden');
         }
 
-        // 6. Hapus Dokumen
         function hapusFamilyDocument(docId) {
             if (confirm("Apakah Anda yakin ingin menghapus arsip dokumen keluarga ini?")) {
                 db.collection("family_documents").doc(docId).delete()
-                .then(() => {
-                    alert("Dokumen berhasil dihapus!");
-                })
+                .then(() => alert("Dokumen berhasil dihapus!"))
                 .catch(e => alert("Gagal menghapus dokumen: " + e.message));
             }
         }
 
         let editIdFamilyTree = null;
 
-        // 1. Simpan atau Update Anggota Silsilah ke Firestore
         function simpanFamilyTree() {
             const nama = document.getElementById('tree-nama').value.trim();
             const peran = document.getElementById('tree-peran').value;
             const keterangan = document.getElementById('tree-keterangan').value.trim();
 
-            if (!nama) {
-                return alert("Nama lengkap wajib diisi!");
-            }
+            if (!nama) return alert("Nama lengkap wajib diisi!");
 
             if (editIdFamilyTree !== null) {
-                // Update Data
                 db.collection("family_tree").doc(editIdFamilyTree).update({
                     nama: nama,
                     peran: peran,
@@ -3280,7 +3052,6 @@
                     batalEditFamilyTree();
                 }).catch(e => alert("Gagal mengupdate silsilah: " + e.message));
             } else {
-                // Tambah Baru
                 db.collection("family_tree").add({
                     nama: nama,
                     peran: peran,
@@ -3293,12 +3064,16 @@
             }
         }
 
-        // 2. Muat dan Render Bagan Hirarki Tree secara Real-time
         function muatFamilyTree() {
+            if (unsubscribeTree) {
+                unsubscribeTree();
+                unsubscribeTree = null;
+            }
+
             const container = document.getElementById('visual-family-tree');
             if (!container) return;
 
-            db.collection("family_tree").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+            unsubscribeTree = db.collection("family_tree").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
                 let kakekSuami = [], ortuSuami = [], saudaraSuami = [];
                 let kakekIstri = [], ortuIstri = [], saudaraIstri = [];
                 let pasanganList = [];
@@ -3312,11 +3087,9 @@
                     if (data.peran === 'Kakek/Nenek Suami') kakekSuami.push(item);
                     else if (data.peran === 'Ortu Suami') ortuSuami.push(item);
                     else if (data.peran === 'Saudara Suami') saudaraSuami.push(item);
-                    
                     else if (data.peran === 'Kakek/Nenek Istri') kakekIstri.push(item);
                     else if (data.peran === 'Ortu Istri') ortuIstri.push(item);
                     else if (data.peran === 'Saudara Istri') saudaraIstri.push(item);
-                    
                     else if (data.peran === 'Pasangan Utama') pasanganList.push(item);
                     else if (data.peran === 'Anak') anakList.push(item);
                 });
@@ -3326,37 +3099,22 @@
                     return;
                 }
 
-                // Render Bagan dengan Garis Penghubung Silsilah (Tree Connectors)
                 let html = `
                     <div class="flex flex-col items-center space-y-4 py-6 w-full overflow-x-auto">
-                        
-                        <!-- BAGIAN ATAS: CABANG KELUARGA SUAMI & KELUARGA ISTRI -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
-                            
-                            <!-- SISI KIRI: KELUARGA SUAMI -->
                             <div class="bg-blue-50/40 dark:bg-slate-800/40 p-5 rounded-3xl border border-blue-200 dark:border-slate-700 flex flex-col items-center relative">
                                 <span class="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-4">🛡️ Keluarga Pihak Suami (Saya)</span>
-                                
                                 <div class="w-full space-y-4 flex flex-col items-center">
-                                    <!-- Kakek/Nenek -->
                                     <div class="w-full text-center">
                                         <p class="text-[10px] font-bold text-gray-400 mb-2">-- Kakek & Nenek --</p>
                                         <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(kakekSuami)}</div>
                                     </div>
-
-                                    <!-- Garis Cabang Turun -->
                                     <div class="w-0.5 h-4 bg-blue-300 dark:bg-slate-600"></div>
-
-                                    <!-- Ortu -->
                                     <div class="w-full text-center">
                                         <p class="text-[10px] font-bold text-gray-400 mb-2">-- Orang Tua --</p>
                                         <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(ortuSuami)}</div>
                                     </div>
-
-                                    <!-- Garis Cabang Turun -->
                                     <div class="w-0.5 h-4 bg-blue-300 dark:bg-slate-600"></div>
-
-                                    <!-- Saudara & Ipar -->
                                     <div class="w-full text-center">
                                         <p class="text-[10px] font-bold text-gray-400 mb-2">-- Saudara Kandung & Keponakan --</p>
                                         <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(saudaraSuami)}</div>
@@ -3364,68 +3122,44 @@
                                 </div>
                             </div>
 
-                            <!-- SISI KANAN: KELUARGA ISTRI -->
                             <div class="bg-pink-50/40 dark:bg-slate-800/40 p-5 rounded-3xl border border-pink-200 dark:border-slate-700 flex flex-col items-center relative">
                                 <span class="bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-4">🌸 Keluarga Pihak Istri</span>
-                                
                                 <div class="w-full space-y-4 flex flex-col items-center">
-                                    <!-- Kakek/Nenek -->
                                     <div class="w-full text-center">
                                         <p class="text-[10px] font-bold text-gray-400 mb-2">-- Kakek & Nenek --</p>
                                         <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(kakekIstri)}</div>
                                     </div>
-
-                                    <!-- Garis Cabang Turun -->
                                     <div class="w-0.5 h-4 bg-pink-300 dark:bg-slate-600"></div>
-
-                                    <!-- Ortu -->
                                     <div class="w-full text-center">
                                         <p class="text-[10px] font-bold text-gray-400 mb-2">-- Orang Tua / Mertua --</p>
                                         <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(ortuIstri)}</div>
                                     </div>
-
-                                    <!-- Garis Cabang Turun -->
                                     <div class="w-0.5 h-4 bg-pink-300 dark:bg-slate-600"></div>
-
-                                    <!-- Saudara & Ipar -->
                                     <div class="w-full text-center">
                                         <p class="text-[10px] font-bold text-gray-400 mb-2">-- Saudara Kandung & Keponakan --</p>
                                         <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(saudaraIstri)}</div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
-                        <!-- GARIS PENGHUBUNG UTAMA MENYATU KE TENGAH -->
                         <div class="flex flex-col items-center">
                             <div class="w-0.5 h-8 bg-amber-400 dark:bg-amber-500"></div>
                             <div class="w-24 h-0.5 bg-amber-400 dark:bg-amber-500"></div>
                             <div class="w-0.5 h-4 bg-amber-400 dark:bg-amber-500"></div>
                         </div>
 
-                        <!-- TENGAH: KELUARGA INTI (SAYA & ISTRI) -->
                         <div class="w-full max-w-md bg-amber-50/75 dark:bg-slate-800/90 p-5 rounded-3xl border-2 border-amber-300 dark:border-amber-600 shadow-md text-center flex flex-col items-center">
                             <span class="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-3">💍 Keluarga Inti (Saya & Istri)</span>
-                            <div class="flex flex-wrap justify-center gap-3 w-full">
-                                ${renderTreeNodeCards(pasanganList)}
-                            </div>
+                            <div class="flex flex-wrap justify-center gap-3 w-full">${renderTreeNodeCards(pasanganList)}</div>
                         </div>
 
-                        <!-- GARIS PENGHUBUNG KE BAWAH -->
-                        ${anakList.length > 0 ? `
-                        <div class="flex flex-col items-center">
-                            <div class="w-0.5 h-6 bg-emerald-400 dark:bg-emerald-500"></div>
-                        </div>` : ''}
+                        ${anakList.length > 0 ? `<div class="flex flex-col items-center"><div class="w-0.5 h-6 bg-emerald-400 dark:bg-emerald-500"></div></div>` : ''}
 
-                        <!-- BAGIAN BAWAH: ANAK / KETURUNAN -->
                         <div class="w-full max-w-2xl bg-emerald-50/50 dark:bg-slate-800/40 p-5 rounded-3xl border border-emerald-200 dark:border-slate-700 flex flex-col items-center">
                             <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-3">👶 Generasi Penerus (Anak-anak)</span>
-                            <div class="flex flex-wrap justify-center gap-3 w-full">
-                                ${renderTreeNodeCards(anakList)}
-                            </div>
+                            <div class="flex flex-wrap justify-center gap-3 w-full">${renderTreeNodeCards(anakList)}</div>
                         </div>
-
                     </div>
                 `;
 
@@ -3440,7 +3174,6 @@
 
             let cardsHtml = '';
             list.forEach(item => {
-                // Menentukan ikon atau emoji berdasarkan peran
                 let icon = '👤';
                 if (item.peran && item.peran.includes('Kakek')) icon = '👴';
                 else if (item.peran && item.peran.includes('Nenek')) icon = '👵';
@@ -3449,19 +3182,13 @@
 
                 cardsHtml += `
                     <div class="relative bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 p-3 rounded-2xl shadow-sm flex flex-col items-center text-center transition hover:border-amber-400 dark:hover:border-amber-500 min-w-[130px] max-w-[150px] group">
-                        
-                        <!-- Lingkaran Avatar / Foto Silsilah -->
                         <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-100 to-blue-100 dark:from-slate-700 dark:to-slate-800 border-2 border-white dark:border-slate-700 flex items-center justify-center text-2xl shadow-md mb-2">
                             ${icon}
                         </div>
-
-                        <!-- Info Nama & Peran -->
                         <div class="w-full overflow-hidden">
                             <h5 class="font-bold text-xs text-gray-900 dark:text-white truncate" title="${item.nama}">${item.nama}</h5>
                             <p class="text-[9px] text-gray-500 dark:text-gray-400 truncate mt-0.5">${item.keterangan || item.peran}</p>
                         </div>
-
-                        <!-- Tombol Aksi (Muncul rapi di bawah kartu) -->
                         <div class="flex items-center justify-center gap-2 mt-3 pt-2 border-t border-gray-100 dark:border-slate-700/60 w-full">
                             <button onclick="editFamilyTree('${item.id}')" class="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline">Edit</button>
                             <span class="text-gray-300 dark:text-slate-600">|</span>
@@ -3473,38 +3200,6 @@
             return cardsHtml;
         }
 
-        function renderGenerasiBox(title, list, badgeClass) {
-            let cards = '';
-            if (list.length === 0) {
-                cards = `<p class="text-xs text-gray-400 italic py-2">Belum ada data untuk kategori ini.</p>`;
-            } else {
-                list.forEach(item => {
-                    cards += `
-                        <div class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-gray-200 dark:border-slate-700 flex justify-between items-center shadow-sm">
-                            <div>
-                                <h5 class="font-bold text-xs text-gray-900 dark:text-white">👤 ${item.nama}</h5>
-                                ${item.keterangan ? `<p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">${item.keterangan}</p>` : ''}
-                            </div>
-                            <div class="flex gap-1">
-                                <button onclick="editFamilyTree('${item.id}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-yellow-500 hover:text-white transition text-[10px] font-bold rounded-full h-6 w-6 flex items-center justify-center" title="Edit">✏️</button>
-                                <button onclick="hapusFamilyTree('${item.id}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-red-500 hover:text-white transition text-[10px] font-bold rounded-full h-6 w-6 flex items-center justify-center" title="Hapus">✕</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            return `
-                <div class="space-y-2">
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold border ${badgeClass}">${title}</span>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        ${cards}
-                    </div>
-                </div>
-            `;
-        }
-
-        // 3. Ambil Data untuk Edit Silsilah
         function editFamilyTree(id) {
             db.collection("family_tree").doc(id).get().then((doc) => {
                 if (!doc.exists) return alert("Data tidak ditemukan!");
@@ -3521,7 +3216,6 @@
             }).catch(e => alert("Gagal memuat data: " + e.message));
         }
 
-        // 4. Batalkan Edit Silsilah
         function batalEditFamilyTree() {
             editIdFamilyTree = null;
             document.getElementById('tree-nama').value = '';
@@ -3531,12 +3225,9 @@
             document.getElementById('btn-batal-tree').classList.add('hidden');
         }
 
-        // 5. Hapus Silsilah
         function hapusFamilyTree(id) {
             if (confirm("Yakin ingin menghapus anggota keluarga ini dari silsilah?")) {
-                db.collection("family_tree").doc(id).delete().then(() => {
-                    alert("Berhasil dihapus!");
-                }).catch(e => alert("Gagal menghapus: " + e.message));
+                db.collection("family_tree").doc(id).delete().then(() => alert("Berhasil dihapus!")).catch(e => alert("Gagal menghapus: " + e.message));
             }
         }
 
@@ -3593,27 +3284,15 @@
             let belumCount = debtors.filter(d => d.sisa > 0).length;
 
             const badgeEl = document.getElementById('debt-summary-badge');
-            if (badgeEl) {
-                badgeEl.innerText = `Lunas: ${lunasCount} | Belum: ${belumCount} (${overallPercent}%)`;
-            }
+            if (badgeEl) badgeEl.innerText = `Lunas: ${lunasCount} | Belum: ${belumCount} (${overallPercent}%)`;
 
             debtPelunasanChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels.length > 0 ? labels : ['Tidak Ada Data'],
                     datasets: [
-                        {
-                            label: 'Sudah Terbayar (Rp)',
-                            data: terbayarData.length > 0 ? terbayarData : [0],
-                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Sisa Hutang / Belum Lunas (Rp)',
-                            data: sisaData.length > 0 ? sisaData : [0],
-                            backgroundColor: 'rgba(249, 115, 22, 0.8)',
-                            borderRadius: 4
-                        }
+                        { label: 'Sudah Terbayar (Rp)', data: terbayarData.length > 0 ? terbayarData : [0], backgroundColor: 'rgba(34, 197, 94, 0.8)', borderRadius: 4 },
+                        { label: 'Sisa Hutang / Belum Lunas (Rp)', data: sisaData.length > 0 ? sisaData : [0], backgroundColor: 'rgba(249, 115, 22, 0.8)', borderRadius: 4 }
                     ]
                 },
                 options: {
@@ -3627,13 +3306,11 @@
                                     if (debtors.length === 0) return ' Tidak ada data hutang';
                                     const index = context.dataIndex;
                                     const debtor = debtors[index];
-                                    const datasetLabel = context.dataset.label;
-                                    const val = context.raw;
                                     const repPercent = debtor.total > 0 ? ((debtor.terbayar / debtor.total) * 100).toFixed(1) : 0;
                                     const statusText = debtor.sisa <= 0 ? 'Lunas ✓' : 'Belum Lunas';
                                     return [
                                         ` Status: ${statusText}`,
-                                        ` ${datasetLabel}: Rp ${val.toLocaleString('id-ID')}`,
+                                        ` ${context.dataset.label}: Rp ${context.raw.toLocaleString('id-ID')}`,
                                         ` Total Hutang: Rp ${debtor.total.toLocaleString('id-ID')}`,
                                         ` Progres Pelunasan: ${repPercent}%`
                                     ];
@@ -3659,9 +3336,7 @@
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
                     document.getElementById('aset-lokasi').value = `${lat}, ${lon}`;
-                }, (err) => {
-                    alert("Gagal mendapatkan lokasi GPS: " + err.message);
-                }, { enableHighAccuracy: true });
+                }, (err) => alert("Gagal mendapatkan lokasi GPS: " + err.message), { enableHighAccuracy: true });
             } else {
                 alert("Geolocation tidak didukung oleh browser ini.");
             }
@@ -3697,23 +3372,22 @@
             const dbRef = db.collection("aset_keluarga");
             let promise = id ? dbRef.doc(id).update(dataAset) : dbRef.add(dataAset);
 
-            promise.then(() => {
-                tutupModalAset();
-            }).catch(err => {
-                alert("Gagal menyimpan aset: " + err.message);
-            });
+            promise.then(() => tutupModalAset()).catch(err => alert("Gagal menyimpan aset: " + err.message));
         }
 
         function hapusAset(id) {
             if (confirm("Apakah Anda yakin ingin menghapus data aset ini dari daftar keluarga?")) {
-                db.collection("aset_keluarga").doc(id).delete().catch(err => {
-                    alert("Gagal menghapus: " + err.message);
-                });
+                db.collection("aset_keluarga").doc(id).delete().catch(err => alert("Gagal menghapus: " + err.message));
             }
         }
 
         function inisialisasiRealtimeAset() {
-            db.collection("aset_keluarga").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+            if (unsubscribeAset) {
+                unsubscribeAset();
+                unsubscribeAset = null;
+            }
+
+            unsubscribeAset = db.collection("aset_keluarga").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
                 const tbody = document.getElementById('tabel-aset-body');
                 if(!tbody) return;
                 tbody.innerHTML = '';
@@ -3790,11 +3464,9 @@
                 }
             });
 
-            // 1. Update di halaman Aset
             const totalAsetEl = document.getElementById('total-aset-keluarga');
             if (totalAsetEl) totalAsetEl.innerText = formatRupiah(totalAsetDisesuaikan);
 
-            // 2. Update di halaman Dashboard Utama (INI YANG SEBELUMNYA KOSONG)
             const totalAsetDashboardEl = document.getElementById('total-aset-dashboard');
             if (totalAsetDashboardEl) totalAsetDashboardEl.innerText = formatRupiah(totalAsetDisesuaikan);
 
@@ -3805,8 +3477,6 @@
             const legendContainer = document.getElementById('pie-legend-custom');
             if (legendContainer) {
                 legendContainer.innerHTML = '';
-                
-                // Total Keseluruhan di legend halaman Aset
                 legendContainer.innerHTML += `
                     <div class="p-3 bg-slate-900 rounded-xl mb-3 border border-slate-700 flex justify-between items-center text-white">
                         <span class="font-bold text-xs">💎 Total Nilai Aset:</span>
@@ -3831,19 +3501,13 @@
             const canvasPie = document.getElementById('pieChartAset');
             if (canvasPie) {
                 const ctx = canvasPie.getContext('2d');
-                if (pieChartInstance) {
-                    pieChartInstance.destroy();
-                }
+                if (pieChartInstance) pieChartInstance.destroy();
 
                 pieChartInstance = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
                         labels: labels.length ? labels : ['Belum ada data'],
-                        datasets: [{
-                            data: dataValues.length ? dataValues : [1],
-                            backgroundColor: labels.length ? backgroundColors : ['#e2e8f0'],
-                            borderWidth: 0
-                        }]
+                        datasets: [{ data: dataValues.length ? dataValues : [1], backgroundColor: labels.length ? backgroundColors : ['#e2e8f0'], borderWidth: 0 }]
                     },
                     options: {
                         responsive: true,
@@ -3937,27 +3601,15 @@
             let belumCount = debtors.filter(d => d.sisa > 0).length;
 
             const badgeEl = document.getElementById('family-debt-summary-badge');
-            if (badgeEl) {
-                badgeEl.innerText = `Lunas: ${lunasCount} | Belum: ${belumCount} (${overallPercent}%)`;
-            }
+            if (badgeEl) badgeEl.innerText = `Lunas: ${lunasCount} | Belum: ${belumCount} (${overallPercent}%)`;
 
             familyDebtPelunasanChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels.length > 0 ? labels : ['Tidak Ada Data'],
                     datasets: [
-                        {
-                            label: 'Sudah Terbayar (Rp)',
-                            data: terbayarData.length > 0 ? terbayarData : [0],
-                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Sisa Hutang / Belum Lunas (Rp)',
-                            data: sisaData.length > 0 ? sisaData : [0],
-                            backgroundColor: 'rgba(6, 182, 212, 0.8)',
-                            borderRadius: 4
-                        }
+                        { label: 'Sudah Terbayar (Rp)', data: terbayarData.length > 0 ? terbayarData : [0], backgroundColor: 'rgba(34, 197, 94, 0.8)', borderRadius: 4 },
+                        { label: 'Sisa Hutang / Belum Lunas (Rp)', data: sisaData.length > 0 ? sisaData : [0], backgroundColor: 'rgba(6, 182, 212, 0.8)', borderRadius: 4 }
                     ]
                 },
                 options: {
@@ -3971,13 +3623,11 @@
                                     if (debtors.length === 0) return ' Tidak ada data hutang keluarga';
                                     const index = context.dataIndex;
                                     const debtor = debtors[index];
-                                    const datasetLabel = context.dataset.label;
-                                    const val = context.raw;
                                     const repPercent = debtor.total > 0 ? ((debtor.terbayar / debtor.total) * 100).toFixed(1) : 0;
                                     const statusText = debtor.sisa <= 0 ? 'Lunas ✓' : 'Belum Lunas';
                                     return [
                                         ` Status: ${statusText}`,
-                                        ` ${datasetLabel}: Rp ${val.toLocaleString('id-ID')}`,
+                                        ` ${context.dataset.label}: Rp ${context.raw.toLocaleString('id-ID')}`,
                                         ` Total Pinjaman: Rp ${debtor.total.toLocaleString('id-ID')}`,
                                         ` Progres Pelunasan: ${repPercent}%`
                                     ];
@@ -4080,10 +3730,7 @@
                     if (currentUser && uid === currentUser.uid) return;
 
                     const role = data.jenisAkun;
-
-                    if (currentUserJenisAkun === 'Penghutang' && role !== 'Ayah' && role !== 'Bunda') {
-                        return;
-                    }
+                    if (currentUserJenisAkun === 'Penghutang' && role !== 'Ayah' && role !== 'Bunda') return;
 
                     validTargetsFound++;
                     const isOnline = data.lastSeen && (Date.now() - data.lastSeen.toDate().getTime() < 45000);
@@ -4260,18 +3907,14 @@
                     const batch = db.batch();
                     snapshot.docs.forEach((doc) => batch.delete(doc.ref));
                     return batch.commit();
-                }).then(() => {
-                    alert("Semua pesan grup berhasil dihapus!");
-                }).catch(e => alert("Gagal menghapus chat: " + e.message));
+                }).then(() => alert("Semua pesan grup berhasil dihapus!")).catch(e => alert("Gagal menghapus chat: " + e.message));
             } else {
                 const chatId = [currentUser.uid, activeChatTarget].sort().join('_');
                 db.collection("private_chats").where("chatId", "==", chatId).get().then((snapshot) => {
                     const batch = db.batch();
                     snapshot.docs.forEach((doc) => batch.delete(doc.ref));
                     return batch.commit();
-                }).then(() => {
-                    alert("Semua pesan privat berhasil dihapus!");
-                }).catch(e => alert("Gagal menghapus chat: " + e.message));
+                }).then(() => alert("Semua pesan privat berhasil dihapus!")).catch(e => alert("Gagal menghapus chat: " + e.message));
             }
         }
 
@@ -4526,7 +4169,7 @@
         }
 
         function pindahHalaman(halaman) {
-            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'dokumen-keluarga'];
+            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'dokumen', 'silsilah'];
             
             pages.forEach(p => {
                 const el = document.getElementById(`page-${p}`);
@@ -4541,12 +4184,6 @@
                     }
                 }
             });
-
-            // TAMBAHKAN INI: Panggil data dokumen & silsilah saat halaman dokumen keluarga dibuka
-            if (halaman === 'dokumen-keluarga') {
-                if (typeof muatFamilyDocuments === 'function') muatFamilyDocuments();
-                if (typeof muatFamilyTree === 'function') muatFamilyTree();
-            }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
