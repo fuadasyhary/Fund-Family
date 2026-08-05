@@ -93,6 +93,80 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(99, 102, 241, 0.8);
         }
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #0b0f19 50%, #020617 100%);
+            color: #f1f5f9;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Efek Kartu Glassmorphism Premium */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            border-radius: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Input & Form Modern Elegan */
+        .modern-input {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            color: #ffffff;
+            border-radius: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        .modern-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+            outline: none;
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        /* Tombol Aksi Utama dengan Gradient Bercahaya */
+        .btn-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.5);
+            transition: all 0.25s ease;
+        }
+        .btn-gradient:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px -4px rgba(99, 102, 241, 0.7);
+        }
+
+        /* Tabel Modern Minimalis */
+        .table-modern th {
+            background: rgba(15, 23, 42, 0.75);
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+        }
+        .table-modern td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+            font-size: 0.8125rem;
+        }
+        .table-modern tr {
+            transition: background-color 0.2s ease;
+        }
+        .table-modern tr:hover {
+            background-color: rgba(51, 65, 85, 0.2);
+        }
         
     </style>
 </head>
@@ -223,41 +297,41 @@
 
             <!-- HALAMAN 2: MANAJEMEN ASET -->
             <div id="page-aset" class="space-y-6 hidden">
-                <div class="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Manajemen Aset & Kekayaan</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Pantau seluruh aset berharga, kendaraan, gadget, dan properti keluarga.</p>
+                        <h3 class="text-lg font-bold text-white tracking-wide">Manajemen Aset & Kekayaan</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Pantau seluruh aset berharga, kendaraan, gadget, dan properti keluarga.</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="bukaModalAset()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow">+ Tambah Aset</button>
+                        <button onclick="bukaModalAset()" class="btn-gradient text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-lg">+ Tambah Aset</button>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-1 flex flex-col justify-between">
+                    <div class="glass-card p-6 lg:col-span-1 flex flex-col justify-between">
                         <div>
-                            <h4 class="font-bold text-sm mb-4">Distribusi Kategori Aset</h4>
+                            <h4 class="font-bold text-sm text-white mb-4 flex items-center gap-2">📊 Distribusi Kategori Aset</h4>
                             <div class="h-60 relative"><canvas id="pieChartAset"></canvas></div>
                         </div>
                         <div id="pie-legend-custom" class="mt-4 space-y-2 text-xs"></div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 overflow-hidden">
-                        <div class="p-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center gap-4">
-                            <input type="text" id="search-aset" oninput="filterTabelAset()" placeholder="Cari nama aset, kategori, lokasi..." class="w-full p-2.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                    <div class="glass-card lg:col-span-2 overflow-hidden flex flex-col">
+                        <div class="p-4 border-b border-slate-700/50 flex justify-between items-center gap-4 bg-slate-900/40">
+                            <input type="text" id="search-aset" oninput="filterTabelAset()" placeholder="Cari nama aset, kategori, lokasi..." class="w-full modern-input p-3 text-xs">
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                        <div class="overflow-x-auto flex-1">
+                            <table class="w-full text-left border-collapse table-modern">
                                 <thead>
-                                    <tr class="bg-gray-50 dark:bg-slate-900/50 text-gray-400 text-[11px] border-b dark:border-slate-700">
-                                        <th class="p-4">Nama Aset</th>
-                                        <th class="p-4">Kategori</th>
-                                        <th class="p-4">Pemilik</th>
-                                        <th class="p-4">Lokasi / GPS</th>
-                                        <th class="p-4 text-right">Nilai (Rp)</th>
-                                        <th class="p-4 text-center">Aksi</th>
+                                    <tr>
+                                        <th>Nama Aset</th>
+                                        <th>Kategori</th>
+                                        <th>Pemilik</th>
+                                        <th>Lokasi / GPS</th>
+                                        <th class="text-right">Nilai (Rp)</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabel-aset-body" class="text-xs divide-y divide-gray-100 dark:divide-slate-700"></tbody>
+                                <tbody id="tabel-aset-body" class="divide-y divide-slate-700/40"></tbody>
                             </table>
                         </div>
                     </div>
@@ -267,64 +341,64 @@
             <!-- HALAMAN 3: KAS KELUARGA & LIMIT -->
             <div id="page-kas" class="space-y-6 hidden">
                 <div id="form-area" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-1 space-y-4">
-                        <h3 id="form-title" class="font-bold text-sm text-gray-900 dark:text-white">Tambah Transaksi Baru</h3>
+                    <div class="glass-card p-6 lg:col-span-1 space-y-4">
+                        <h3 id="form-title" class="font-bold text-sm text-white flex items-center gap-2">✨ Tambah Transaksi Baru</h3>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Kategori Kas</label>
-                            <select id="kategori-kas" onchange="gantiKategoriKas(this)" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs">
-                                <option value="limit_bulanan">🟣 Pengeluaran Limit Bulanan</option>
-                                <option value="permanen">🟢 Kas Keluarga (Permanen)</option>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Kategori Kas</label>
+                            <select id="kategori-kas" onchange="gantiKategoriKas(this)" class="w-full modern-input p-3 text-xs">
+                                <option value="limit_bulanan" class="bg-slate-900">🟣 Pengeluaran Limit Bulanan</option>
+                                <option value="permanen" class="bg-slate-900">🟢 Kas Keluarga (Permanen)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Tanggal Transaksi</label>
-                            <input type="date" id="tanggal" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Tanggal Transaksi</label>
+                            <input type="date" id="tanggal" class="w-full modern-input p-3 text-xs text-white">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis</label>
-                            <select id="jenis" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs">
-                                <option value="keluar">Keluar (-) Penghasilan/Belanja</option>
-                                <option value="masuk">Masuk (+) Pemasukan</option>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Jenis</label>
+                            <select id="jenis" class="w-full modern-input p-3 text-xs">
+                                <option value="keluar" class="bg-slate-900">Keluar (-) Penghasilan/Belanja</option>
+                                <option value="masuk" class="bg-slate-900">Masuk (+) Pemasukan</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jumlah Nominal (Rp)</label>
-                            <input type="text" id="jumlah" oninput="formatInputRupiah(this)" placeholder="Misal: 50.000" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Jumlah Nominal (Rp)</label>
+                            <input type="text" id="jumlah" oninput="formatInputRupiah(this)" placeholder="Misal: 50.000" class="w-full modern-input p-3 text-xs">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Keterangan</label>
-                            <input type="text" id="keterangan" placeholder="Contoh: Belanja Bulanan" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Keterangan</label>
+                            <input type="text" id="keterangan" placeholder="Contoh: Belanja Bulanan" class="w-full modern-input p-3 text-xs">
                         </div>
                         <div class="flex gap-2 pt-2">
-                            <button id="btn-simpan" onclick="simpanTransaksi()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl transition flex-1 font-bold shadow text-xs">Simpan</button>
-                            <button id="btn-batal" onclick="batalEdit()" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded-xl transition font-bold text-xs hidden">Batal</button>
+                            <button id="btn-simpan" onclick="simpanTransaksi()" class="btn-gradient text-white p-3 rounded-xl transition flex-1 font-bold text-xs shadow-lg">Simpan</button>
+                            <button id="btn-batal" onclick="batalEdit()" class="bg-slate-700/80 hover:bg-slate-600 text-white p-3 rounded-xl transition font-bold text-xs hidden">Batal</button>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 space-y-4">
+                    <div class="glass-card p-6 lg:col-span-2 space-y-4">
                         <div class="flex flex-wrap justify-between items-center gap-4">
-                            <h3 class="font-bold text-sm text-gray-900 dark:text-white">Riwayat Transaksi Kas</h3>
+                            <h3 class="font-bold text-sm text-white">Riwayat Transaksi Kas</h3>
                             <div class="flex gap-2">
-                                <input type="month" id="filter-bulan" onchange="muatDataTransaksi()" class="p-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-xs">
-                                <button onclick="resetFilter()" class="bg-gray-200 dark:bg-slate-700 px-3 py-2 rounded-xl text-xs font-bold">Reset</button>
+                                <input type="month" id="filter-bulan" onchange="muatDataTransaksi()" class="modern-input p-2.5 text-xs text-white">
+                                <button onclick="resetFilter()" class="bg-slate-700/80 hover:bg-slate-600 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition shadow">Reset</button>
                             </div>
                         </div>
-                        <div class="flex gap-4 text-xs font-bold text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-slate-700 pb-2">
-                            <span>Total Masuk Filter: <strong id="filter-masuk" class="text-green-500">Rp 0</strong></span>
-                            <span>Total Keluar Filter: <strong id="filter-keluar" class="text-red-500">Rp 0</strong></span>
+                        <div class="flex gap-6 text-xs font-bold text-slate-400 border-b border-slate-700/50 pb-3">
+                            <span>Total Masuk Filter: <strong id="filter-masuk" class="text-green-400 text-sm">Rp 0</strong></span>
+                            <span>Total Keluar Filter: <strong id="filter-keluar" class="text-red-400 text-sm">Rp 0</strong></span>
                         </div>
-                        <div class="overflow-x-auto max-h-[450px] overflow-y-auto">
-                            <table class="w-full text-left border-collapse">
+                        <div class="overflow-x-auto max-h-[450px] overflow-y-auto pr-1">
+                            <table class="w-full text-left border-collapse table-modern">
                                 <thead>
-                                    <tr class="bg-gray-50 dark:bg-slate-900/50 text-gray-400 text-[11px] border-b dark:border-slate-700">
-                                        <th class="p-3">Tanggal</th>
-                                        <th class="p-3">Keterangan</th>
-                                        <th class="p-3">Jenis</th>
-                                        <th class="p-3">Jumlah</th>
-                                        <th class="p-3 text-center">Aksi</th>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Keterangan</th>
+                                        <th>Jenis</th>
+                                        <th>Jumlah</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabel-transaksi" class="text-xs divide-y divide-gray-100 dark:divide-slate-700"></tbody>
+                                <tbody id="tabel-transaksi" class="divide-y divide-slate-700/40"></tbody>
                             </table>
                         </div>
                     </div>
@@ -333,32 +407,32 @@
             
             <!-- HALAMAN 4: HUTANG (ONLINE & INTERNAL) -->
             <div id="page-hutang" class="space-y-6 hidden">
-                <div class="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Manajemen Hutang Piutang</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Pencatatan hutang / piutang eksternal (dengan akun login penghutang) & internal keluarga.</p>
+                        <h3 class="text-lg font-bold text-white tracking-wide">Manajemen Hutang Piutang</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Pencatatan hutang / piutang eksternal & internal keluarga.</p>
                     </div>
                     <div id="debt-section-wrapper" class="flex gap-2">
-                        <button onclick="bukaModalHutangInternal()" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow">🔄 Hutang Internal</button>
-                        <button onclick="bukaModalHutangOnline()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow">+ Hutang Online</button>
+                        <button onclick="bukaModalHutangInternal()" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg">🔄 Hutang Internal</button>
+                        <button onclick="bukaModalHutangOnline()" class="btn-gradient text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg">+ Hutang Online</button>
                     </div>
                 </div>
 
                 <div class="space-y-6">
                     <div>
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="font-bold text-sm text-gray-900 dark:text-white">👥 Hutang Internal Keluarga</h4>
+                            <h4 class="font-bold text-sm text-white">👥 Hutang Internal Keluarga</h4>
                         </div>
                         <div id="list-family-debt" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                     </div>
 
-                    <div class="pt-6 border-t border-gray-200 dark:border-slate-700">
+                    <div class="pt-6 border-t border-slate-700/60">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="font-bold text-sm text-gray-900 dark:text-white">📋 Hutang / Piutang Eksternal</h4>
-                            <select id="filter-status-hutang" onchange="muatDataHutang()" class="p-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-xs">
-                                <option value="semua">Semua Status</option>
-                                <option value="belum">Belum Lunas</option>
-                                <option value="lunas">Lunas</option>
+                            <h4 class="font-bold text-sm text-white">📋 Hutang / Piutang Eksternal</h4>
+                            <select id="filter-status-hutang" onchange="muatDataHutang()" class="modern-input p-2.5 text-xs text-white">
+                                <option value="semua" class="bg-slate-900">Semua Status</option>
+                                <option value="belum" class="bg-slate-900">Belum Lunas</option>
+                                <option value="lunas" class="bg-slate-900">Lunas</option>
                             </select>
                         </div>
                         <div id="list-hutang" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -368,20 +442,20 @@
 
             <!-- HALAMAN 5: TARGET TABUNGAN -->
             <div id="page-tabungan" class="space-y-6 hidden">
-                <div class="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Rencana Tabungan Keluarga</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Target impian finansial anggota keluarga bersama.</p>
+                        <h3 class="text-lg font-bold text-white tracking-wide">Rencana Tabungan Keluarga</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Target impian finansial anggota keluarga bersama.</p>
                     </div>
                     <div class="flex gap-2">
-                        <select id="filter-user-tabungan" onchange="muatDataTabungan()" class="p-2.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-xs">
-                            <option value="Semua">Semua Anggota</option>
-                            <option value="Ayah">Ayah</option>
-                            <option value="Bunda">Bunda</option>
-                            <option value="Anak">Anak</option>
-                            <option value="Keluarga Bersama">Keluarga Bersama</option>
+                        <select id="filter-user-tabungan" onchange="muatDataTabungan()" class="modern-input p-2.5 text-xs text-white">
+                            <option value="Semua" class="bg-slate-900">Semua Anggota</option>
+                            <option value="Ayah" class="bg-slate-900">Ayah</option>
+                            <option value="Bunda" class="bg-slate-900">Bunda</option>
+                            <option value="Anak" class="bg-slate-900">Anak</option>
+                            <option value="Keluarga Bersama" class="bg-slate-900">Keluarga Bersama</option>
                         </select>
-                        <button onclick="bukaModalTabungan()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow">+ Buat Target</button>
+                        <button onclick="bukaModalTabungan()" class="btn-gradient text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg">+ Buat Target</button>
                     </div>
                 </div>
                 <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -389,135 +463,135 @@
             
             <!-- HALAMAN 6: CRYPTO INVESTOR -->
             <div id="page-invest" class="space-y-6 hidden">
-                <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700">
+                <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
                     <div>
-                        <h3 class="text-lg font-bold text-white">Portofolio Crypto Keluarga</h3>
-                        <p class="text-xs text-slate-400">Pantau PnL real-time aset kripto seluruh anggota.</p>
+                        <h3 class="text-lg font-bold text-white tracking-wide">Portofolio Crypto Keluarga</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Pantau PnL real-time aset kripto seluruh anggota.</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div id="total-crypto-pnl-badge" class="bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">Total PnL: Rp 0 (0%)</div>
-                        <select id="filter-user-crypto" onchange="muatDataCrypto()" class="p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
-                            <option value="Semua">Semua Anggota</option>
-                            <option value="Ayah">Ayah</option>
-                            <option value="Bunda">Bunda</option>
-                            <option value="Anak">Anak</option>
+                        <div id="total-crypto-pnl-badge" class="bg-slate-800/80 text-white px-4 py-2 rounded-xl text-xs font-bold shadow border border-slate-700">Total PnL: Rp 0 (0%)</div>
+                        <select id="filter-user-crypto" onchange="muatDataCrypto()" class="modern-input p-2.5 text-xs text-white">
+                            <option value="Semua" class="bg-slate-900">Semua Anggota</option>
+                            <option value="Ayah" class="bg-slate-900">Ayah</option>
+                            <option value="Bunda" class="bg-slate-900">Bunda</option>
+                            <option value="Anak" class="bg-slate-900">Anak</option>
                         </select>
-                        <button onclick="bukaModalCrypto()" class="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow">+ Tambah Koin</button>
+                        <button onclick="bukaModalCrypto()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-lg">+ Tambah Koin</button>
                     </div>
                 </div>
                 <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <!-- HALAMAN 7: DOKUMEN KELUARGA (Hanya ada 1 blok yang bersih dan rapi di sini) -->
+            <!-- HALAMAN 7: DOKUMEN KELUARGA -->
             <div id="page-dokumen" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-1 space-y-4">
-                        <h3 id="form-title-doc" class="font-bold text-sm text-gray-900 dark:text-white">Tambah Dokumen Keluarga</h3>
+                    <div class="glass-card p-6 lg:col-span-1 space-y-4">
+                        <h3 id="form-title-doc" class="font-bold text-sm text-white">Tambah Dokumen Keluarga</h3>
                         <input type="hidden" id="edit-doc-id" value="">
                         
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Keluarga</label>
-                            <select id="doc-nama-keluarga" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
-                                <option value="Mochamad Fuad Asyhary">Mochamad Fuad Asyhary</option>
-                                <option value="Hernita Kurniasari">Hernita Kurniasari</option>
-                                <option value="Haura Fatimah Mawar">Haura Fatimah Mawar</option>
-                                <option value="Hamzah Fatih Alfarizi">Hamzah Fatih Alfarizi</option>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Nama Keluarga</label>
+                            <select id="doc-nama-keluarga" class="w-full modern-input p-3 text-xs text-white">
+                                <option value="Mochamad Fuad Asyhary" class="bg-slate-900">Mochamad Fuad Asyhary</option>
+                                <option value="Hernita Kurniasari" class="bg-slate-900">Hernita Kurniasari</option>
+                                <option value="Haura Fatimah Mawar" class="bg-slate-900">Haura Fatimah Mawar</option>
+                                <option value="Hamzah Fatih Alfarizi" class="bg-slate-900">Hamzah Fatih Alfarizi</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Jenis Akun</label>
-                            <select id="doc-jenis-akun" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
-                                <option value="Keluarga">Keluarga</option>                                
-                                <option value="Ayah">Ayah</option>
-                                <option value="Bunda">Bunda</option>
-                                <option value="Anak">Anak</option>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Jenis Akun</label>
+                            <select id="doc-jenis-akun" class="w-full modern-input p-3 text-xs text-white">
+                                <option value="Keluarga" class="bg-slate-900">Keluarga</option>                                
+                                <option value="Ayah" class="bg-slate-900">Ayah</option>
+                                <option value="Bunda" class="bg-slate-900">Bunda</option>
+                                <option value="Anak" class="bg-slate-900">Anak</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Dokumen</label>
-                            <input type="text" id="doc-nama-dokumen" placeholder="Contoh: KTP / KK / Sertifikat" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-900 text-xs text-gray-900 dark:text-white">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Nama Dokumen</label>
+                            <input type="text" id="doc-nama-dokumen" placeholder="Contoh: KTP / KK / Sertifikat" class="w-full modern-input p-3 text-xs text-white">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Upload Dokumen (Gambar)</label>
-                            <input type="file" id="doc-file-input" accept="image/*" onchange="previewFamilyDocFile(event)" class="w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-950 file:text-cyan-300">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Upload Dokumen (Gambar)</label>
+                            <input type="file" id="doc-file-input" accept="image/*" onchange="previewFamilyDocFile(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-950 file:text-cyan-300">
                             <div id="doc-preview-container" class="mt-2 hidden">
                                 <img id="doc-preview-img" class="h-28 w-full object-cover rounded-xl border border-slate-700 shadow-sm cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
                             </div>
                         </div>
                         <div class="flex gap-2 pt-2">
-                            <button onclick="simpanFamilyDocument()" id="btn-simpan-doc" class="bg-cyan-600 hover:bg-cyan-700 text-white p-3 rounded-xl transition flex-1 font-bold shadow text-xs">Simpan Dokumen</button>
-                            <button onclick="batalEditFamilyDocument()" id="btn-batal-doc" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded-xl transition font-bold text-xs hidden">Batal</button>
+                            <button onclick="simpanFamilyDocument()" id="btn-simpan-doc" class="bg-cyan-600 hover:bg-cyan-700 text-white p-3 rounded-xl transition flex-1 font-bold shadow-lg text-xs">Simpan Dokumen</button>
+                            <button onclick="batalEditFamilyDocument()" id="btn-batal-doc" class="bg-slate-700 hover:bg-slate-600 text-white p-3 rounded-xl transition font-bold text-xs hidden">Batal</button>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 space-y-4">
+                    <div class="glass-card p-6 lg:col-span-2 space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                            <h3 class="text-base font-bold text-gray-900 dark:text-white">Daftar Arsip Dokumen Keluarga</h3>
+                            <h3 class="text-base font-bold text-white">Daftar Arsip Dokumen Keluarga</h3>
                             <div class="w-full sm:w-auto">
-                                <select id="filter-jenis-akun" onchange="muatFamilyDocuments()" class="w-full sm:w-48 bg-gray-50 dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                                    <option value="">Semua Jenis Akun</option>
+                                <select id="filter-jenis-akun" onchange="muatFamilyDocuments()" class="w-full sm:w-48 modern-input px-3 py-2 text-xs text-white">
+                                    <option value="" class="bg-slate-900">Semua Jenis Akun</option>
                                 </select>
                             </div>
                         </div>
-                        <div id="list-family-documents" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto"></div>
+                        <div id="list-family-documents" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- HALAMAN 8: SILSILAH KELUARGA-->
+            <!-- HALAMAN 8: SILSILAH KELUARGA -->
             <div id="page-silsilah" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="mt-8 bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 space-y-6 lg:col-span-3">
+                    <div class="glass-card p-6 space-y-6 lg:col-span-3">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
-                                <h3 class="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">🌳 <span>Silsilah Keluarga (Family Tree)</span></h3>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Kelola hirarki anggota keluarga dari kakek/nenek hingga keturunan.</p>
+                                <h3 class="font-bold text-base text-white flex items-center gap-2">🌳 <span>Silsilah Keluarga (Family Tree)</span></h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Kelola hirarki anggota keluarga dari kakek/nenek hingga keturunan.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-gray-50 dark:bg-slate-900 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 space-y-4 lg:col-span-1">
-                        <h4 id="form-title-tree" class="font-bold text-sm text-gray-900 dark:text-white">➕ Tambah Anggota Silsilah</h4>
+                    <div class="glass-card p-5 space-y-4 lg:col-span-1">
+                        <h4 id="form-title-tree" class="font-bold text-sm text-white">➕ Tambah Anggota Silsilah</h4>
                         <input type="hidden" id="edit-tree-id" value="">
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama Lengkap</label>
-                            <input type="text" id="tree-nama" placeholder="Contoh: H. Ahmad Sutisna" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Nama Lengkap</label>
+                            <input type="text" id="tree-nama" placeholder="Contoh: H. Ahmad Sutisna" class="w-full modern-input p-3 text-xs text-white">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Posisi / Hubungan Keluarga</label>
-                            <select id="tree-peran" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white">
-                                <optgroup label="Pihak Suami (Keluarga Saya)">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Posisi / Hubungan Keluarga</label>
+                            <select id="tree-peran" class="w-full modern-input p-3 text-xs text-white">
+                                <optgroup label="Pihak Suami (Keluarga Saya)" class="bg-slate-900">
                                     <option value="Kakek/Nenek Suami">👴 Kakek / Nenek (Pihak Suami)</option>
                                     <option value="Ortu Suami">👨 Orang Tua / Ayah & Ibu (Pihak Suami)</option>
                                     <option value="Saudara Suami">👥 Saudara Kandung / Ipar / Keponakan (Pihak Suami)</option>
                                 </optgroup>
-                                <optgroup label="Pihak Istri (Keluarga Istri)">
+                                <optgroup label="Pihak Istri (Keluarga Istri)" class="bg-slate-900">
                                     <option value="Kakek/Nenek Istri">👵 Kakek / Nenek (Pihak Istri)</option>
                                     <option value="Ortu Istri">👩 Orang Tua / Ayah & Ibu (Pihak Istri)</option>
                                     <option value="Saudara Istri">👥 Saudara Kandung / Ipar / Keponakan (Pihak Istri)</option>
                                 </optgroup>
-                                <optgroup label="Keluarga Inti & Keturunan">
+                                <optgroup label="Keluarga Inti & Keturunan" class="bg-slate-900">
                                     <option value="Pasangan Utama">💑 Saya & Istri (Pasangan Inti)</option>
                                     <option value="Anak">👶 Anak / Keturunan Inti</option>
                                 </optgroup>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Keterangan (Opsional)</label>
-                            <input type="text" id="tree-keterangan" placeholder="Contoh: Orang tua dari Ayah / Anak pertama" class="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Keterangan (Opsional)</label>
+                            <input type="text" id="tree-keterangan" placeholder="Contoh: Orang tua dari Ayah / Anak pertama" class="w-full modern-input p-3 text-xs text-white">
                         </div>
 
                         <div class="flex gap-2 pt-2">
-                            <button onclick="simpanFamilyTree()" id="btn-simpan-tree" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow">Simpan Anggota</button>
-                            <button onclick="batalEditFamilyTree()" id="btn-batal-tree" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-xs transition hidden">Batal</button>
+                            <button onclick="simpanFamilyTree()" id="btn-simpan-tree" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg">Simpan Anggota</button>
+                            <button onclick="batalEditFamilyTree()" id="btn-batal-tree" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl text-xs transition hidden">Batal</button>
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 dark:bg-slate-900 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 lg:col-span-2 space-y-6 overflow-x-auto">
-                        <h4 class="font-bold text-sm text-gray-900 dark:text-white">📊 Bagan Hirarki Silsilah</h4>
+                    <div class="glass-card p-5 lg:col-span-2 space-y-6 overflow-x-auto">
+                        <h4 class="font-bold text-sm text-white">📊 Bagan Hirarki Silsilah</h4>
                         <div id="visual-family-tree" class="space-y-6 min-w-[300px]"></div>
                     </div>
                 </div>
@@ -2050,33 +2124,33 @@
                         ? `🔴 ${data.penerima} berhutang ke ${data.pemberi}` 
                         : `🟢 ${data.pemberi} memberikan piutang ke ${data.penerima}`;
 
-                    container.innerHTML += `
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between">
+                        container.innerHTML += `
+                        <div class="glass-card p-6 flex flex-col justify-between">
                             <div>
                                 <div class="flex justify-between items-start mb-3">
                                     <div class="flex items-center gap-2">
-                                        <span class="${badgeJenisStyle} px-3 py-1 rounded-full text-xs font-bold">${jenisPinjam}</span>
-                                        <span class="bg-cyan-100 dark:bg-cyan-900 text-cyan-800 dark:text-cyan-200 px-3 py-1 rounded-full text-xs font-bold">🔄 ${teksLabel}</span>
+                                        <span class="${badgeJenisStyle} px-3 py-1 rounded-full text-xs font-bold border border-slate-700/50">${jenisPinjam}</span>
+                                        <span class="bg-cyan-950 text-cyan-300 px-3 py-1 rounded-full text-xs font-bold border border-cyan-800/50">🔄 ${teksLabel}</span>
                                     </div>
-                                    <button onclick="hapusHutangKeluarga('${id}')" class="text-gray-400 hover:text-red-500 font-bold text-xs bg-gray-100 dark:bg-slate-700 h-7 w-7 rounded-full flex items-center justify-center transition">✕</button>
+                                    <button onclick="hapusHutangKeluarga('${id}')" class="text-slate-400 hover:text-red-400 font-bold text-xs bg-slate-800 h-7 w-7 rounded-full flex items-center justify-center transition border border-slate-700">✕</button>
                                 </div>
-                                <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">${data.keterangan}</p>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">Dicatat oleh: ${data.createdBy || 'Keluarga'}</div>
+                                <p class="text-sm font-bold text-white mb-1">${data.keterangan}</p>
+                                <div class="text-xs text-slate-400 mb-3">Dicatat oleh: ${data.createdBy || 'Keluarga'}</div>
                                 <div class="mb-3">${badgeStatus}</div>
 
-                                <div class="my-4 p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700 text-xs space-y-1.5">
-                                    <div class="flex justify-between"><span class="text-gray-500">Total ${jenisPinjam}:</span> <strong class="text-gray-900 dark:text-white">Rp ${nominal.toLocaleString('id-ID')}</strong></div>
-                                    <div class="flex justify-between"><span class="text-gray-500">Sudah Dibayar:</span> <strong class="text-green-600 dark:text-green-400">Rp ${terbayar.toLocaleString('id-ID')}</strong></div>
-                                    <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-1.5 mt-1.5"><span class="text-gray-700 dark:text-gray-300 font-bold">Sisa ${jenisPinjam}:</span> <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisa.toLocaleString('id-ID')}</strong></div>
+                                <div class="my-4 p-4 bg-slate-900/80 rounded-2xl border border-slate-700/60 text-xs space-y-2">
+                                    <div class="flex justify-between"><span class="text-slate-400">Total ${jenisPinjam}:</span> <strong class="text-white">Rp ${nominal.toLocaleString('id-ID')}</strong></div>
+                                    <div class="flex justify-between"><span class="text-slate-400">Sudah Dibayar:</span> <strong class="text-green-400">Rp ${terbayar.toLocaleString('id-ID')}</strong></div>
+                                    <div class="flex justify-between border-t border-slate-800 pt-2 mt-1"><span class="text-slate-300 font-bold">Sisa ${jenisPinjam}:</span> <strong class="text-red-400 font-bold">Rp ${sisa.toLocaleString('id-ID')}</strong></div>
                                 </div>
 
-                                <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-1.5">
-                                    <div class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: ${persen}%"></div>
+                                <div class="w-full bg-slate-900 rounded-full h-2 mb-1 p-0.5 border border-slate-700/50">
+                                    <div class="bg-cyan-500 h-full rounded-full transition-all duration-300 shadow-sm" style="width: ${persen}%"></div>
                                 </div>
-                                <div class="text-[10px] text-right text-gray-400 font-semibold mb-4">${persen.toFixed(1)}% Terbayar</div>
+                                <div class="text-[10px] text-right text-slate-400 font-semibold mb-4">${persen.toFixed(1)}% Terbayar</div>
                             </div>
 
-                            <button onclick="bayarHutangKeluarga('${id}')" class="w-full bg-cyan-50 dark:bg-slate-700 hover:bg-cyan-100 dark:hover:bg-cyan-600 text-cyan-700 dark:text-cyan-300 font-bold py-2.5 rounded-xl text-xs transition border border-cyan-200 dark:border-slate-600 shadow-sm">
+                            <button onclick="bayarHutangKeluarga('${id}')" class="w-full bg-slate-800/80 hover:bg-slate-700 text-cyan-400 font-bold py-2.5 rounded-xl text-xs transition border border-slate-700 shadow-sm">
                                 💸 Catat Pelunasan / Pembayaran
                             </button>
                         </div>
@@ -2519,36 +2593,38 @@
                     const jenisPinjam = data.jenisPinjam || 'Hutang';
 
                     container.innerHTML += `
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between overflow-hidden relative">
+                        <div class="glass-card p-6 flex flex-col justify-between overflow-hidden relative">
                             <div class="absolute top-4 right-4 flex gap-1.5">
-                                <button onclick="bukaModalDetailHutang('${docId}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-blue-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Detail Lengkap">👁️</button>
-                                <button onclick="bukaModalEditHutang('${docId}', '${safeNama}', '${safeEmail}', ${totalHutang}, '${safeJaminan}', '${data.jatuhTempo || ''}', '${jenisPinjam}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-yellow-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Edit Data">✏️</button>
-                                <button onclick="hapusHutang('${docId}', '${data.authUid || ''}')" class="bg-gray-100 dark:bg-slate-700 hover:bg-red-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Hapus Hutang & Akun">✖</button>
+                                <button onclick="bukaModalDetailHutang('${docId}')" class="bg-slate-800/80 hover:bg-blue-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow border border-slate-700" title="Detail Lengkap">👁️</button>
+                                <button onclick="bukaModalEditHutang('${docId}', '${safeNama}', '${safeEmail}', ${totalHutang}, '${safeJaminan}', '${data.jatuhTempo || ''}', '${jenisPinjam}')" class="bg-slate-800/80 hover:bg-yellow-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow border border-slate-700" title="Edit Data">✏️</button>
+                                <button onclick="hapusHutang('${docId}', '${data.authUid || ''}')" class="bg-slate-800/80 hover:bg-red-500 hover:text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow border border-slate-700" title="Hapus Hutang & Akun">✖</button>
                             </div>
                             
-                            <div class="p-6">
-                                <h4 class="font-bold text-gray-900 dark:text-white text-lg mb-0.5">👤 ${data.nama}</h4>
+                            <div>
+                                <h4 class="font-bold text-white text-base mb-0.5">👤 ${data.nama}</h4>
                                 ${emailInfo}
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-3 font-semibold">Jatuh Tempo: ${formatTanggal(data.jatuhTempo)}</p>
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold ${jenisPinjam === 'Hutang' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'}">
+                                <p class="text-xs text-slate-400 mb-3 font-semibold">Jatuh Tempo: ${formatTanggal(data.jatuhTempo)}</p>
+                                <div class="flex gap-2 mb-4">
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold ${jenisPinjam === 'Hutang' ? 'bg-red-950 text-red-300 border border-red-800/50' : 'bg-emerald-950 text-emerald-300 border border-emerald-800/50'}">
                                         ${jenisPinjam === 'Hutang' ? '🔴 Hutang' : '🟢 Piutang'}
-                                </span>
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold ${bgStatus}">${status}</span>
+                                    </span>
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold ${bgStatus}">${status}</span>
+                                </div>
 
-                                <div class="mt-4 mb-2 p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700 text-xs space-y-1.5">
-                                    <div class="flex justify-between"><span class="text-gray-500">Total:</span> <strong class="text-gray-900 dark:text-white">Rp ${totalHutang.toLocaleString('id-ID')}</strong></div>
-                                    <div class="flex justify-between"><span class="text-gray-500">Terbayar:</span> <strong class="text-green-600 dark:text-green-400">Rp ${terbayarHutang.toLocaleString('id-ID')}</strong></div>
-                                    <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-1.5 mt-1.5"><span class="text-gray-700 dark:text-gray-300 font-bold">Sisa:</span> <strong class="text-red-500 dark:text-red-400 font-bold">Rp ${sisaHutang.toLocaleString('id-ID')}</strong></div>
+                                <div class="mb-4 p-4 bg-slate-900/80 rounded-2xl border border-slate-700/60 text-xs space-y-2">
+                                    <div class="flex justify-between"><span class="text-slate-400">Total:</span> <strong class="text-white">Rp ${totalHutang.toLocaleString('id-ID')}</strong></div>
+                                    <div class="flex justify-between"><span class="text-slate-400">Terbayar:</span> <strong class="text-green-400">Rp ${terbayarHutang.toLocaleString('id-ID')}</strong></div>
+                                    <div class="flex justify-between border-t border-slate-800 pt-2 mt-1"><span class="text-slate-300 font-bold">Sisa:</span> <strong class="text-red-400 font-bold">Rp ${sisaHutang.toLocaleString('id-ID')}</strong></div>
                                 </div>
                                 
-                                <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-1 mt-4">
-                                    <div class="bg-orange-500 h-2.5 rounded-full transition-all duration-500" style="width: ${persen}%"></div>
+                                <div class="w-full bg-slate-900 rounded-full h-2 mb-1 p-0.5 border border-slate-700/50">
+                                    <div class="bg-orange-500 h-full rounded-full transition-all duration-500 shadow-sm" style="width: ${persen}%"></div>
                                 </div>
-                                <div class="text-[10px] text-right text-orange-500 dark:text-orange-400 font-extrabold mb-2">📊 ${persen.toFixed(1)}% Lunas</div>
+                                <div class="text-[10px] text-right text-orange-400 font-extrabold mb-4">📊 ${persen.toFixed(1)}% Lunas</div>
                             </div>
                             
-                            <div class="px-6 pb-6 pt-0">
-                                <button onclick="bukaModalHutang('${docId}', ${sisa}, ${terbayarHutang})" class="w-full bg-orange-50 dark:bg-slate-700 hover:bg-orange-100 dark:hover:bg-slate-600 text-orange-600 dark:text-orange-400 font-bold py-2.5 rounded-xl transition border border-orange-200 dark:border-slate-600 shadow-sm text-xs flex items-center justify-center gap-2">
+                            <div>
+                                <button onclick="bukaModalHutang('${docId}', ${sisa}, ${terbayarHutang})" class="w-full bg-slate-800/80 hover:bg-slate-700 text-orange-400 font-bold py-2.5 rounded-xl transition border border-slate-700 shadow-sm text-xs flex items-center justify-center gap-2">
                                     💸 Upload Bukti & Bayar
                                 </button>
                             </div>
@@ -3288,58 +3364,58 @@
                             </div>` 
                             : `<div class="mt-4 text-center text-xs text-gray-400 italic">Portofolio Koin Ini Sudah Ditutup</div>`;
                             
-                        container.innerHTML += `
-                        <div class="${cardBg} text-white p-5 sm:p-6 rounded-2xl shadow-xl border flex flex-col justify-between hover:shadow-2xl transition relative overflow-hidden">
-                            <div class="absolute -right-4 -bottom-4 opacity-10 text-9xl pointer-events-none">${isProfit ? '📈' : '📉'}</div>
-                            
-                            <div class="relative z-10">
-                                <div class="flex flex-wrap justify-between items-center gap-2 mb-4 border-b border-slate-700 pb-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${ownerBadgeColor}">👤 ${pemilik}</span>
-                                        <h4 class="font-bold text-yellow-400 text-sm sm:text-base">🚀 ${data.koin}</h4>
+                            container.innerHTML += `
+                            <div class="glass-card p-5 sm:p-6 flex flex-col justify-between hover:shadow-2xl transition relative overflow-hidden">
+                                <div class="absolute -right-4 -bottom-4 opacity-10 text-9xl pointer-events-none">${isProfit ? '📈' : '📉'}</div>
+                                
+                                <div class="relative z-10">
+                                    <div class="flex flex-wrap justify-between items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${ownerBadgeColor}">👤 ${pemilik}</span>
+                                            <h4 class="font-bold text-yellow-400 text-sm sm:text-base">🚀 ${data.koin}</h4>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            ${statusBadge}
+                                            <button onclick="hapusCrypto('${docId}')" class="text-slate-400 hover:text-red-400 transition text-sm bg-slate-900 rounded-full h-7 w-7 flex items-center justify-center font-bold shadow border border-slate-700">✖</button>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        ${statusBadge}
-                                        <button onclick="hapusCrypto('${docId}')" class="text-slate-400 hover:text-red-400 transition text-sm bg-slate-800 rounded-full h-7 w-7 flex items-center justify-center font-bold shadow border border-slate-600">✖</button>
+                                    
+                                    <div class="text-xs sm:text-sm text-slate-300 bg-slate-900/80 p-3 rounded-2xl border border-slate-700/60 mb-4 flex justify-between items-center">
+                                        <span>Jumlah Koin:</span>
+                                        <strong class="text-white">${formatFloat(data.jumlahKoin)} Koin</strong>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm mb-4">
+                                        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-700/60">
+                                            <p class="text-slate-400 text-[11px]">Modal Pembelian</p>
+                                            <p class="font-semibold text-white truncate">Rp ${totalModal.toLocaleString('id-ID')}</p>
+                                        </div>
+                                        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-700/60">
+                                            <p class="text-slate-400 text-[11px]">${labelNilai}</p>
+                                            <p class="font-semibold text-white truncate">Rp ${totalSekarang.toLocaleString('id-ID')}</p>
+                                        </div>
+                                        <div class="px-1">
+                                            <p class="text-slate-400 text-[10px]">Harga Beli/Koin</p>
+                                            <p class="text-slate-200 text-xs truncate font-medium">Rp ${data.hargaBeli.toLocaleString('id-ID')}</p>
+                                        </div>
+                                        <div class="px-1">
+                                            <p class="text-slate-400 text-[10px]">${labelHarga}</p>
+                                            <p class="text-slate-200 text-xs truncate font-medium">Rp ${data.hargaSekarang.toLocaleString('id-ID')}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4 p-3.5 rounded-2xl bg-slate-950/90 border border-slate-800 text-center">
+                                        <p class="text-slate-400 text-xs mb-1">Profit / Loss (PnL)</p>
+                                        <div class="flex flex-wrap justify-center items-center gap-1.5">
+                                            <span class="${pnlColor} font-extrabold text-sm sm:text-base tracking-wide">${pnlSimbol} Rp ${Math.abs(pnlRp).toLocaleString('id-ID')}</span>
+                                            <span class="${pnlColor} text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800">(${pnlSimbol}${pnlPersen.toFixed(2)}%)</span>
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <div class="text-xs sm:text-sm text-slate-300 bg-slate-800 p-3 rounded-xl mb-4 flex justify-between items-center">
-                                    <span>Jumlah Koin:</span>
-                                    <strong class="text-white">${formatFloat(data.jumlahKoin)} Koin</strong>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm mb-4">
-                                    <div class="bg-slate-800/50 p-2.5 rounded-xl">
-                                        <p class="text-slate-400 text-[11px]">Modal Pembelian</p>
-                                        <p class="font-semibold text-white truncate">Rp ${totalModal.toLocaleString('id-ID')}</p>
-                                    </div>
-                                    <div class="bg-slate-800/50 p-2.5 rounded-xl">
-                                        <p class="text-slate-400 text-[11px]">${labelNilai}</p>
-                                        <p class="font-semibold text-white truncate">Rp ${totalSekarang.toLocaleString('id-ID')}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-500 text-[10px] mt-1">Harga Beli/Koin</p>
-                                        <p class="text-slate-300 text-xs truncate">Rp ${data.hargaBeli.toLocaleString('id-ID')}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-500 text-[10px] mt-1">${labelHarga}</p>
-                                        <p class="text-slate-300 text-xs truncate">Rp ${data.hargaSekarang.toLocaleString('id-ID')}</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-4 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                                    <p class="text-slate-400 text-xs mb-1">Profit / Loss (PnL)</p>
-                                    <div class="flex flex-wrap justify-center items-center gap-1.5">
-                                        <span class="${pnlColor} font-extrabold text-sm sm:text-base tracking-wide">${pnlSimbol} Rp ${Math.abs(pnlRp).toLocaleString('id-ID')}</span>
-                                        <span class="${pnlColor} text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800">(${pnlSimbol}${pnlPersen.toFixed(2)}%)</span>
-                                    </div>
-                                </div>
+                                ${actionButtons}
                             </div>
-                            
-                            ${actionButtons}
-                        </div>
-                    `;
+                        `;
                     }
                 });
                 
