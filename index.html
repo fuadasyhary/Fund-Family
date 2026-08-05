@@ -2681,6 +2681,32 @@
             });
         }
 
+        let base64EditTabunganImage = '';
+
+        function bukaModalEditTabungan(id, pemilik, nama, target, fotoLama) {
+            document.getElementById('edit-tabungan-id').value = id;
+            document.getElementById('edit-pemilik-tabungan').value = pemilik;
+            document.getElementById('edit-nama-tabungan').value = nama;
+            document.getElementById('edit-target-tabungan').value = target.toLocaleString('id-ID');
+            
+            base64EditTabunganImage = fotoLama;
+            const previewContainer = document.getElementById('edit-tabungan-preview-container');
+            const previewImg = document.getElementById('edit-tabungan-preview');
+            
+            if (fotoLama) {
+                previewImg.src = fotoLama;
+                previewContainer.classList.remove('hidden');
+            } else {
+                previewContainer.classList.add('hidden');
+            }
+
+            document.getElementById('modal-edit-tabungan').classList.remove('hidden');
+        }
+
+        function tutupModalEditTabungan() {
+            document.getElementById('modal-edit-tabungan').classList.add('hidden');
+        }
+
         function previewTabunganFile(event) {
             const file = event.target.files[0];
             if (file) {
@@ -2845,7 +2871,7 @@
                                 <h4 class="absolute bottom-3 left-4 right-4 font-bold text-white text-base tracking-wide drop-shadow">${data.nama}</h4>
                                 
                                 <div class="absolute top-3 right-3 flex gap-1.5">
-                                    <button onclick="bukaModalEditTabungan(...)" class="bg-slate-900/80 hover:bg-yellow-500 text-white transition text-xs font-bold rounded-full h-8 w-8 flex items-center justify-center backdrop-blur shadow" title="Edit">✏️</button>
+                                    <button onclick="bukaModalEditTabungan('${docId}', '${pemilik.replace(/'/g, "\\'")}', '${data.nama.replace(/'/g, "\\'")}', ${data.target}, '${fotoUrl}')" class="bg-slate-900/80 hover:bg-yellow-500 text-white transition text-xs font-bold rounded-full h-8 w-8 flex items-center justify-center backdrop-blur shadow" title="Edit">✏️</button>
                                     <button onclick="hapusTabungan('${docId}')" class="bg-slate-900/80 hover:bg-red-500 text-white transition text-xs font-bold rounded-full h-8 w-8 flex items-center justify-center backdrop-blur shadow" title="Hapus">✖</button>
                                 </div>
                             </div>
@@ -2891,8 +2917,6 @@
                 }
             });
         }
-
-        let base64EditTabunganImage = '';
 
         function bukaModalTambahSaldoTabungan(id, terkumpulSekarang) {
             document.getElementById('target-id-tabungan-aktif').value = id;
