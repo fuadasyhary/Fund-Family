@@ -118,12 +118,12 @@
                         <h3 id="total-aset-dashboard" class="text-2xl font-bold text-gray-900 dark:text-white">Rp 0</h3>
                         <span class="text-[10px] text-gray-400 mt-1 block">Kendaraan & Gadget dihitung 50%</span>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="pindahHalaman('kas')">
                         <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Kas Keluarga Permanen</p>
                         <h3 id="total-kas-permanen" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rp 0</h3>
                         <span class="text-[10px] text-gray-400 mt-1 block">Saldo kas bersama masa depan</span>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="pindahHalaman('kas')">
                         <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Sisa Limit Bulanan Aktif</p>
                         <h3 id="total-kas-bulanan" class="text-2xl font-bold text-purple-600 dark:text-purple-400">Rp 0</h3>
                         <span id="info-limit-bulanan" class="text-[10px] text-gray-400 mt-1 block">Batasan Limit: Rp 0</span>
@@ -267,7 +267,7 @@
                 <div class="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 dark:text-white">Manajemen Hutang Piutang</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Pencatatan hutang eksternal (dengan akun login penghutang) & internal keluarga.</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Pencatatan hutang / piutang eksternal (dengan akun login penghutang) & internal keluarga.</p>
                     </div>
                     <div id="debt-section-wrapper" class="flex gap-2">
                         <button onclick="bukaModalHutangInternal()" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow">🔄 Hutang Internal</button>
@@ -285,7 +285,7 @@
 
                     <div class="pt-6 border-t border-gray-200 dark:border-slate-700">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="font-bold text-sm text-gray-900 dark:text-white">📋 Hutang Eksternal (Debitur & Jaminan)</h4>
+                            <h4 class="font-bold text-sm text-gray-900 dark:text-white">📋 Hutang / Piutang Eksternal</h4>
                             <select id="filter-status-hutang" onchange="muatDataHutang()" class="p-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-xs">
                                 <option value="semua">Semua Status</option>
                                 <option value="belum">Belum Lunas</option>
@@ -2349,12 +2349,16 @@
                     const totalHutang = data.total || 0;
                     const terbayarHutang = data.terbayar || 0;
                     const sisaHutang = Math.max(0, totalHutang - terbayarHutang);
+                    
+                    // Tambahkan kembali kata 'const' di sini agar tidak error
+                    const jnsPinjam = data.jenisPinjam || 'Hutang';
+                    const labelPrefix = jnsPinjam === 'Piutang' ? '[Piutang] ' : '[Hutang] ';
 
                     sumTotalHutang += totalHutang;
                     sumTerbayar += terbayarHutang;
 
                     debtorsArray.push({
-                        nama: data.nama || 'Tanpa Nama',
+                        nama: labelPrefix + (data.nama || 'Tanpa Nama'),
                         total: totalHutang,
                         terbayar: terbayarHutang,
                         sisa: sisaHutang
@@ -2405,6 +2409,9 @@
                                 <h4 class="font-bold text-gray-900 dark:text-white text-lg mb-0.5">👤 ${data.nama}</h4>
                                 ${emailInfo}
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mb-3 font-semibold">Jatuh Tempo: ${formatTanggal(data.jatuhTempo)}</p>
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold ${jenisPinjam === 'Hutang' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'}">
+                                        ${jenisPinjam === 'Hutang' ? '🔴 Hutang' : '🟢 Piutang'}
+                                </span>
                                 <span class="px-3 py-1 rounded-full text-[10px] font-bold ${bgStatus}">${status}</span>
 
                                 <div class="mt-4 mb-2 p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700 text-xs space-y-1.5">
