@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fund & Family</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%%22 y=%2254%%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2280%22>🏡</text></svg>">
-    <!-- Tailwind CSS v4 -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Tailwind CSS v4.3.3 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
     
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -955,6 +955,22 @@
         </div>
     </div>
 
+    <!-- Modal Kustom Tambah Saldo Tabungan -->
+    <div id="modal-tambah-saldo-tabungan" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-sm border border-gray-100 dark:border-slate-700 space-y-4">
+            <h3 class="font-bold text-base text-gray-900 dark:text-white">💰 Tambah Saldo Tabungan</h3>
+            <input type="hidden" id="target-id-tabungan-aktif">
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nominal Penambahan (Rp)</label>
+                <input type="text" id="input-nominal-tambah-tabungan" oninput="formatInputRupiah(this)" placeholder="Misal: 50.000" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="prosesTambahSaldoTabungan()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs transition">Simpan</button>
+                <button onclick="tutupModalTambahSaldoTabungan()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-xs transition">Batal</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Crypto Portofolio -->
     <div id="modal-crypto" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -1008,9 +1024,9 @@
     </div>
 
     <!-- ================= FIREBASE & SCRIPT UTAMA ================= -->
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.17.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.17.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore-compat.js"></script>
     
     <script>
         const firebaseConfig = {
@@ -1633,21 +1649,27 @@
         let editIdTransaksi = null;
 
         function siapkanEdit(docId, kategori, jenis, jumlah, keterangan, tanggalStr) {
-            editIdTransaksi = docId;
-            document.getElementById('tanggal').value = tanggalStr || new Date().toISOString().split('T')[0];
-            document.getElementById('kategori-kas').value = kategori;
-            document.getElementById('jenis').value = jenis;
-            document.getElementById('jumlah').value = jumlah.toLocaleString('id-ID');
-            document.getElementById('keterangan').value = keterangan;
+                editIdTransaksi = docId;
+                document.getElementById('tanggal').value = tanggalStr || new Date().toISOString().split('T')[0];
+                document.getElementById('kategori-kas').value = kategori;
+                
+                // Aktifkan kembali elemen select jenis jika sebelumnya terkunci
+                const jenisSelect = document.getElementById('jenis');
+                jenisSelect.disabled = false;
+                jenisSelect.classList.remove('opacity-60', 'cursor-not-allowed');
+                jenisSelect.value = jenis;
 
-            const btnSimpan = document.getElementById('btn-simpan');
-            if(btnSimpan) btnSimpan.innerText = 'Update Transaksi';
-            
-            const btnBatal = document.getElementById('btn-batal');
-            if(btnBatal) btnBatal.classList.remove('hidden');
+                document.getElementById('jumlah').value = Math.abs(jumlah).toLocaleString('id-ID');
+                document.getElementById('keterangan').value = keterangan;
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+                const btnSimpan = document.getElementById('btn-simpan');
+                if(btnSimpan) btnSimpan.innerText = 'Update Transaksi';
+                
+                const btnBatal = document.getElementById('btn-batal');
+                if(btnBatal) btnBatal.classList.remove('hidden');
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
 
         function batalEdit() {
             editIdTransaksi = null;
@@ -2578,18 +2600,40 @@
         }
 
         function tambahSaldoTabungan(id, terkumpulSekarang) {
-            const nominalStr = prompt("Berapa Rupiah yang ditabung?\n(Ketik angka saja tanpa titik)");
-            if (nominalStr !== null) {
-                const nominal = unformatRupiah(nominalStr);
-                if (!isNaN(nominal) && nominal > 0) {
-                    db.collection("tabungan").doc(id).update({ 
-                        terkumpul: terkumpulSekarang + nominal, 
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-                    }).then(() => alert("Saldo tabungan berhasil ditambahkan!"));
-                } else {
-                    alert("Nominal tidak valid.");
-                }
+            document.getElementById('target-id-tabungan-aktif').value = id;
+            // Menyimpan nilai terkumpul sekarang sebagai atribut data di elemen input atau variabel global jika diperlukan, tapi cukup ambil ID-nya saja nanti
+            document.getElementById('input-nominal-tambah-tabungan').value = '';
+            document.getElementById('modal-tambah-saldo-tabungan').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('input-nominal-tambah-tabungan').focus();
+            }, 100);
+        }
+
+        function tutupModalTambahSaldoTabungan() {
+            document.getElementById('modal-tambah-saldo-tabungan').classList.add('hidden');
+        }
+
+        function prosesTambahSaldoTabungan() {
+            const id = document.getElementById('target-id-tabungan-aktif').value;
+            const rawVal = document.getElementById('input-nominal-tambah-tabungan').value;
+            const nominal = unformatRupiah(rawVal);
+
+            if (!nominal || nominal <= 0) {
+                return alert("Masukkan nominal penambahan yang valid!");
             }
+
+            db.collection("tabungan").doc(id).get().then((docSnap) => {
+                if (!docSnap.exists) return;
+                const terkumpulLama = docSnap.data().terkumpul || 0;
+
+                db.collection("tabungan").doc(id).update({ 
+                    terkumpul: terkumpulLama + nominal, 
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                }).then(() => {
+                    tutupModalTambahSaldoTabungan();
+                    alert("Saldo tabungan berhasil ditambahkan!");
+                });
+            }).catch(e => alert("Gagal memperbarui saldo: " + e.message));
         }
 
         function hapusTabungan(id) {
@@ -2660,7 +2704,7 @@
                             </div>
                             
                             <div class="px-6 pb-6 pt-0">
-                                <button onclick="bukaModalInputKustom('tambah_tabungan', '${docId}', '', 'Tambah Saldo Tabungan', 'Nominal Tabungan (Rp)')" class="w-full bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-slate-600 text-indigo-700 dark:text-indigo-300 font-semibold py-2.5 rounded-xl transition border border-indigo-200 dark:border-slate-600 shadow-sm text-xs">
+                                <button onclick="tambahSaldoTabungan('${docId}', ${data.terkumpul})" class="w-full bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-slate-600 text-indigo-700 dark:text-indigo-300 font-semibold py-2.5 rounded-xl transition border border-indigo-200 dark:border-slate-600 shadow-sm text-xs">
                                     + Tambah Saldo Tabungan
                                 </button>
                             </div>
