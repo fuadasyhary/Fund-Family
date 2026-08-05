@@ -2032,13 +2032,23 @@
             const file = event.target.files[0];
             if (file) {
                 document.getElementById('hutang-jaminan-file-name').innerText = file.name;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64HutangJaminanImage = e.target.result;
-                    document.getElementById('hutang-jaminan-preview').src = base64HutangJaminanImage;
-                    document.getElementById('hutang-jaminan-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+                const ukuranMb = file.size / (1024 * 1024);
+
+                if (ukuranMb >= 1) {
+                    compressImage(file, 1, 0.7, (compressedBase64) => {
+                        base64HutangJaminanImage = compressedBase64;
+                        document.getElementById('hutang-jaminan-preview').src = base64HutangJaminanImage;
+                        document.getElementById('hutang-jaminan-preview-container').classList.remove('hidden');
+                    });
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        base64HutangJaminanImage = e.target.result;
+                        document.getElementById('hutang-jaminan-preview').src = base64HutangJaminanImage;
+                        document.getElementById('hutang-jaminan-preview-container').classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
         }
 
@@ -2053,13 +2063,23 @@
             const file = event.target.files[0];
             if (file) {
                 document.getElementById('hutang-ktp-file-name').innerText = file.name;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64HutangKtpImage = e.target.result;
-                    document.getElementById('hutang-ktp-preview').src = base64HutangKtpImage;
-                    document.getElementById('hutang-ktp-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+                const ukuranMb = file.size / (1024 * 1024);
+
+                if (ukuranMb >= 1) {
+                    compressImage(file, 1, 0.7, (compressedBase64) => {
+                        base64HutangKtpImage = compressedBase64;
+                        document.getElementById('hutang-ktp-preview').src = base64HutangKtpImage;
+                        document.getElementById('hutang-ktp-preview-container').classList.remove('hidden');
+                    });
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        base64HutangKtpImage = e.target.result;
+                        document.getElementById('hutang-ktp-preview').src = base64HutangKtpImage;
+                        document.getElementById('hutang-ktp-preview-container').classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
         }
 
@@ -2596,13 +2616,23 @@
             const file = event.target.files[0];
             if (file) {
                 document.getElementById('tabungan-file-name').innerText = file.name;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64TabunganImage = e.target.result;
-                    document.getElementById('tabungan-preview').src = base64TabunganImage;
-                    document.getElementById('tabungan-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+                const ukuranMb = file.size / (1024 * 1024);
+
+                if (ukuranMb >= 1) {
+                    compressImage(file, 1, 0.7, (compressedBase64) => {
+                        base64TabunganImage = compressedBase64;
+                        document.getElementById('tabungan-preview').src = base64TabunganImage;
+                        document.getElementById('tabungan-preview-container').classList.remove('hidden');
+                    });
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        base64TabunganImage = e.target.result;
+                        document.getElementById('tabungan-preview').src = base64TabunganImage;
+                        document.getElementById('tabungan-preview-container').classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
         }
 
@@ -2909,19 +2939,31 @@
                 }).catch(e => alert("Gagal menghapus riwayat: " + e.message));
             }
         }
-        
+
         function previewEditTabunganFile(event) {
             const file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64EditTabunganImage = e.target.result;
-                    const previewImg = document.getElementById('edit-tabungan-preview');
-                    const previewContainer = document.getElementById('edit-tabungan-preview-container');
-                    previewImg.src = base64EditTabunganImage;
-                    previewContainer.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+                const ukuranMb = file.size / (1024 * 1024);
+
+                if (ukuranMb >= 1) {
+                    compressImage(file, 1, 0.7, (compressedBase64) => {
+                        base64EditTabunganImage = compressedBase64;
+                        const previewImg = document.getElementById('edit-tabungan-preview');
+                        const previewContainer = document.getElementById('edit-tabungan-preview-container');
+                        previewImg.src = base64EditTabunganImage;
+                        previewContainer.classList.remove('hidden');
+                    });
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        base64EditTabunganImage = e.target.result;
+                        const previewImg = document.getElementById('edit-tabungan-preview');
+                        const previewContainer = document.getElementById('edit-tabungan-preview-container');
+                        previewImg.src = base64EditTabunganImage;
+                        previewContainer.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
         }
 
@@ -3223,23 +3265,80 @@
             });
         }
 
+        function compressImage(file, maxMb = 1, quality = 0.7, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Jika ukuran file asli >= maxMb (default 1MB), kita perkecil dimensinya secara proporsional
+                    if (file.size >= maxMb * 1024 * 1024) {
+                        const MAX_WIDTH = 1280;
+                        const MAX_HEIGHT = 1280;
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Konversi ke format JPEG dengan penyesuaian kualitas (quality: 0.7 = 70%)
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                    callback(compressedDataUrl);
+                };
+            };
+        }
+
         let base64FamilyDocImage = '';
         let editIdFamilyDoc = null;
 
         function previewFamilyDocFile(event) {
             const file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64FamilyDocImage = e.target.result;
-                    const previewImg = document.getElementById('doc-preview-img');
-                    const previewContainer = document.getElementById('doc-preview-container');
-                    if (previewImg && previewContainer) {
-                        previewImg.src = base64FamilyDocImage;
-                        previewContainer.classList.remove('hidden');
-                    }
-                };
-                reader.readAsDataURL(file);
+                const ukuranMb = file.size / (1024 * 1024);
+                
+                if (ukuranMb >= 1) {
+                    console.log(`Ukuran file (${ukuranMb.toFixed(2)} MB) >= 1MB, melakukan auto-compress...`);
+                    // Kompres otomatis jika >= 1 MB
+                    compressImage(file, 1, 0.7, (compressedBase64) => {
+                        base64FamilyDocImage = compressedBase64;
+                        const previewImg = document.getElementById('doc-preview-img');
+                        const previewContainer = document.getElementById('doc-preview-container');
+                        if (previewImg && previewContainer) {
+                            previewImg.src = base64FamilyDocImage;
+                            previewContainer.classList.remove('hidden');
+                        }
+                    });
+                } else {
+                    // Jika di bawah 1 MB, langsung baca seperti biasa
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        base64FamilyDocImage = e.target.result;
+                        const previewImg = document.getElementById('doc-preview-img');
+                        const previewContainer = document.getElementById('doc-preview-container');
+                        if (previewImg && previewContainer) {
+                            previewImg.src = base64FamilyDocImage;
+                            previewContainer.classList.remove('hidden');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
         }
 
