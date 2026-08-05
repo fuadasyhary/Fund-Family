@@ -960,6 +960,13 @@
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-sm border border-gray-100 dark:border-slate-700 space-y-4">
             <h3 class="font-bold text-base text-gray-900 dark:text-white">💰 Tambah Saldo Tabungan</h3>
             <input type="hidden" id="target-id-tabungan-aktif">
+            
+            <!-- TAMBAHKAN INPUT TANGGAL DI SINI -->
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Tanggal Menabung</label>
+                <input type="date" id="input-tanggal-tambah-tabungan" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+            </div>
+
             <div>
                 <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nominal Penambahan (Rp)</label>
                 <input type="text" id="input-nominal-tambah-tabungan" oninput="formatInputRupiah(this)" placeholder="Misal: 50.000" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
@@ -967,6 +974,27 @@
             <div class="flex gap-2 pt-2">
                 <button onclick="prosesTambahSaldoTabungan()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs transition">Simpan</button>
                 <button onclick="tutupModalTambahSaldoTabungan()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-xs transition">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Riwayat Saldo Tabungan -->
+    <div id="modal-edit-riwayat-tabungan" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-sm border border-gray-100 dark:border-slate-700 space-y-4">
+            <h3 class="font-bold text-base text-gray-900 dark:text-white">✏️ Edit Riwayat Penambahan</h3>
+            <input type="hidden" id="edit-riwayat-tabungan-id">
+            <input type="hidden" id="edit-riwayat-index">
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Tanggal</label>
+                <input type="date" id="edit-riwayat-tanggal" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nominal (Rp)</label>
+                <input type="text" id="edit-riwayat-nominal" oninput="formatInputRupiah(this)" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="prosesSimpanEditRiwayatTabungan()" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-xl text-xs transition">Update</button>
+                <button onclick="tutupModalEditRiwayatTabungan()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-xs transition">Batal</button>
             </div>
         </div>
     </div>
@@ -2681,7 +2709,27 @@
                     if (pemilik === 'Anak') ownerBadgeColor = 'bg-emerald-900 text-emerald-200';
                     if (pemilik === 'Keluarga Bersama') ownerBadgeColor = 'bg-purple-900 text-purple-200';
 
-                    // Di dalam loop muatDataTabungan():
+                    // Buat list riwayat penambahan saldo
+                    // Buat list riwayat penambahan saldo dengan tombol edit/hapus
+                    let riwayatListHtml = '';
+                    if (data.riwayatTabungan && data.riwayatTabungan.length > 0) {
+                        data.riwayatTabungan.forEach((log, index) => {
+                            let tglFormat = log.tanggal ? new Date(log.tanggal).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}) : '-';
+                            riwayatListHtml += `
+                                <div class="flex justify-between items-center text-[10px] bg-gray-50 dark:bg-slate-900 p-2 rounded-xl border border-gray-100 dark:border-slate-700 mb-1 gap-2">
+                                    <span class="text-gray-500 dark:text-gray-400 truncate">📅 ${tglFormat}</span>
+                                    <div class="flex items-center gap-2">
+                                        <strong class="text-emerald-600 dark:text-emerald-400">+ Rp ${log.nominal.toLocaleString('id-ID')}</strong>
+                                        <button onclick="bukaModalEditRiwayatTabungan('${docId}', ${index}, '${log.tanggal || ''}', ${log.nominal})" class="text-yellow-500 hover:underline font-bold" title="Edit Riwayat">✏️</button>
+                                        <button onclick="hapusRiwayatTabungan('${docId}', ${index})" class="text-red-500 hover:underline font-bold" title="Hapus Riwayat">✖</button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        riwayatListHtml = `<p class="text-[10px] text-gray-400 italic text-center py-1">Belum ada riwayat penambahan.</p>`;
+                    }
+
                     container.innerHTML += `
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between overflow-hidden hover:shadow-md transition">
                             <div>
@@ -2691,27 +2739,34 @@
                                     <span class="absolute top-3 left-3 text-[10px] font-bold px-3 py-1 rounded-full ${ownerBadgeColor} shadow">👤 ${pemilik}</span>
                                     <h4 class="absolute bottom-3 left-4 right-4 font-bold text-white text-base drop-shadow-md truncate pointer-events-none">${data.nama}</h4>
                                     
-                                    <!-- Tombol Edit & Hapus -->
                                     <div class="absolute top-3 right-3 flex gap-1">
                                         <button onclick="bukaModalEditTabungan('${docId}', '${pemilik.replace(/'/g, "\\'")}', '${data.nama.replace(/'/g, "\\'")}', ${data.target}, '${fotoUrl}')" class="bg-black/60 hover:bg-yellow-500 text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Edit Tabungan">✏️</button>
                                         <button onclick="hapusTabungan('${docId}')" class="bg-black/60 hover:bg-red-600 text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Hapus Tabungan">✖</button>
                                     </div>
                                 </div>
                                 
-                                <div class="p-6">
-                                    <div class="flex justify-between text-sm mb-1.5">
+                                <div class="p-6 space-y-3">
+                                    <div class="flex justify-between text-sm">
                                         <span class="text-gray-600 dark:text-gray-400 text-xs">Terkumpul: <strong class="text-gray-900 dark:text-gray-200">Rp ${data.terkumpul.toLocaleString('id-ID')}</strong></span>
                                         <span class="text-gray-500 dark:text-gray-400 text-xs">Target: Rp ${data.target.toLocaleString('id-ID')}</span>
                                     </div>
-                                    <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-2 mt-2">
+                                    <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5">
                                         <div class="${barColor} h-2.5 rounded-full transition-all duration-500" style="width: ${persen}%"></div>
                                     </div>
-                                    <p class="text-xs text-right text-gray-500 dark:text-gray-400 mb-2 font-semibold">${persen.toFixed(1)}% Tercapai</p>
+                                    <p class="text-xs text-right text-gray-500 dark:text-gray-400 font-semibold">${persen.toFixed(1)}% Tercapai</p>
+
+                                    <!-- Bagian List Riwayat Penambahan Saldo -->
+                                    <div class="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+                                        <p class="text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-2">📜 Riwayat Penambahan Saldo:</p>
+                                        <div class="max-h-28 overflow-y-auto space-y-1 pr-1">
+                                            ${riwayatListHtml}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="px-6 pb-6 pt-0">
-                                <button onclick="tambahSaldoTabungan('${docId}', ${data.terkumpul})" class="w-full bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-slate-600 text-indigo-700 dark:text-indigo-300 font-semibold py-2.5 rounded-xl transition border border-indigo-200 dark:border-slate-600 shadow-sm text-xs">
+                                <button onclick="bukaModalTambahSaldoTabungan('${docId}', ${data.terkumpul})" class="w-full bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-slate-600 text-indigo-700 dark:text-indigo-300 font-semibold py-2.5 rounded-xl transition border border-indigo-200 dark:border-slate-600 shadow-sm text-xs">
                                     + Tambah Saldo Tabungan
                                 </button>
                             </div>
@@ -2727,30 +2782,130 @@
 
         let base64EditTabunganImage = '';
 
-        function bukaModalEditTabungan(id, pemilik, nama, target, fotoLama) {
-            document.getElementById('edit-tabungan-id').value = id;
-            document.getElementById('edit-pemilik-tabungan').value = pemilik;
-            document.getElementById('edit-nama-tabungan').value = nama;
-            document.getElementById('edit-target-tabungan').value = target.toLocaleString('id-ID');
+        function bukaModalTambahSaldoTabungan(id, terkumpulSekarang) {
+            document.getElementById('target-id-tabungan-aktif').value = id;
+            document.getElementById('input-nominal-tambah-tabungan').value = '';
             
-            base64EditTabunganImage = fotoLama;
-            const previewContainer = document.getElementById('edit-tabungan-preview-container');
-            const previewImg = document.getElementById('edit-tabungan-preview');
-            
-            if (fotoLama) {
-                previewImg.src = fotoLama;
-                previewContainer.classList.remove('hidden');
-            } else {
-                previewContainer.classList.add('hidden');
+            // Set otomatis tanggal hari ini
+            const today = new Date().toISOString().split('T')[0];
+            const inputTgl = document.getElementById('input-tanggal-tambah-tabungan');
+            if (inputTgl) inputTgl.value = today;
+
+            document.getElementById('modal-tambah-saldo-tabungan').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('input-nominal-tambah-tabungan').focus();
+            }, 100);
+        }
+
+        function tutupModalTambahSaldoTabungan() {
+            document.getElementById('modal-tambah-saldo-tabungan').classList.add('hidden');
+        }
+
+        function prosesTambahSaldoTabungan() {
+            const id = document.getElementById('target-id-tabungan-aktif').value;
+            const rawVal = document.getElementById('input-nominal-tambah-tabungan').value;
+            const tanggalVal = document.getElementById('input-tanggal-tambah-tabungan').value;
+            const nominal = unformatRupiah(rawVal);
+
+            if (!nominal || nominal <= 0 || !tanggalVal) {
+                return alert("Masukkan tanggal dan nominal penambahan yang valid!");
             }
 
-            document.getElementById('modal-edit-tabungan').classList.remove('hidden');
+            db.collection("tabungan").doc(id).get().then((docSnap) => {
+                if (!docSnap.exists) return;
+                const dataTabungan = docSnap.data();
+                const terkumpulLama = dataTabungan.terkumpul || 0;
+                
+                let riwayatArray = dataTabungan.riwayatTabungan || [];
+                riwayatArray.push({
+                    nominal: nominal,
+                    tanggal: tanggalVal
+                });
+
+                db.collection("tabungan").doc(id).update({ 
+                    terkumpul: terkumpulLama + nominal, 
+                    riwayatTabungan: riwayatArray,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                }).then(() => {
+                    tutupModalTambahSaldoTabungan();
+                    alert("Saldo tabungan dan riwayat berhasil ditambahkan!");
+                });
+            }).catch(e => alert("Gagal memperbarui saldo: " + e.message));
         }
 
-        function tutupModalEditTabungan() {
-            document.getElementById('modal-edit-tabungan').classList.add('hidden');
+        function bukaModalEditRiwayatTabungan(docId, index, tanggal, nominal) {
+            document.getElementById('edit-riwayat-tabungan-id').value = docId;
+            document.getElementById('edit-riwayat-index').value = index;
+            document.getElementById('edit-riwayat-tanggal').value = tanggal;
+            document.getElementById('edit-riwayat-nominal').value = nominal.toLocaleString('id-ID');
+            document.getElementById('modal-edit-riwayat-tabungan').classList.remove('hidden');
         }
 
+        function tutupModalEditRiwayatTabungan() {
+            document.getElementById('modal-edit-riwayat-tabungan').classList.add('hidden');
+        }
+
+        function prosesSimpanEditRiwayatTabungan() {
+            const docId = document.getElementById('edit-riwayat-tabungan-id').value;
+            const index = parseInt(document.getElementById('edit-riwayat-index').value, 10);
+            const tanggalBaru = document.getElementById('edit-riwayat-tanggal').value;
+            const nominalBaru = unformatRupiah(document.getElementById('edit-riwayat-nominal').value);
+
+            if (!tanggalBaru || isNaN(nominalBaru) || nominalBaru <= 0) {
+                return alert("Tanggal dan nominal harus diisi dengan benar!");
+            }
+
+            db.collection("tabungan").doc(docId).get().then((docSnap) => {
+                if (!docSnap.exists) return;
+                let dataTabungan = docSnap.data();
+                let riwayatArray = dataTabungan.riwayatTabungan || [];
+
+                if (riwayatArray[index] !== undefined) {
+                    riwayatArray[index] = {
+                        tanggal: tanggalBaru,
+                        nominal: nominalBaru
+                    };
+
+                    // Hitung ulang total terkumpul dari seluruh riwayat
+                    let totalTerkumpulBaru = riwayatArray.reduce((sum, item) => sum + (item.nominal || 0), 0);
+
+                    db.collection("tabungan").doc(docId).update({
+                        terkumpul: totalTerkumpulBaru,
+                        riwayatTabungan: riwayatArray,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        tutupModalEditRiwayatTabungan();
+                        alert("Riwayat tabungan berhasil diperbarui!");
+                    });
+                }
+            }).catch(e => alert("Gagal mengupdate riwayat: " + e.message));
+        }
+
+        function hapusRiwayatTabungan(docId, index) {
+            if (confirm("Apakah Anda yakin ingin menghapus catatan riwayat penambahan ini? (Total saldo terkumpul akan disesuaikan kembali)")) {
+                db.collection("tabungan").doc(docId).get().then((docSnap) => {
+                    if (!docSnap.exists) return;
+                    let dataTabungan = docSnap.data();
+                    let riwayatArray = dataTabungan.riwayatTabungan || [];
+
+                    if (riwayatArray[index] !== undefined) {
+                        riwayatArray.splice(index, 1); // Hapus item pada index tersebut
+
+                        // Hitung ulang total terkumpul
+                        let totalTerkumpulBaru = riwayatArray.reduce((sum, item) => sum + (item.nominal || 0), 0);
+
+                        db.collection("tabungan").doc(docId).update({
+                            terkumpul: totalTerkumpulBaru,
+                            riwayatTabungan: riwayatArray,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            alert("Riwayat berhasil dihapus!");
+                        });
+                    }
+                }).catch(e => alert("Gagal menghapus riwayat: " + e.message));
+            }
+        }
+        
         function previewEditTabunganFile(event) {
             const file = event.target.files[0];
             if (file) {
@@ -3364,6 +3519,60 @@
 
                 container.innerHTML = html;
             });
+        }
+
+        // Contoh fungsi render silsilah dengan sistem klik interaktif (Accordion)
+        function renderInteractiveTree(dataList) {
+            const container = document.getElementById('visual-family-tree');
+            container.innerHTML = '';
+
+            // Kelompokkan data berdasarkan level (Kakek -> Ortu -> Anak -> Cucu)
+            // Contoh untuk level 1 (Kakek & Nenek):
+            let kakekNenekList = dataList.filter(item => item.peran.includes('Kakek') || item.peran.includes('Nenek'));
+
+            let html = `<div class="space-y-4 w-full max-w-2xl mx-auto">`;
+            
+            kakekNenekList.forEach(kakek => {
+                html += `
+                    <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-md">
+                        <!-- Tombol Klik Utama Kakek/Nenek -->
+                        <div onclick="toggleAnak('${kakek.id}')" class="flex justify-between items-center cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">👴👵</span>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">${kakek.nama}</h4>
+                                    <p class="text-[10px] text-gray-400">Klik untuk lihat anak-anak (${kakek.peran})</p>
+                                </div>
+                            </div>
+                            <span id="icon-${kakek.id}" class="text-xs text-blue-400 font-bold">▼ Buka</span>
+                        </div>
+
+                        <!-- Kontainer Anak yang awalnya disembunyikan (hidden) -->
+                        <div id="anak-dari-${kakek.id}" class="hidden pl-6 mt-4 pt-3 border-t border-slate-700 space-y-3">
+                            <!-- Data anak-anaknya akan dirender di sini saat diklik -->
+                            <p class="text-xs text-gray-400 italic">Memuat keturunan...</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // Fungsi pendukung saat card diklik untuk membuka/menutup anak
+        function toggleAnak(idKakek) {
+            const kontainerAnak = document.getElementById(`anak-dari-${idKakek}`);
+            const icon = document.getElementById(`icon-${idKakek}`);
+            
+            if (kontainerAnak.classList.contains('hidden')) {
+                kontainerAnak.classList.remove('hidden');
+                icon.innerText = "▲ Tutup";
+                // Di sini Anda bisa memasukkan logika memfilter anak dari kakek tersebut secara dinamis
+            } else {
+                kontainerAnak.classList.add('hidden');
+                icon.innerText = "▼ Buka";
+            }
         }
 
         function renderTreeNodeCards(list) {
