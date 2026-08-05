@@ -1099,7 +1099,11 @@
         let pieChartInstance = null;
         let cacheDataAset = [];
 
-        let latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Anak': 0 };
+        let latestPnlByUser = { 
+            'Ayah': { pnl: 0, modal: 0 }, 
+            'Bunda': { pnl: 0, modal: 0 }, 
+            'Anak': { pnl: 0, modal: 0 } 
+        };
         let latestDebtSummary = { totalHutang: 0, totalTerbayar: 0, sisaHutang: 0, debtors: [] };
         let latestFamilyDebtSummary = { totalHutang: 0, totalTerbayar: 0, sisaHutang: 0, debtors: [] };
         let currentUserJenisAkun = '';
@@ -3090,7 +3094,11 @@
                 let grandTotalModal = 0;
                 let dataCount = 0;
 
-                latestPnlByUser = { 'Ayah': 0, 'Bunda': 0, 'Anak': 0 };
+                latestPnlByUser = { 
+                    'Ayah': { pnl: 0, modal: 0 }, 
+                    'Bunda': { pnl: 0, modal: 0 }, 
+                    'Anak': { pnl: 0, modal: 0 } 
+                };
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); const docId = doc.id;
@@ -3101,7 +3109,8 @@
                     const pnlRp = totalSekarang - totalModal;
 
                     if (latestPnlByUser[pemilik] !== undefined) {
-                        latestPnlByUser[pemilik] += pnlRp;
+                        latestPnlByUser[pemilik].pnl += pnlRp;
+                        latestPnlByUser[pemilik].modal += totalModal;
                     }
 
                     if (filterUser === 'Semua' || filterUser === pemilik) {
@@ -3645,8 +3654,10 @@
             const ctx = canvasEl.getContext('2d');
             if (cryptoProfitChartInstance) cryptoProfitChartInstance.destroy();
 
-            const labels = Object.keys(pnlData);
-            const values = Object.values(pnlData);
+            const labels = Object.keys(pnlData); // ['Ayah', 'Bunda', 'Anak']
+            const values = labels.map(user => pnlData[user].pnl);
+            const modals = labels.map(user => pnlData[user].modal);
+            
             const backgroundColors = values.map(val => val >= 0 ? 'rgba(34, 197, 94, 0.7)' : 'rgba(239, 68, 68, 0.7)');
 
             cryptoProfitChartInstance = new Chart(ctx, {
@@ -3664,7 +3675,25 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    const pnlVal = values[index];
+                                    const modalVal = modals[index];
+                                    const persen = modalVal > 0 ? (pnlVal / modalVal) * 100 : 0;
+                                    const simbol = pnlVal >= 0 ? '+' : '';
+                                    
+                                    return [
+                                        ` Total PnL: ${simbol}Rp ${Math.abs(pnlVal).toLocaleString('id-ID')}`,
+                                        ` Performa (%): ${simbol}${persen.toFixed(2)}%`
+                                    ];
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
                         x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } }
