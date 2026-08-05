@@ -3683,12 +3683,19 @@
                                     const index = context.dataIndex;
                                     const pnlVal = values[index];
                                     const modalVal = modals[index];
+                                    const nilaiSekarang = modalVal + pnlVal; // Total uang sekarang
                                     const persen = modalVal > 0 ? (pnlVal / modalVal) * 100 : 0;
-                                    const simbol = pnlVal >= 0 ? '+' : '';
+                                    
+                                    // Tentukan simbol minus/plus untuk Rupiah dan Persen
+                                    const isMinus = pnlVal < 0;
+                                    const simbolRp = isMinus ? '- Rp ' : '+ Rp ';
+                                    const simbolPersen = isMinus ? '' : '+';
                                     
                                     return [
-                                        ` Total PnL: ${simbol}Rp ${Math.abs(pnlVal).toLocaleString('id-ID')}`,
-                                        ` Performa (%): ${simbol}${persen.toFixed(2)}%`
+                                        ` Total Modal: Rp ${modalVal.toLocaleString('id-ID')}`,
+                                        ` Total Nilai Sekarang: Rp ${nilaiSekarang.toLocaleString('id-ID')}`,
+                                        ` Total PnL: ${simbolRp}${Math.abs(pnlVal).toLocaleString('id-ID')}`,
+                                        ` Performa (%): ${simbolPersen}${persen.toFixed(2)}%`
                                     ];
                                 }
                             }
