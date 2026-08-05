@@ -25,6 +25,75 @@
         .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
         .fade-out { transition: opacity 0.5s ease; opacity: 0; }
         #map { height: 250px; width: 100%; border-radius: 0.75rem; z-index: 10; }
+
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        /* Efek Kartu Glassmorphism Minimalis */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-3px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 30px -10px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Input & Form Modern Elegan */
+        .modern-input {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .modern-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+            outline: none;
+        }
+
+        /* Tombol Aksi Utama dengan Gradient Halus */
+        .btn-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .btn-gradient:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Custom Scrollbar yang Minimalis */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(51, 65, 85, 0.8);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.8);
+        }
+        
     </style>
 </head>
 <body id="body-root" class="bg-slate-900 text-gray-100 font-sans pb-20 transition-colors duration-300">
@@ -2765,46 +2834,55 @@
                     }
 
                     container.innerHTML += `
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between overflow-hidden hover:shadow-md transition">
-                            <div>
-                                <div class="h-40 overflow-hidden relative bg-slate-900">
-                                    <img src="${fotoUrl}" alt="Foto Target" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent pointer-events-none"></div>
-                                    <span class="absolute top-3 left-3 text-[10px] font-bold px-3 py-1 rounded-full ${ownerBadgeColor} shadow">👤 ${pemilik}</span>
-                                    <h4 class="absolute bottom-3 left-4 right-4 font-bold text-white text-base drop-shadow-md truncate pointer-events-none">${data.nama}</h4>
-                                    
-                                    <div class="absolute top-3 right-3 flex gap-1">
-                                        <button onclick="bukaModalEditTabungan('${docId}', '${pemilik.replace(/'/g, "\\'")}', '${data.nama.replace(/'/g, "\\'")}', ${data.target}, '${fotoUrl}')" class="bg-black/60 hover:bg-yellow-500 text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Edit Tabungan">✏️</button>
-                                        <button onclick="hapusTabungan('${docId}')" class="bg-black/60 hover:bg-red-600 text-white transition text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow" title="Hapus Tabungan">✖</button>
-                                    </div>
-                                </div>
+                       
+                    <div class="glass-card glass-card-hover rounded-3xl flex flex-col justify-between overflow-hidden">
+                        <div>
+                            <!-- Bagian Foto & Header Card -->
+                            <div class="h-44 overflow-hidden relative bg-slate-900">
+                                <img src="${fotoUrl}" alt="Foto Target" class="w-full h-full object-cover hover:scale-105 transition duration-500 cursor-pointer" onclick="bukaModalGambarBesar(this.src)">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent"></div>
+                                <span class="absolute top-3 left-3 text-[10px] font-bold px-3 py-1 rounded-full ${ownerBadgeColor} backdrop-blur-md shadow-lg">👤 ${pemilik}</span>
+                                <h4 class="absolute bottom-3 left-4 right-4 font-bold text-white text-base tracking-wide drop-shadow">${data.nama}</h4>
                                 
-                                <div class="p-6 space-y-3">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600 dark:text-gray-400 text-xs">Terkumpul: <strong class="text-gray-900 dark:text-gray-200">Rp ${data.terkumpul.toLocaleString('id-ID')}</strong></span>
-                                        <span class="text-gray-500 dark:text-gray-400 text-xs">Target: Rp ${data.target.toLocaleString('id-ID')}</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5">
-                                        <div class="${barColor} h-2.5 rounded-full transition-all duration-500" style="width: ${persen}%"></div>
-                                    </div>
-                                    <p class="text-xs text-right text-gray-500 dark:text-gray-400 font-semibold">${persen.toFixed(1)}% Tercapai</p>
-
-                                    <!-- Bagian List Riwayat Penambahan Saldo -->
-                                    <div class="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
-                                        <p class="text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-2">📜 Riwayat Penambahan Saldo:</p>
-                                        <div class="max-h-28 overflow-y-auto space-y-1 pr-1">
-                                            ${riwayatListHtml}
-                                        </div>
-                                    </div>
+                                <div class="absolute top-3 right-3 flex gap-1.5">
+                                    <button onclick="bukaModalEditTabungan(...)" class="bg-slate-900/80 hover:bg-yellow-500 text-white transition text-xs font-bold rounded-full h-8 w-8 flex items-center justify-center backdrop-blur shadow" title="Edit">✏️</button>
+                                    <button onclick="hapusTabungan('${docId}')" class="bg-slate-900/80 hover:bg-red-500 text-white transition text-xs font-bold rounded-full h-8 w-8 flex items-center justify-center backdrop-blur shadow" title="Hapus">✖</button>
                                 </div>
                             </div>
                             
-                            <div class="px-6 pb-6 pt-0">
-                                <button onclick="bukaModalTambahSaldoTabungan('${docId}', ${data.terkumpul})" class="w-full bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-slate-600 text-indigo-700 dark:text-indigo-300 font-semibold py-2.5 rounded-xl transition border border-indigo-200 dark:border-slate-600 shadow-sm text-xs">
-                                    + Tambah Saldo Tabungan
-                                </button>
+                            <!-- Bagian Detail & Progress -->
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-slate-400">Terkumpul: <strong class="text-white font-semibold">Rp ${data.terkumpul.toLocaleString('id-ID')}</strong></span>
+                                    <span class="text-slate-400">Target: Rp ${data.target.toLocaleString('id-ID')}</span>
+                                </div>
+                                
+                                <!-- Progress Bar Minimalis -->
+                                <div class="w-full bg-slate-900/80 rounded-full h-2 p-0.5 border border-slate-700/50">
+                                    <div class="${barColor} h-full rounded-full transition-all duration-700 shadow-sm" style="width: ${persen}%"></div>
+                                </div>
+                                <div class="flex justify-between items-center text-[11px]">
+                                    <span class="text-slate-500 italic">Progress Finansial</span>
+                                    <span class="text-indigo-400 font-bold">${persen.toFixed(1)}%</span>
+                                </div>
+
+                                <!-- Bagian List Riwayat Penambahan Saldo (Clean & Minimalist) -->
+                                <div class="mt-4 pt-4 border-t border-slate-700/50">
+                                    <p class="text-[11px] font-bold text-slate-300 mb-2.5 flex items-center gap-1.5">📜 Riwayat Penambahan:</p>
+                                    <div class="max-h-32 overflow-y-auto space-y-1.5 pr-1">
+                                        ${riwayatListHtml}
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        
+                        <!-- Tombol Aksi di Bawah -->
+                        <div class="px-6 pb-6 pt-0">
+                            <button onclick="bukaModalTambahSaldoTabungan('${docId}', ${data.terkumpul})" class="w-full btn-gradient text-white font-semibold py-3 rounded-2xl shadow-md text-xs tracking-wide">
+                                + Tambah Saldo Tabungan
+                            </button>
+                        </div>
+                    </div>
                     `;
                 });
 
