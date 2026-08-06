@@ -101,7 +101,7 @@
         
     </style>
 </head>
-<body id="body-root" class="bg-slate-900 text-gray-100 font-sans pb-20 transition-colors duration-300">
+<body id="body-root" class="bg-gray-100 text-gray-900 dark:bg-slate-900 dark:text-gray-100 font-sans pb-20 transition-colors duration-300"></body>
 
     <!-- Loader Screen -->
     <div id="loader" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center transition-opacity duration-500">
@@ -179,7 +179,7 @@
             </div>
 
             <div class="hidden sm:flex items-center gap-2">
-                <button onclick="toggleTheme()" id="theme-icon" class="h-10 w-10 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-sm shadow hover:scale-105 transition flex-shrink-0">☀️</button>
+                <!-- Versi Desktop -->
                 <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow flex-shrink-0">Keluar</button>
             </div>
 
@@ -1212,39 +1212,7 @@
         let unsubscribeTree = null;
         let unsubscribeHutangKeluarga = null;
 
-        function toggleTheme() {
-            const htmlRoot = document.getElementById('html-root');
-            const bodyRoot = document.getElementById('body-root');
-            const themeIcon = document.getElementById('theme-icon');
-
-            if (htmlRoot.classList.contains('dark')) {
-                htmlRoot.classList.remove('dark');
-                bodyRoot.className = "bg-gray-100 text-gray-900 font-sans pb-20 transition-colors duration-300";
-                if(themeIcon) themeIcon.innerText = '🌙';
-                localStorage.setItem('theme', 'light');
-            } else {
-                htmlRoot.classList.add('dark');
-                bodyRoot.className = "bg-slate-900 text-gray-100 font-sans pb-20 transition-colors duration-300";
-                if(themeIcon) themeIcon.innerText = '☀️';
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            const htmlRoot = document.getElementById('html-root');
-            const bodyRoot = document.getElementById('body-root');
-            const themeIcon = document.getElementById('theme-icon');
-
-            if (savedTheme === 'light') {
-                htmlRoot.classList.remove('dark');
-                bodyRoot.className = "bg-gray-100 text-gray-900 font-sans pb-20 transition-colors duration-300";
-                if(themeIcon) themeIcon.innerText = '🌙';
-            } else {
-                htmlRoot.classList.add('dark');
-                bodyRoot.className = "bg-slate-900 text-gray-100 font-sans pb-20 transition-colors duration-300";
-            }
-            
+        window.addEventListener('DOMContentLoaded', () => {            
             inisialisasiRealtimeAset();
             setTanggalHariIni();
             setDefaultFilterBulan();
