@@ -3,6 +3,7 @@
   "short_name": "Keuangan Keluarga",
   "description": "Sistem manajemen keuangan, pencatatan aset, kas bulanan, dan portofolio crypto real-time keluarga.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#2563eb",
