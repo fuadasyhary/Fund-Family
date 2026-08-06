@@ -174,7 +174,7 @@
                     <button id="menu-invest" onclick="pindahHalaman('invest')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🚀 Crypto</button>
                     <button id="menu-dokumen" onclick="pindahHalaman('dokumen')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📁 Dokumen</button>
                     <button id="menu-silsilah" onclick="pindahHalaman('silsilah')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">👨‍👩‍👧‍👦 Keluarga</button>
-                    <button id="menu-posisi" onclick="pindahHalaman('posisi')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📍 Posisi</button>
+                    <button id="menu-posisi" onclick="pindahHalaman('posisi')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🏠 Rumah</button>
                 </nav>
             </div>
 
@@ -539,37 +539,37 @@
                 </div>
             </div>
 
-            <!-- HALAMAN 9: LIVE POSISI GPS -->
+            <!-- HALAMAN 9: RUMAH KELUARGA -->
             <div id="page-posisi" class="space-y-6 hidden">
                 <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
                     <div>
-                        <h3 class="text-lg font-bold text-white tracking-wide">Live Posisi GPS HP Keluarga</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Pantau dan bagikan koordinat GPS perangkat secara real-time.</p>
+                        <h3 class="text-lg font-bold text-white tracking-wide">Lokasi Rumah & Tempat Keluarga</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Pantau titik lokasi penting, rumah, atau posisi anggota keluarga.</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="bukaModalPosisi()" class="btn-gradient text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg">+ Tambah / Update Posisi</button>
+                        <button onclick="bukaModalPosisi()" class="btn-gradient text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg">+ Tambah / Update Lokasi</button>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Peta Interaktif Leaflet -->
                     <div class="glass-card p-6 lg:col-span-1 space-y-4">
-                        <h4 class="font-bold text-sm text-white flex items-center gap-2">🗺️ Peta Lokasi Anggota</h4>
+                        <h4 class="font-bold text-sm text-white flex items-center gap-2">🗺️ Peta Lokasi Keluarga</h4>
                         <div id="map-live-posisi" style="height: 350px; width: 100%; border-radius: 0.75rem; z-index: 10;"></div>
                         <p class="text-[10px] text-slate-400 text-center">Klik salah satu data di list untuk memusatkan peta.</p>
                     </div>
 
-                    <!-- List Data Live Posisi -->
+                    <!-- List Data Lokasi -->
                     <div class="glass-card p-6 lg:col-span-2 space-y-4">
                         <div class="flex justify-between items-center">
-                            <h4 class="font-bold text-sm text-white">📋 Daftar Posisi Perangkat & Anggota</h4>
+                            <h4 class="font-bold text-sm text-white">📋 Daftar Lokasi & Rumah Keluarga</h4>
                             <span id="posisi-count-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">0 Lokasi</span>
                         </div>
                         <div class="overflow-x-auto max-h-[400px] overflow-y-auto pr-1">
                             <table class="w-full text-left border-collapse table-modern">
                                 <thead>
                                     <tr>
-                                        <th>Nama / Perangkat</th>
+                                        <th>Nama Tempat / Anggota</th>
                                         <th>Koordinat (Lat, Lng)</th>
                                         <th>Waktu Update</th>
                                         <th class="text-center">Aksi (GMap / Edit)</th>
@@ -1171,14 +1171,14 @@
         </div>
     </div>
 
-    <!-- Modal Tambah / Edit Live Posisi GPS -->
+    <!-- Modal Tambah / Edit Lokasi Rumah & Keluarga -->
     <div id="modal-posisi" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4">
-            <h3 id="modal-posisi-title" class="font-bold text-base text-gray-900 dark:text-white">📍 Tambah / Update Live Posisi</h3>
+            <h3 id="modal-posisi-title" class="font-bold text-base text-gray-900 dark:text-white">🏠 Tambah / Update Lokasi Keluarga</h3>
             <input type="hidden" id="edit-posisi-id">
             <div>
-                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama / Pemilik Perangkat</label>
-                <input type="text" id="posisi-nama" placeholder="Contoh: HP Ayah / HP Bunda" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama Tempat / Anggota</label>
+                <input type="text" id="posisi-nama" placeholder="Contoh: Rumah Utama / Kantor Ayah" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
             </div>
             <div>
                 <div class="flex justify-between items-center mb-1">
@@ -1188,11 +1188,11 @@
                 <input type="text" id="posisi-koordinat" placeholder="Contoh: -7.2575, 112.7521" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
             </div>
             <div>
-                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Keterangan Tambahan (Opsional)</label>
-                <input type="text" id="posisi-keterangan" placeholder="Contoh: Sedang di Kantor / Perjalanan Pulang" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
+                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Keterangan / Alamat (Opsional)</label>
+                <input type="text" id="posisi-keterangan" placeholder="Contoh: Jl. Ahmad Yani No. 123, Surabaya" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl text-xs text-gray-900 dark:text-white">
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="simpanLivePosisi()" class="flex-1 btn-gradient text-white font-bold py-3 rounded-xl text-xs transition">Simpan Posisi</button>
+                <button onclick="simpanLivePosisi()" class="flex-1 btn-gradient text-white font-bold py-3 rounded-xl text-xs transition">Simpan Lokasi</button>
                 <button onclick="tutupModalPosisi()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-xs transition">Batal</button>
             </div>
         </div>
@@ -3957,7 +3957,21 @@
             document.getElementById('modal-posisi').classList.add('hidden');
         }
 
-        // Ambil lokasi otomatis dari GPS Perangkat HP yang sedang digunakan
+        function bukaModalPosisi(id = '', nama = '', koordinat = '', keterangan = '') {
+            editIdLivePosisi = id || null;
+            document.getElementById('edit-posisi-id').value = id;
+            document.getElementById('posisi-nama').value = nama;
+            document.getElementById('posisi-koordinat').value = koordinat;
+            document.getElementById('posisi-keterangan').value = keterangan;
+            
+            document.getElementById('modal-posisi-title').innerText = id ? '✏️ Edit Lokasi Keluarga' : '🏠 Tambah Lokasi Rumah / Keluarga';
+            document.getElementById('modal-posisi').classList.remove('hidden');
+        }
+
+        function tutupModalPosisi() {
+            document.getElementById('modal-posisi').classList.add('hidden');
+        }
+
         function ambilGPSHpSekarang() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
@@ -3970,7 +3984,6 @@
             }
         }
 
-        // Simpan atau Update data ke Firestore database
         function simpanLivePosisi() {
             const nama = document.getElementById('posisi-nama').value.trim();
             const koordinat = document.getElementById('posisi-koordinat').value.trim();
@@ -3987,7 +4000,7 @@
             const dataPayload = {
                 nama: nama,
                 koordinat: koordinat,
-                keterangan: keterangan || 'Live Posisi',
+                keterangan: keterangan || 'Rumah / Lokasi Keluarga',
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 createdBy: document.getElementById('user-display-name')?.innerText || 'Anggota'
             };
@@ -3996,19 +4009,17 @@
             let promise = editIdLivePosisi ? dbRef.doc(editIdLivePosisi).update(dataPayload) : dbRef.add(dataPayload);
 
             promise.then(() => {
-                alert("Live posisi berhasil disimpan!");
+                alert("Data lokasi keluarga berhasil disimpan!");
                 tutupModalPosisi();
-            }).catch(e => alert("Gagal menyimpan posisi: " + e.message));
+            }).catch(e => alert("Gagal menyimpan lokasi: " + e.message));
         }
 
-        // Hapus data posisi
         function hapusLivePosisi(id) {
-            if (confirm("Hapus data live posisi ini?")) {
+            if (confirm("Hapus data lokasi ini dari daftar?")) {
                 db.collection("live_posisi").doc(id).delete().then(() => alert("Berhasil dihapus!"));
             }
         }
 
-        // Inisialisasi & Realtime Listener untuk List Data dan Peta
         function muatDataLivePosisi() {
             if (unsubscribeLivePosisi) {
                 unsubscribeLivePosisi();
@@ -4018,23 +4029,25 @@
             const tbody = document.getElementById('tabel-live-posisi');
             if (!tbody) return;
 
+            // 1. Inisialisasi Peta SEKALI SAJA
+            if (!mapLiveInstance) {
+                mapLiveInstance = L.map('map-live-posisi').setView([-7.2575, 112.7521], 12);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(mapLiveInstance);
+            }
+
+            // PENTING: Paksa Leaflet untuk merender ulang ukuran kotak agar tidak abu-abu/lemot
+            setTimeout(() => {
+                mapLiveInstance.invalidateSize();
+            }, 300);
+
             unsubscribeLivePosisi = db.collection("live_posisi").orderBy("updatedAt", "desc").onSnapshot((snapshot) => {
                 tbody.innerHTML = '';
                 let count = 0;
                 let listLokasiPeta = [];
 
-                // Inisialisasi Peta Leaflet khusus halaman posisi jika belum ada
-                if (!mapLiveInstance) {
-                    setTimeout(() => {
-                        mapLiveInstance = L.map('map-live-posisi').setView([-7.2575, 112.7521], 12);
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            maxZoom: 19,
-                            attribution: '© OpenStreetMap'
-                        }).addTo(mapLiveInstance);
-                    }, 300);
-                }
-
-                // Bersihkan marker lama di peta
                 if (markersLiveArray && mapLiveInstance) {
                     markersLiveArray.forEach(m => mapLiveInstance.removeLayer(m));
                     markersLiveArray = [];
@@ -4050,11 +4063,9 @@
 
                     listLokasiPeta.push({ lat, lng, nama: data.nama });
 
-                    // Buat Link Direct ke Google Maps
                     const gmapUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
                     const waktuStr = data.updatedAt ? formatWaktu(data.updatedAt) : 'Baru saja';
 
-                    // Tambahkan marker ke Leaflet Map
                     if (mapLiveInstance) {
                         const marker = L.marker([lat, lng]).addTo(mapLiveInstance)
                             .bindPopup(`<b>${data.nama}</b><br>${data.keterangan || ''}<br><a href="${gmapUrl}" target="_blank" style="color:blue;font-weight:bold;">Buka di GMap ↗</a>`);
@@ -4068,7 +4079,7 @@
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-700/30 transition">
                             <td class="p-4 font-semibold text-white">
-                                📍 ${data.nama}<br>
+                                🏠 ${data.nama}<br>
                                 <span class="text-[10px] text-slate-400 font-normal">${data.keterangan || ''}</span>
                             </td>
                             <td class="p-4 text-xs font-mono text-slate-300">${data.koordinat}</td>
@@ -4087,11 +4098,10 @@
                 document.getElementById('posisi-count-badge').innerText = `${count} Lokasi`;
 
                 if (count === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada data live posisi GPS yang tersimpan.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada data lokasi keluarga yang tersimpan.</td></tr>`;
                 } else if (mapLiveInstance && listLokasiPeta.length > 0) {
-                    // Sesuaikan pandangan peta ke koordinat terbaru
                     mapLiveInstance.setView([listLokasiPeta[0].lat, listLokasiPeta[0].lng], 13);
-                    setTimeout(() => mapLiveInstance.invalidateSize(), 250);
+                    mapLiveInstance.invalidateSize();
                 }
             });
         }
@@ -5070,6 +5080,17 @@
                     if (p === halaman) {
                         el.classList.remove('hidden');
                         if (btn) btn.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
+                        
+                        // JIKA HALAMAN POSISI DIBUKA, PAKSA REFRESH PETA DI SINI
+                        if (halaman === 'posisi') {
+                            muatDataLivePosisi();
+                            setTimeout(() => {
+                                if (mapLiveInstance) {
+                                    mapLiveInstance.invalidateSize(true);
+                                }
+                            }, 250);
+                        }
+
                     } else {
                         el.classList.add('hidden');
                         if (btn) btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white";
