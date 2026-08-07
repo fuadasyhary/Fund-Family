@@ -1989,9 +1989,42 @@
                         rowCount++;
                         if(data.jenis === 'masuk') filterTabelMasuk += data.jumlah;
                         if(data.jenis === 'keluar') filterTabelKeluar += data.jumlah;
-                        // ... (kode render baris tabel Anda yang sudah ada sebelumnya) ...
+
+                        let statusBadge = data.status === 'Diupdate' && data.updatedAt 
+                            ? `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)}</div>`
+                            : `<div class="mt-1 inline-block bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)}</div>`;
+
+                        const textColor = data.jenis === 'masuk' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+                        const simbol = data.jenis === 'masuk' ? '+' : '-';
+                        const ketAman = data.keterangan ? data.keterangan.replace(/'/g, "\\'") : '';
+                        const badgeKategori = kategori === 'permanen' 
+                            ? `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟢 Kas Keluarga</span>` 
+                            : `<span class="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟣 Limit Bulanan</span>`;
+
+                        const tglFormatYMD = waktuTransaksiObj.toISOString().split('T')[0];
+
+                        let actionButtonsHtml = currentUserJenisAkun !== 'Anak' 
+                            ? `<div class="flex justify-center space-x-2">
+                                    <button onclick="siapkanEdit('${docId}', '${kategori}', '${data.jenis}', ${data.jumlah}, '${ketAman}', '${tglFormatYMD}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Edit</button>
+                                    <button onclick="hapusTransaksi('${docId}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Hapus</button>
+                            </div>`
+                            : `<span class="text-xs text-gray-400 italic">Hanya Baca</span>`;
+
+                        tabel.innerHTML += `
+                            <tr class="border-b dark:border-slate-700 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
+                                <td class="p-4 text-sm text-gray-700 dark:text-gray-300 font-medium">${formatWaktu(data.tanggal).split(',')[0]}${badgeKategori}</td>
+                                <td class="p-4 text-gray-900 dark:text-gray-200"><span class="font-bold">${data.keterangan}</span><br>${statusBadge}</td>
+                                <td class="p-4 capitalize text-sm font-semibold">${data.jenis}</td>
+                                <td class="p-4 font-bold ${textColor} text-base">${simbol} Rp ${data.jumlah.toLocaleString('id-ID')}</td>
+                                <td class="p-4 text-center">${actionButtonsHtml}</td>
+                            </tr>
+                        `;
                     }
                 });
+
+                if (rowCount === 0) {
+                    tabel.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400 font-medium">Belum ada catatan transaksi pada bulan/filter ini.</td></tr>`;
+                }
 
                 document.getElementById('total-kas-permanen').innerText = 'Rp ' + (totalKeluargaMasuk - totalKeluargaKeluar).toLocaleString('id-ID');
                 const sisaLimitBulanan = autoLimitMasuk - autoLimitKeluar;
@@ -2000,8 +2033,7 @@
                 const infoLimitEl = document.getElementById('info-limit-bulanan');
                 if (infoLimitEl) infoLimitEl.innerText = `Limit Masuk Bulan Ini: Rp ${autoLimitMasuk.toLocaleString('id-ID')}`;
 
-                // ========================================================
-                // PASTIKAN BLOK INI BERADA DI DALAM muatDataTransaksi() TANPA ADA TEKS SAMPAH
+                // --- LOGIKA RINCIAN HARIAN & STATUS BOROS/HEMAT ---
                 const now = new Date();
                 const tahun = now.getFullYear();
                 const bulan = now.getMonth();
@@ -2048,7 +2080,7 @@
                     limitHarianIdeal: nilaiHarianIdeal,
                     totalPengeluaranBulanIni: autoLimitKeluar
                 };
-                // ========================================================
+                // -------------------------------------------------
 
                 document.getElementById('filter-masuk').innerText = 'Rp ' + filterTabelMasuk.toLocaleString('id-ID');
                 document.getElementById('filter-keluar').innerText = 'Rp ' + filterTabelKeluar.toLocaleString('id-ID');
