@@ -5346,6 +5346,43 @@
             }
         }
 
+        function tutupModalDetailHarian() {
+            const modal = document.getElementById('modal-detail-harian');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function pindahHalaman(halaman) {
+            const pages = ['dashboard', 'aset', 'kas', 'hutang', 'tabungan', 'invest', 'dokumen', 'silsilah', 'posisi'];
+            
+            pages.forEach(p => {
+                const el = document.getElementById(`page-${p}`);
+                const btn = document.getElementById(`menu-${p}`);
+                if (el) {
+                    if (p === halaman) {
+                        el.classList.remove('hidden');
+                        if (btn) btn.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
+                        
+                        // JIKA HALAMAN POSISI DIBUKA, PAKSA REFRESH PETA DI SINI
+                        if (halaman === 'posisi') {
+                            muatDataLivePosisi();
+                            setTimeout(() => {
+                                if (mapLiveInstance) {
+                                    mapLiveInstance.invalidateSize(true);
+                                }
+                            }, 250);
+                        }
+
+                    } else {
+                        el.classList.add('hidden');
+                        if (btn) btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white";
+                    }
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         // --- FUNGSI UNTUK MEMBUKA & MENUTUP MODAL ---
 
         function bukaModalHutangOnline() {
@@ -5378,13 +5415,6 @@
             document.getElementById('modal-hutang-internal').classList.add('hidden');
         }
 
-        function tutupModalDetailHarian() {
-            const modal = document.getElementById('modal-detail-harian');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        }
-        
     </script>
     <!-- Footer Web -->
     <footer class="mt-12 py-6 border-t border-gray-200 dark:border-slate-700 text-center text-xs text-gray-500 dark:text-gray-400 transition-colors">
