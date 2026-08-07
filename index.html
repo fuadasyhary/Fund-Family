@@ -207,11 +207,11 @@
                         <h3 id="total-kas-bulanan" class="text-2xl font-bold text-purple-600 dark:text-purple-400">Rp 0</h3>
                         <span id="info-limit-bulanan" class="text-[10px] text-gray-400 mt-1 block">Batasan Limit: Rp 0</span>
                     </div>
-                    <!-- CARD BARU: HARIAN -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="pindahHalaman('kas')">
+                    <!-- CARD HARIAN YANG DIPERBARUI -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailHarian()">
                         <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Harian (Limit / Sisa Hari)</p>
                         <h3 id="limit-harian-aktif" class="text-2xl font-bold text-cyan-600 dark:text-cyan-400">Rp 0</h3>
-                        <span id="info-sisa-hari" class="text-[10px] text-gray-400 mt-1 block">Sisa hari bulan ini: 0 hari</span>
+                        <span id="info-sisa-hari" class="text-[10px] text-gray-400 mt-1 block">Sisa hari bulan ini: 0 hari (Klik untuk detail)</span>
                     </div>
                 </div>
 
@@ -1207,6 +1207,19 @@
         </div>
     </div>
 
+    <!-- Modal Detail & Status Harian -->
+    <div id="modal-detail-harian" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">📅 Rincian Pengeluaran & Limit Harian</h3>
+                <button onclick="tutupModalDetailHarian()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
+            </div>
+            <div id="konten-detail-harian" class="space-y-3">
+                <!-- Data per tanggal akan dirender secara dinamis di sini -->
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Gambar Zoom / Preview Besar -->
     <div id="modal-gambar-besar" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden">
         <div class="relative max-w-4xl max-h-[90vh]">
@@ -1298,6 +1311,13 @@
 
         let mapModalPosisiInstance = null;
         let markerModalPosisiInstance = null;
+
+        // Variabel penyimpan data harian sementara untuk ditampilkan ke modal
+        let cacheDataHarianDetail = {
+            rincianPerTanggal: [],
+            limitHarianIdeal: 0,
+            totalPengeluaranBulanIni: 0
+        };
 
         window.addEventListener('DOMContentLoaded', () => {            
             inisialisasiRealtimeAset();
@@ -1926,7 +1946,6 @@
         // ------------------------------------------
 
         function muatDataTransaksi() {
-            // 1. Bersihkan listener lama yang masih aktif
             if (unsubscribeTransaksi) {
                 unsubscribeTransaksi();
                 unsubscribeTransaksi = null;
@@ -1935,7 +1954,6 @@
             const filterValue = document.getElementById('filter-bulan').value; 
             const currentBulanKey = getCurrentMonthKey();
 
-            // 2. Buat listener baru dan simpan referensinya ke variabel global
             unsubscribeTransaksi = db.collection("transaksi").orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
                 const tabel = document.getElementById('tabel-transaksi');
                 if(!tabel) return;
@@ -1971,42 +1989,9 @@
                         rowCount++;
                         if(data.jenis === 'masuk') filterTabelMasuk += data.jumlah;
                         if(data.jenis === 'keluar') filterTabelKeluar += data.jumlah;
-
-                        let statusBadge = data.status === 'Diupdate' && data.updatedAt 
-                            ? `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)}</div>`
-                            : `<div class="mt-1 inline-block bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)}</div>`;
-
-                        const textColor = data.jenis === 'masuk' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
-                        const simbol = data.jenis === 'masuk' ? '+' : '-';
-                        const ketAman = data.keterangan ? data.keterangan.replace(/'/g, "\\'") : '';
-                        const badgeKategori = kategori === 'permanen' 
-                            ? `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟢 Kas Keluarga</span>` 
-                            : `<span class="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟣 Limit Bulanan</span>`;
-
-                        const tglFormatYMD = waktuTransaksiObj.toISOString().split('T')[0];
-
-                        let actionButtonsHtml = currentUserJenisAkun !== 'Anak' 
-                            ? `<div class="flex justify-center space-x-2">
-                                    <button onclick="siapkanEdit('${docId}', '${kategori}', '${data.jenis}', ${data.jumlah}, '${ketAman}', '${tglFormatYMD}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Edit</button>
-                                    <button onclick="hapusTransaksi('${docId}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Hapus</button>
-                            </div>`
-                            : `<span class="text-xs text-gray-400 italic">Hanya Baca</span>`;
-
-                        tabel.innerHTML += `
-                            <tr class="border-b dark:border-slate-700 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
-                                <td class="p-4 text-sm text-gray-700 dark:text-gray-300 font-medium">${formatWaktu(data.tanggal).split(',')[0]}${badgeKategori}</td>
-                                <td class="p-4 text-gray-900 dark:text-gray-200"><span class="font-bold">${data.keterangan}</span><br>${statusBadge}</td>
-                                <td class="p-4 capitalize text-sm font-semibold">${data.jenis}</td>
-                                <td class="p-4 font-bold ${textColor} text-base">${simbol} Rp ${data.jumlah.toLocaleString('id-ID')}</td>
-                                <td class="p-4 text-center">${actionButtonsHtml}</td>
-                            </tr>
-                        `;
+                        // ... (kode render baris tabel Anda yang sudah ada sebelumnya) ...
                     }
                 });
-
-                if (rowCount === 0) {
-                    tabel.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400 font-medium">Belum ada catatan transaksi pada bulan/filter ini.</td></tr>`;
-                }
 
                 document.getElementById('total-kas-permanen').innerText = 'Rp ' + (totalKeluargaMasuk - totalKeluargaKeluar).toLocaleString('id-ID');
                 const sisaLimitBulanan = autoLimitMasuk - autoLimitKeluar;
@@ -2015,24 +2000,54 @@
                 const infoLimitEl = document.getElementById('info-limit-bulanan');
                 if (infoLimitEl) infoLimitEl.innerText = `Limit Masuk Bulan Ini: Rp ${autoLimitMasuk.toLocaleString('id-ID')}`;
 
-                // --- TAMBAHAN LOGIKA CARD HARIAN ---
+                // ========================================================
+                // PASTIKAN BLOK INI BERADA DI DALAM muatDataTransaksi() TANPA ADA TEKS SAMPAH
                 const now = new Date();
                 const tahun = now.getFullYear();
-                const bulan = now.getMonth(); // 0 - 11
+                const bulan = now.getMonth();
                 const tanggalHariIni = now.getDate();
-                
-                // Menghitung total jumlah hari dalam bulan aktif saat ini
                 const totalHariBulanIni = new Date(tahun, bulan + 1, 0).getDate();
-                
-                // Menghitung sisa hari
                 const sisaHari = Math.max(1, totalHariBulanIni - tanggalHariIni + 1);
-                
-                const nilaiHarian = sisaLimitBulanan > 0 ? Math.round(sisaLimitBulanan / sisaHari) : 0;
-                
-                document.getElementById('limit-harian-aktif').innerText = 'Rp ' + nilaiHarian.toLocaleString('id-ID');
+                const nilaiHarianIdeal = sisaLimitBulanan > 0 ? Math.round(sisaLimitBulanan / sisaHari) : 0;
+
+                document.getElementById('limit-harian-aktif').innerText = 'Rp ' + nilaiHarianIdeal.toLocaleString('id-ID');
                 const infoSisaHariEl = document.getElementById('info-sisa-hari');
-                if (infoSisaHariEl) infoSisaHariEl.innerText = `Sisa ${sisaHari} hari (dari ${totalHariBulanIni} hari)`;
-                // -----------------------------------
+                if (infoSisaHariEl) infoSisaHariEl.innerText = `Sisa ${sisaHari} hari (Klik untuk rincian)`;
+
+                let pengeluaranMap = {};
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.kategoriKas === 'limit_bulanan' && data.jenis === 'keluar' && data.tanggal) {
+                        const tglObj = data.tanggal.toDate();
+                        const yyyy = tglObj.getFullYear();
+                        const mm = String(tglObj.getMonth() + 1).padStart(2, '0');
+                        const dd = String(tglObj.getDate()).padStart(2, '0');
+                        const keyYMD = `${yyyy}-${mm}-${dd}`;
+
+                        if (yyyy === tahun && tglObj.getMonth() === bulan) {
+                            if (!pengeluaranMap[keyYMD]) {
+                                pengeluaranMap[keyYMD] = 0;
+                            }
+                            pengeluaranMap[keyYMD] += (data.jumlah || 0);
+                        }
+                    }
+                });
+
+                let rincianArray = [];
+                for (let tglStr in pengeluaranMap) {
+                    let tglFormatted = new Date(tglStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                    rincianArray.push({
+                        tanggalStr: tglStr,
+                        tanggalFormat: tglFormatted,
+                        totalKeluar: pengeluaranMap[tglStr]
+                    });
+                }
+
+                cacheDataHarianDetail = {
+                    rincianPerTanggal: rincianArray,
+                    limitHarianIdeal: nilaiHarianIdeal,
+                    totalPengeluaranBulanIni: autoLimitKeluar
+                };
                 // ========================================================
 
                 document.getElementById('filter-masuk').innerText = 'Rp ' + filterTabelMasuk.toLocaleString('id-ID');
@@ -5128,6 +5143,67 @@
                     }
                 }
             }, 200);
+        }
+
+        // Fungsi untuk membuka modal detail harian
+        function bukaModalDetailHarian() {
+            const container = document.getElementById('konten-detail-harian');
+            if (!container) return;
+
+            container.innerHTML = '';
+            const rincian = cacheDataHarianDetail.rincianPerTanggal;
+            const limitIdeal = cacheDataHarianDetail.limitHarianIdeal;
+
+            if (rincian.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">Belum ada pengeluaran limit bulanan tercatat pada bulan ini.</p>`;
+            } else {
+                // Urutkan berdasarkan tanggal terbaru ke terlama
+                rincian.sort((a, b) => new Date(b.tanggalStr) - new Date(a.tanggalStr));
+
+                rincian.forEach(item => {
+                    const selisih = limitIdeal - item.totalKeluar;
+                    let statusBadge = '';
+                    let statusTextColor = '';
+
+                    // Penentuan Status Boros atau Hemat berdasarkan perbandingan dengan limit harian ideal
+                    if (item.totalKeluar > limitIdeal) {
+                        statusBadge = `<span class="bg-red-950 text-red-300 border border-red-800/50 px-2.5 py-0.5 rounded-full text-[10px] font-bold">🔴 Boros (Lebih Rp ${Math.abs(selisih).toLocaleString('id-ID')})</span>`;
+                        statusTextColor = 'text-red-400';
+                    } else {
+                        statusBadge = `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800/50 px-2.5 py-0.5 rounded-full text-[10px] font-bold">🟢 Hemat (Sisa Rp ${selisih.toLocaleString('id-ID')})</span>`;
+                        statusTextColor = 'text-emerald-400';
+                    }
+
+                    container.innerHTML += `
+                        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700/80 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-white text-xs">📅 ${item.tanggalFormat}</span>
+                                ${statusBadge}
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs pt-1 border-t border-slate-800">
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Keluar Harian</span>
+                                    <strong class="${statusTextColor}">Rp ${item.totalKeluar.toLocaleString('id-ID')}</strong>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Limit Harian Ideal</span>
+                                    <strong class="text-cyan-400">Rp ${limitIdeal.toLocaleString('id-ID')}</strong>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Sisa Limit Harian</span>
+                                    <strong class="${selisih >= 0 ? 'text-blue-400' : 'text-red-400'}">Rp ${selisih.toLocaleString('id-ID')}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('modal-detail-harian').classList.remove('hidden');
+        }
+
+        function tutupModalDetailHarian() {
+            document.getElementById('modal-detail-harian').classList.add('hidden');
         }
 
         function pindahHalaman(halaman) {
