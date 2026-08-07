@@ -2033,7 +2033,7 @@
                 const infoLimitEl = document.getElementById('info-limit-bulanan');
                 if (infoLimitEl) infoLimitEl.innerText = `Limit Masuk Bulan Ini: Rp ${autoLimitMasuk.toLocaleString('id-ID')}`;
 
-                // --- LOGIKA RINCIAN HARIAN & STATUS BOROS/HEMAT ---
+                // --- LOGIKA RINCIAN HARIAN & LIST ITEM PER TANGGAL ---
                 const now = new Date();
                 const tahun = now.getFullYear();
                 const bulan = now.getMonth();
@@ -2047,6 +2047,8 @@
                 if (infoSisaHariEl) infoSisaHariEl.innerText = `Sisa ${sisaHari} hari (Klik untuk rincian)`;
 
                 let pengeluaranMap = {};
+                let transaksiPerTanggalMap = {};
+
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     if (data.kategoriKas === 'limit_bulanan' && data.jenis === 'keluar' && data.tanggal) {
@@ -2059,8 +2061,13 @@
                         if (yyyy === tahun && tglObj.getMonth() === bulan) {
                             if (!pengeluaranMap[keyYMD]) {
                                 pengeluaranMap[keyYMD] = 0;
+                                transaksiPerTanggalMap[keyYMD] = [];
                             }
                             pengeluaranMap[keyYMD] += (data.jumlah || 0);
+                            transaksiPerTanggalMap[keyYMD].push({
+                                keterangan: data.keterangan || 'Tanpa Keterangan',
+                                jumlah: data.jumlah || 0
+                            });
                         }
                     }
                 });
@@ -2071,7 +2078,8 @@
                     rincianArray.push({
                         tanggalStr: tglStr,
                         tanggalFormat: tglFormatted,
-                        totalKeluar: pengeluaranMap[tglStr]
+                        totalKeluar: pengeluaranMap[tglStr],
+                        transaksiList: transaksiPerTanggalMap[tglStr] || []
                     });
                 }
 
@@ -5189,15 +5197,13 @@
             if (rincian.length === 0) {
                 container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">Belum ada pengeluaran limit bulanan tercatat pada bulan ini.</p>`;
             } else {
-                // Urutkan berdasarkan tanggal terbaru ke terlama
                 rincian.sort((a, b) => new Date(b.tanggalStr) - new Date(a.tanggalStr));
 
-                rincian.forEach(item => {
+                rincian.forEach((item, index) => {
                     const selisih = limitIdeal - item.totalKeluar;
                     let statusBadge = '';
                     let statusTextColor = '';
 
-                    // Penentuan Status Boros atau Hemat berdasarkan perbandingan dengan limit harian ideal
                     if (item.totalKeluar > limitIdeal) {
                         statusBadge = `<span class="bg-red-950 text-red-300 border border-red-800/50 px-2.5 py-0.5 rounded-full text-[10px] font-bold">🔴 Boros (Lebih Rp ${Math.abs(selisih).toLocaleString('id-ID')})</span>`;
                         statusTextColor = 'text-red-400';
@@ -5206,13 +5212,27 @@
                         statusTextColor = 'text-emerald-400';
                     }
 
+                    let listDetailHtml = '';
+                    if (item.transaksiList && item.transaksiList.length > 0) {
+                        item.transaksiList.forEach(trx => {
+                            listDetailHtml += `
+                                <div class="flex justify-between items-center text-[11px] bg-slate-950/60 px-3 py-2 rounded-xl border border-slate-800">
+                                    <span class="text-slate-300">▪️ ${trx.keterangan}</span>
+                                    <strong class="text-red-400">Rp ${trx.jumlah.toLocaleString('id-ID')}</strong>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        listDetailHtml = `<p class="text-[10px] text-slate-500 italic">Tidak ada rincian.</p>`;
+                    }
+
                     container.innerHTML += `
-                        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700/80 space-y-2">
+                        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700/80 space-y-3 cursor-pointer hover:border-blue-500 transition" onclick="toggleRincianHarian(${index})">
                             <div class="flex justify-between items-center">
-                                <span class="font-bold text-white text-xs">📅 ${item.tanggalFormat}</span>
+                                <span class="font-bold text-white text-xs flex items-center gap-1.5">📅 ${item.tanggalFormat} <span class="text-[10px] text-blue-400 font-normal">(Klik untuk lihat rincian ▾)</span></span>
                                 ${statusBadge}
                             </div>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs pt-1 border-t border-slate-800">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs pt-2 border-t border-slate-800">
                                 <div>
                                     <span class="text-slate-400 text-[10px] block">Keluar Harian</span>
                                     <strong class="${statusTextColor}">Rp ${item.totalKeluar.toLocaleString('id-ID')}</strong>
@@ -5226,12 +5246,28 @@
                                     <strong class="${selisih >= 0 ? 'text-blue-400' : 'text-red-400'}">Rp ${selisih.toLocaleString('id-ID')}</strong>
                                 </div>
                             </div>
+
+                            <div id="rincian-item-${index}" class="hidden space-y-1.5 pt-2 border-t border-slate-800/80 mt-2">
+                                <p class="text-[10px] font-bold text-slate-400 mb-1">Daftar Pengeluaran Hari Ini:</p>
+                                ${listDetailHtml}
+                            </div>
                         </div>
                     `;
                 });
             }
 
             document.getElementById('modal-detail-harian').classList.remove('hidden');
+        }
+
+        function toggleRincianHarian(index) {
+            const el = document.getElementById(`rincian-item-${index}`);
+            if (el) {
+                el.classList.toggle('hidden');
+            }
+        }
+
+        function tutupModalDetailHarian() {
+            document.getElementById('modal-detail-harian').classList.add('hidden');
         }
 
         function tutupModalDetailHarian() {
