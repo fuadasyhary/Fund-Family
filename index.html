@@ -4228,9 +4228,15 @@
             if (cryptoProfitChartInstance) cryptoProfitChartInstance.destroy();
 
             const labels = Object.keys(pnlData); // ['Ayah', 'Bunda', 'Anak']
-            const values = labels.map(user => pnlData[user].pnl);
-            const modals = labels.map(user => pnlData[user].modal);
             
+            // Hitung persentase PnL: (pnl / modal) * 100
+            const values = labels.map(user => {
+                const modal = pnlData[user].modal;
+                const pnl = pnlData[user].pnl;
+                return modal > 0 ? (pnl / modal) * 100 : 0;
+            });
+
+            const modals = labels.map(user => pnlData[user].modal);
             const backgroundColors = values.map(val => val >= 0 ? 'rgba(34, 197, 94, 0.7)' : 'rgba(239, 68, 68, 0.7)');
 
             cryptoProfitChartInstance = new Chart(ctx, {
@@ -4238,7 +4244,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Total PnL (Rp)',
+                        label: 'Performa PnL (%)',
                         data: values,
                         backgroundColor: backgroundColors,
                         borderWidth: 1,
@@ -4254,28 +4260,31 @@
                             callbacks: {
                                 label: function(context) {
                                     const index = context.dataIndex;
-                                    const pnlVal = values[index];
+                                    const persenVal = values[index];
                                     const modalVal = modals[index];
-                                    const nilaiSekarang = modalVal + pnlVal; // Total uang sekarang
-                                    const persen = modalVal > 0 ? (pnlVal / modalVal) * 100 : 0;
-                                    
-                                    // Tentukan simbol minus/plus untuk Rupiah dan Persen
-                                    const isMinus = pnlVal < 0;
-                                    const simbolRp = isMinus ? '- Rp ' : '+ Rp ';
-                                    const simbolPersen = isMinus ? '' : '+';
+                                    const pnlVal = pnlData[labels[index]].pnl;
                                     
                                     return [
                                         ` Total Modal: Rp ${modalVal.toLocaleString('id-ID')}`,
-                                        ` Total Nilai Sekarang: Rp ${nilaiSekarang.toLocaleString('id-ID')}`,
-                                        ` Total PnL: ${simbolRp}${Math.abs(pnlVal).toLocaleString('id-ID')}`,
-                                        ` Performa (%): ${simbolPersen}${persen.toFixed(2)}%`
+                                        ` Total PnL: Rp ${pnlVal.toLocaleString('id-ID')}`,
+                                        ` Performa: ${persenVal.toFixed(2)}%`
                                     ];
                                 }
                             }
                         }
                     },
                     scales: {
-                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        y: { 
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+                            ticks: { 
+                                color: '#94a3b8', 
+                                font: { size: 10 },
+                                // Menambahkan lambang persen (%) di sumbu Y sebelah kiri
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            } 
+                        },
                         x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } }
                     }
                 }
