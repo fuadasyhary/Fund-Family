@@ -568,28 +568,28 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Peta Interaktif Leaflet -->
-                    <div class="glass-card p-6 lg:col-span-1 space-y-4">
-                        <h4 class="font-bold text-sm text-white flex items-center gap-2">🗺️ Peta Lokasi Keluarga</h4>
-                        <div id="map-live-posisi" style="height: 350px; width: 100%; border-radius: 0.75rem; z-index: 10;"></div>
-                        <p class="text-[10px] text-slate-400 text-center">Klik salah satu data di list untuk memusatkan peta.</p>
+                <div class="flex flex-col gap-6"> <!-- Ubah grid ke flex-col agar menumpuk -->
+                    
+                    <!-- Peta Penuh di Atas -->
+                    <div class="glass-card p-6 w-full">
+                        <h4 class="font-bold text-sm text-white mb-4 flex items-center gap-2">🗺️ Peta Lokasi Keluarga</h4>
+                        <div id="map-live-posisi" style="height: 450px; width: 100%; border-radius: 0.75rem;"></div>
                     </div>
 
-                    <!-- List Data Lokasi -->
-                    <div class="glass-card p-6 lg:col-span-2 space-y-4">
-                        <div class="flex justify-between items-center">
+                    <!-- Tabel Data di Bawah Peta -->
+                    <div class="glass-card p-6 w-full">
+                        <div class="flex justify-between items-center mb-4">
                             <h4 class="font-bold text-sm text-white">📋 Daftar Lokasi & Rumah Keluarga</h4>
                             <span id="posisi-count-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">0 Lokasi</span>
                         </div>
-                        <div class="overflow-x-auto max-h-[400px] overflow-y-auto pr-1">
+                        <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse table-modern">
                                 <thead>
                                     <tr>
                                         <th>Nama Tempat / Anggota</th>
-                                        <th>Koordinat (Lat, Lng)</th>
+                                        <th>Koordinat</th>
                                         <th>Waktu Update</th>
-                                        <th class="text-center">Aksi (GMap / Edit)</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabel-live-posisi" class="divide-y divide-slate-700/40"></tbody>
@@ -5396,7 +5396,7 @@
                                 if (mapLiveInstance) {
                                     mapLiveInstance.invalidateSize(true);
                                 }
-                            }, 250);
+                            }, 500);
                         }
 
                     } else {
