@@ -3486,23 +3486,33 @@
                 let grandTotalModal = 0;
                 let dataCount = 0;
 
+                // Inisialisasi struktur data terpisah untuk Hold dan Sold
                 latestPnlByUser = { 
-                    'Ayah': { pnl: 0, modal: 0 }, 
-                    'Bunda': { pnl: 0, modal: 0 }, 
-                    'Anak': { pnl: 0, modal: 0 } 
+                    'Ayah': { holdingModal: 0, holdingPnl: 0, soldModal: 0, soldPnl: 0, modal: 0, pnl: 0 }, 
+                    'Bunda': { holdingModal: 0, holdingPnl: 0, soldModal: 0, soldPnl: 0, modal: 0, pnl: 0 }, 
+                    'Anak': { holdingModal: 0, holdingPnl: 0, soldModal: 0, soldPnl: 0, modal: 0, pnl: 0 } 
                 };
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); const docId = doc.id;
                     const pemilik = data.pemilik || 'Ayah';
+                    const isHold = (!data.status || data.status === 'Hold');
 
                     const totalModal = data.jumlahKoin * data.hargaBeli;
                     const totalSekarang = data.jumlahKoin * data.hargaSekarang;
                     const pnlRp = totalSekarang - totalModal;
 
                     if (latestPnlByUser[pemilik] !== undefined) {
-                        latestPnlByUser[pemilik].pnl += pnlRp;
+                        if (isHold) {
+                            latestPnlByUser[pemilik].holdingModal += totalModal;
+                            latestPnlByUser[pemilik].holdingPnl += pnlRp;
+                        } else {
+                            latestPnlByUser[pemilik].soldModal += totalModal;
+                            latestPnlByUser[pemilik].soldPnl += pnlRp;
+                        }
+                        // Total keseluruhan untuk rekap global
                         latestPnlByUser[pemilik].modal += totalModal;
+                        latestPnlByUser[pemilik].pnl += pnlRp;
                     }
 
                     if (filterUser === 'Semua' || filterUser === pemilik) {
@@ -3516,27 +3526,26 @@
                         const pnlColor = isProfit ? 'text-green-400' : 'text-red-400';
                         const pnlSimbol = isProfit ? '+' : '';
                         
-                        const isHold = data.status === 'Hold';
-                        const statusBadge = isHold 
+                        const isHoldCard = isHold;
+                        const statusBadge = isHoldCard 
                             ? `<span class="bg-blue-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">🟢 HOLDING</span>` 
                             : `<span class="bg-gray-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">⚪ TERJUAL</span>`;
                         
-                        const cardBg = isHold ? 'bg-slate-900 border-slate-700' : 'bg-slate-800 border-gray-600 opacity-90';
-                        const labelNilai = isHold ? 'Nilai Saat Ini' : 'Total Hasil Jual';
-                        const labelHarga = isHold ? 'Harga Skrg/Koin' : 'Harga Jual/Koin';
+                        const labelNilai = isHoldCard ? 'Nilai Saat Ini' : 'Total Hasil Jual';
+                        const labelHarga = isHoldCard ? 'Harga Skrg/Koin' : 'Harga Jual/Koin';
 
                         let ownerBadgeColor = 'bg-blue-900 text-blue-200';
                         if (pemilik === 'Bunda') ownerBadgeColor = 'bg-pink-900 text-pink-200';
                         if (pemilik === 'Anak') ownerBadgeColor = 'bg-emerald-900 text-emerald-200';
 
-                        const actionButtons = isHold 
+                        const actionButtons = isHoldCard 
                             ? `<div class="grid grid-cols-2 gap-2 mt-5 relative z-10">
                                     <button onclick="updateHargaCrypto('${docId}', ${data.hargaSekarang})" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2.5 rounded-xl text-xs transition border border-slate-500 shadow">🔄 Update Harga</button>
                                     <button onclick="jualCrypto('${docId}', ${data.jumlahKoin})" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg">💰 Jual Koin</button>
                             </div>` 
                             : `<div class="mt-4 text-center text-xs text-gray-400 italic">Portofolio Koin Ini Sudah Ditutup</div>`;
                             
-                            container.innerHTML += `
+                        container.innerHTML += `
                             <div class="glass-card p-5 sm:p-6 flex flex-col justify-between hover:shadow-2xl transition relative overflow-hidden">
                                 <div class="absolute -right-4 -bottom-4 opacity-10 text-9xl pointer-events-none">${isProfit ? '📈' : '📉'}</div>
                                 
@@ -4318,46 +4327,84 @@
 
             const labels = Object.keys(pnlData); // ['Ayah', 'Bunda', 'Anak']
             
-            // Hitung persentase PnL: (pnl / modal) * 100
-            const values = labels.map(user => {
-                const modal = pnlData[user].modal;
-                const pnl = pnlData[user].pnl;
-                return modal > 0 ? (pnl / modal) * 100 : 0;
+            // Data Performa Hold (%)
+            const holdValues = labels.map(user => {
+                const d = pnlData[user];
+                return d.holdingModal > 0 ? (d.holdingPnl / d.holdingModal) * 100 : 0;
             });
 
-            const modals = labels.map(user => pnlData[user].modal);
-            const backgroundColors = values.map(val => val >= 0 ? 'rgba(34, 197, 94, 0.7)' : 'rgba(239, 68, 68, 0.7)');
+            // Data Performa Sold (%)
+            const soldValues = labels.map(user => {
+                const d = pnlData[user];
+                return d.soldModal > 0 ? (d.soldPnl / d.soldModal) * 100 : 0;
+            });
+
+            // Warna batang berdasarkan profit/loss
+            const holdColors = holdValues.map(val => val >= 0 ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)'); // Hijau / Merah
+            const soldColors = soldValues.map(val => val >= 0 ? 'rgba(59, 130, 246, 0.8)' : 'rgba(249, 115, 22, 0.8)'); // Biru / Orange
 
             cryptoProfitChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: 'Performa PnL (%)',
-                        data: values,
-                        backgroundColor: backgroundColors,
-                        borderWidth: 1,
-                        borderRadius: 6
-                    }]
+                    datasets: [
+                        {
+                            label: 'Hold (%)',
+                            data: holdValues,
+                            backgroundColor: holdColors,
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Sold (%)',
+                            data: soldValues,
+                            backgroundColor: soldColors,
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { 
-                        legend: { display: false },
+                        legend: { 
+                            display: true, 
+                            position: 'top', 
+                            labels: { color: '#94a3b8', font: { size: 11 } } 
+                        },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
                                     const index = context.dataIndex;
-                                    const persenVal = values[index];
-                                    const modalVal = modals[index];
-                                    const pnlVal = pnlData[labels[index]].pnl;
+                                    const user = labels[index];
+                                    const d = pnlData[user];
+                                    const datasetLabel = context.dataset.label;
                                     
-                                    return [
-                                        ` Total Modal: Rp ${modalVal.toLocaleString('id-ID')}`,
-                                        ` Total PnL: Rp ${pnlVal.toLocaleString('id-ID')}`,
-                                        ` Performa: ${persenVal.toFixed(2)}%`
-                                    ];
+                                    // Perhitungan Total (Modal + PnL)
+                                    const totalHoldVal = d.holdingModal + d.holdingPnl;
+                                    const totalSoldVal = d.soldModal + d.soldPnl;
+                                    const totalModalAll = d.holdingModal + d.soldModal;
+                                    const totalPnlAll = d.holdingPnl + d.soldPnl;
+                                    const totalAllVal = totalHoldVal + totalSoldVal;
+
+                                    if (datasetLabel.includes('Hold')) {
+                                        return [
+                                            `--- TOKEN HOLD (Aktif) ---`,
+                                            ` Modal Hold: Rp ${d.holdingModal.toLocaleString('id-ID')}`,
+                                            ` PnL Hold: Rp ${d.holdingPnl.toLocaleString('id-ID')}`,
+                                            ` Total (Modal + PnL): Rp ${totalHoldVal.toLocaleString('id-ID')}`,
+                                            ` Performa Hold: ${context.raw.toFixed(2)}%`,
+                                        ];
+                                    } else {
+                                        return [
+                                            `--- TOKEN SOLD (Terjual) ---`,
+                                            ` Modal Sold: Rp ${d.soldModal.toLocaleString('id-ID')}`,
+                                            ` PnL Sold: Rp ${d.soldPnl.toLocaleString('id-ID')}`,
+                                            ` Total (Modal + PnL): Rp ${totalSoldVal.toLocaleString('id-ID')}`,
+                                            ` Performa Sold: ${context.raw.toFixed(2)}%`,
+                                        ];
+                                    }
                                 }
                             }
                         }
@@ -4368,7 +4415,6 @@
                             ticks: { 
                                 color: '#94a3b8', 
                                 font: { size: 10 },
-                                // Menambahkan lambang persen (%) di sumbu Y sebelah kiri
                                 callback: function(value) {
                                     return value + '%';
                                 }
@@ -4379,7 +4425,7 @@
                 }
             });
         }
-
+        
         function renderDebtPelunasanChart(debtSummary) {
             const canvasEl = document.getElementById('debtPelunasanChart');
             if (!canvasEl) return;
