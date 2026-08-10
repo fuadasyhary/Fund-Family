@@ -208,9 +208,16 @@
                         <span id="info-limit-bulanan" class="text-[10px] text-gray-400 mt-1 block">Batasan Limit: Rp 0</span>
                     </div>
                     <!-- CARD HARIAN YANG DIPERBARUI -->
+                     <!-- CARD HARIAN YANG DIPERBARUI DENGAN SISA LIMIT DI SEBELAH KANAN -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailHarian()">
                         <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Harian (Limit / Sisa Hari)</p>
-                        <h3 id="limit-harian-aktif" class="text-2xl font-bold text-cyan-600 dark:text-cyan-400">Rp 0</h3>
+                        <div class="flex justify-between items-baseline">
+                            <h3 id="limit-harian-aktif" class="text-xl sm:text-2xl font-bold text-cyan-600 dark:text-cyan-400">Rp 0</h3>
+                            <div class="text-right">
+                                <span class="text-[10px] text-slate-400 block">Sisa Limit Sekarang</span>
+                                <span id="sisa-limit-harian-sekarang" class="text-sm sm:text-base font-extrabold text-emerald-400">Rp 0</span>
+                            </div>
+                        </div>
                         <span id="info-sisa-hari" class="text-[10px] text-gray-400 mt-1 block">Sisa hari bulan ini: 0 hari (Klik untuk detail)</span>
                     </div>
                 </div>
@@ -2084,7 +2091,7 @@
                 if(elLimitHarian) elLimitHarian.innerText = 'Rp ' + nilaiHarianIdeal.toLocaleString('id-ID');
                 
                 const infoSisaHariEl = document.getElementById('info-sisa-hari');
-                if (infoSisaHariEl) infoSisaHariEl.innerText = `Sisa ${sisaHari} hari (Klik untuk rincian)`;
+                if (infoSisaHariEl) infoSisaHariEl.innerText = `Sisa ${sisaHari} hari (Klik untuk detail)`;
 
                 let pengeluaranMap = {};
                 let transaksiPerTanggalMap = {};
@@ -2094,7 +2101,6 @@
                     const data = doc.data();
                     const jenisArusKasVal = (data.jenisArusKas || '').toLowerCase();
 
-                    // Hitung untuk transaksi keluar berjenis 'harian' pada bulan dan tahun berjalan
                     if (data.jenis === 'keluar' && data.tanggal) {
                         const tglObj = data.tanggal.toDate();
                         const yyyy = tglObj.getFullYear();
@@ -2108,14 +2114,12 @@
                                 transaksiPerTanggalMap[keyYMD] = [];
                             }
 
-                            // Masukkan ke list transaksi tanggal tersebut
                             transaksiPerTanggalMap[keyYMD].push({
                                 keterangan: data.keterangan || 'Tanpa Keterangan',
                                 jenisArusKas: jenisArusKasVal,
                                 jumlah: data.jumlah || 0
                             });
 
-                            // Jika jenis arus kas adalah 'harian', masukkan ke perhitungan akumulasi boros/hemat
                             if (jenisArusKasVal === 'harian') {
                                 if (!pengeluaranMap[keyYMD]) {
                                     pengeluaranMap[keyYMD] = 0;
@@ -2126,6 +2130,20 @@
                         }
                     }
                 });
+
+                // === TAMBAHAN KONDISI: PASTIKAN HARI INI TETAP ADA MESKIPUN DATA HARIANNYA NGGA ADA (NILAI 0 & HEMAT FULL) ===
+                const yyyyNow = now.getFullYear();
+                const mmNow = String(now.getMonth() + 1).padStart(2, '0');
+                const ddNow = String(now.getDate()).padStart(2, '0');
+                const keyHariIniYMD = `${yyyyNow}-${mmNow}-${ddNow}`;
+
+                if (!transaksiPerTanggalMap[keyHariIniYMD]) {
+                    transaksiPerTanggalMap[keyHariIniYMD] = [];
+                }
+                if (pengeluaranMap[keyHariIniYMD] === undefined) {
+                    pengeluaranMap[keyHariIniYMD] = 0; // Set pengeluaran hari ini menjadi 0 jika kosong
+                }
+                // =========================================================================================
 
                 let rincianArray = [];
                 for (let tglStr in transaksiPerTanggalMap) {
@@ -2138,8 +2156,17 @@
                     });
                 }
 
-                // Urutkan tanggal dari yang terbaru ke terlama
                 rincianArray.sort((a, b) => new Date(b.tanggalStr) - new Date(a.tanggalStr));
+
+                // Hitung sisa limit harian hari ini untuk ditampilkan langsung di dashboard
+                let pengeluaranHariIni = pengeluaranMap[keyHariIniYMD] || 0;
+                let sisaLimitHarianSekarang = nilaiHarianIdeal - pengeluaranHariIni;
+                
+                const elSisaLimitSekarang = document.getElementById('sisa-limit-harian-sekarang');
+                if (elSisaLimitSekarang) {
+                    elSisaLimitSekarang.innerText = 'Rp ' + sisaLimitHarianSekarang.toLocaleString('id-ID');
+                    elSisaLimitSekarang.className = sisaLimitHarianSekarang >= 0 ? "text-sm sm:text-base font-extrabold text-emerald-400" : "text-sm sm:text-base font-extrabold text-red-400";
+                }
 
                 cacheDataHarianDetail = {
                     rincianPerTanggal: rincianArray,
@@ -5221,23 +5248,18 @@
 
             let totalAkumulasiHemat = 0;
             let totalAkumulasiBoros = 0;
-            let adaDataHarian = false;
 
             rincian.forEach((item) => {
-                let transaksiHarianList = item.transaksiList.filter(tr => tr.jenisArusKas && tr.jenisArusKas.toLowerCase() === 'harian');
-                if (transaksiHarianList.length > 0) {
-                    let keluarHarian = transaksiHarianList.reduce((sum, tr) => sum + (tr.jumlah || 0), 0);
-                    let sisaLimitHarian = limitIdeal - keluarHarian;
+                let keluarHarian = item.totalKeluarHarian || 0;
+                let sisaLimitHarian = limitIdeal - keluarHarian;
 
-                    if (sisaLimitHarian >= 0) {
-                        totalAkumulasiHemat += sisaLimitHarian;
-                    } else {
-                        totalAkumulasiBoros += Math.abs(sisaLimitHarian);
-                    }
+                if (sisaLimitHarian >= 0) {
+                    totalAkumulasiHemat += sisaLimitHarian;
+                } else {
+                    totalAkumulasiBoros += Math.abs(sisaLimitHarian);
                 }
             });
 
-            // Hitung total sisa (Netto: Hemat - Boros)
             let totalSisaNetto = totalAkumulasiHemat - totalAkumulasiBoros;
             let labelSisaNetto = totalSisaNetto >= 0 ? "Total Sisa Hemat Bersih" : "Total Defisit / Selisih Boros";
             let warnaSisaNetto = totalSisaNetto >= 0 ? "text-green-300 bg-green-950/40 border-green-800/60" : "text-red-300 bg-red-950/40 border-red-800/60";
@@ -5255,7 +5277,6 @@
                         </div>
                     </div>
                     
-                    <!-- Kotak Total Sisa Bersih -->
                     <div class="border p-3 rounded-2xl text-center shadow ${warnaSisaNetto}">
                         <p class="text-[10px] font-bold uppercase mb-0.5">${labelSisaNetto}</p>
                         <p class="text-base sm:text-lg font-black">Rp ${Math.abs(totalSisaNetto).toLocaleString('id-ID')}</p>
@@ -5265,66 +5286,70 @@
             `;
 
             rincian.forEach((item, index) => {
-                let transaksiHarianList = item.transaksiList.filter(tr => tr.jenisArusKas && tr.jenisArusKas.toLowerCase() === 'harian');
+                let keluarHarian = item.totalKeluarHarian || 0;
+                let sisaLimitHarian = limitIdeal - keluarHarian;
+                let selisih = Math.abs(sisaLimitHarian);
 
-                if (transaksiHarianList.length > 0) {
-                    adaDataHarian = true;
-                    
-                    let keluarHarian = transaksiHarianList.reduce((sum, tr) => sum + (tr.jumlah || 0), 0);
-                    let sisaLimitHarian = limitIdeal - keluarHarian;
-                    let selisih = Math.abs(sisaLimitHarian);
+                // Jika pengeluaran 0, berikan label khusus "Hemat Full"
+                let statusBadge = '';
+                if (keluarHarian === 0) {
+                    statusBadge = `<span class="bg-emerald-900 text-emerald-200 border border-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">⭐ Hemat Full (Rp 0)</span>`;
+                } else if (sisaLimitHarian >= 0) {
+                    statusBadge = `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">🟢 Hemat (Sisa Rp ${sisaLimitHarian.toLocaleString('id-ID')})</span>`;
+                } else {
+                    statusBadge = `<span class="bg-red-950 text-red-300 border border-red-800/80 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">🔴 Boros (Lebih Rp ${selisih.toLocaleString('id-ID')})</span>`;
+                }
 
-                    let statusBadge = sisaLimitHarian >= 0 
-                        ? `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">🟢 Hemat (Sisa Rp ${sisaLimitHarian.toLocaleString('id-ID')})</span>` 
-                        : `<span class="bg-red-950 text-red-300 border border-red-800/80 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">🔴 Boros (Lebih Rp ${selisih.toLocaleString('id-ID')})</span>`;
-
-                    let listTransaksiHtml = '';
-                    transaksiHarianList.forEach(tr => {
-                        listTransaksiHtml += `
-                            <div class="flex justify-between items-center text-xs py-1.5 border-b border-slate-800/60 last:border-0">
-                                <span class="text-slate-300">• ${tr.keterangan}</span>
-                                <span class="text-red-400 font-semibold">- Rp ${tr.jumlah.toLocaleString('id-ID')}</span>
-                            </div>
-                        `;
+                let listTransaksiHtml = '';
+                if (item.transaksiList && item.transaksiList.length > 0) {
+                    item.transaksiList.forEach(tr => {
+                        if (tr.jenisArusKas && tr.jenisArusKas.toLowerCase() === 'harian') {
+                            listTransaksiHtml += `
+                                <div class="flex justify-between items-center text-xs py-1.5 border-b border-slate-800/60 last:border-0">
+                                    <span class="text-slate-300">• ${tr.keterangan}</span>
+                                    <span class="text-red-400 font-semibold">- Rp ${tr.jumlah.toLocaleString('id-ID')}</span>
+                                </div>
+                            `;
+                        }
                     });
+                }
+                
+                if (!listTransaksiHtml) {
+                    listTransaksiHtml = `<p class="text-[11px] text-emerald-400 italic">Tidak ada pengeluaran harian (Hemat Full / Bersih).</p>`;
+                }
 
-                    htmlContent += `
-                        <div class="bg-slate-900 border border-slate-700/80 p-4 rounded-2xl shadow-lg space-y-3">
-                            <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 cursor-pointer select-none hover:bg-slate-800/40 p-1.5 rounded-xl transition" onclick="toggleDetailTanggal(${index})">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-white text-xs sm:text-sm">📅 ${item.tanggalFormat}</span>
-                                    <span id="icon-tgl-${index}" class="text-xs text-blue-400 font-bold transition-transform">▼ (Lihat Isi)</span>
-                                </div>
-                                <div>${statusBadge}</div>
+                htmlContent += `
+                    <div class="bg-slate-900 border border-slate-700/80 p-4 rounded-2xl shadow-lg space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 cursor-pointer select-none hover:bg-slate-800/40 p-1.5 rounded-xl transition" onclick="toggleDetailTanggal(${index})">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-white text-xs sm:text-sm">📅 ${item.tanggalFormat}</span>
+                                <span id="icon-tgl-${index}" class="text-xs text-blue-400 font-bold transition-transform">▼ (Lihat Rincian)</span>
                             </div>
-                            
-                            <div class="grid grid-cols-3 gap-2 text-center pt-1">
-                                <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                                    <p class="text-[10px] text-slate-400 font-medium mb-1">Keluar Harian</p>
-                                    <p class="text-xs sm:text-sm font-bold text-red-400">Rp ${keluarHarian.toLocaleString('id-ID')}</p>
-                                </div>
-                                <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                                    <p class="text-[10px] text-slate-400 font-medium mb-1">Limit Harian Ideal</p>
-                                    <p class="text-xs sm:text-sm font-bold text-cyan-400">Rp ${limitIdeal.toLocaleString('id-ID')}</p>
-                                </div>
-                                <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                                    <p class="text-[10px] text-slate-400 font-medium mb-1">Sisa Limit Harian</p>
-                                    <p class="text-xs sm:text-sm font-bold ${sisaLimitHarian >= 0 ? 'text-green-400' : 'text-red-500'}">Rp ${sisaLimitHarian.toLocaleString('id-ID')}</p>
-                                </div>
+                            <div>${statusBadge}</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 text-center pt-1">
+                            <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                                <p class="text-[10px] text-slate-400 font-medium mb-1">Keluar Harian</p>
+                                <p class="text-xs sm:text-sm font-bold text-red-400">Rp ${keluarHarian.toLocaleString('id-ID')}</p>
                             </div>
-
-                            <div id="detail-tgl-${index}" class="hidden pt-3 border-t border-slate-800 space-y-1 bg-slate-950/40 p-3 rounded-xl">
-                                <p class="text-[10px] font-bold text-slate-400 mb-1">Rincian Transaksi Harian:</p>
-                                ${listTransaksiHtml}
+                            <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                                <p class="text-[10px] text-slate-400 font-medium mb-1">Limit Harian Ideal</p>
+                                <p class="text-xs sm:text-sm font-bold text-cyan-400">Rp ${limitIdeal.toLocaleString('id-ID')}</p>
+                            </div>
+                            <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                                <p class="text-[10px] text-slate-400 font-medium mb-1">Sisa Limit Harian</p>
+                                <p class="text-xs sm:text-sm font-bold ${sisaLimitHarian >= 0 ? 'text-green-400' : 'text-red-500'}">Rp ${sisaLimitHarian.toLocaleString('id-ID')}</p>
                             </div>
                         </div>
-                    `;
-                }
-            });
 
-            if (!adaDataHarian) {
-                htmlContent += `<div class="bg-slate-900 p-8 rounded-2xl text-center text-gray-400 border border-slate-800 text-xs italic">Belum ada catatan pengeluaran dengan jenis arus kas "Harian" pada bulan ini.</div>`;
-            }
+                        <div id="detail-tgl-${index}" class="hidden pt-3 border-t border-slate-800 space-y-1 bg-slate-950/40 p-3 rounded-xl">
+                            <p class="text-[10px] font-bold text-slate-400 mb-1">Rincian Transaksi Harian:</p>
+                            ${listTransaksiHtml}
+                        </div>
+                    </div>
+                `;
+            });
 
             htmlContent += `</div>`;
             container.innerHTML = htmlContent;
