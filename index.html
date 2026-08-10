@@ -26,6 +26,29 @@
         .fade-out { transition: opacity 0.5s ease; opacity: 0; }
         #map { height: 250px; width: 100%; border-radius: 0.75rem; z-index: 10; }
 
+        /* Efek Animasi Radar Live Location */
+        @keyframes radar-pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 15px rgba(34, 197, 94, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+        .live-marker-radar {
+            background-color: #22c55e;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            animation: radar-pulse 2s infinite;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: radial-gradient(circle at top right, #1e1b4b 0%, #0b0f19 50%, #020617 100%);
@@ -564,6 +587,13 @@
                         <p class="text-xs text-slate-400 mt-0.5">Pantau titik lokasi penting, rumah, atau posisi anggota keluarga.</p>
                     </div>
                     <div class="flex gap-2">
+                        <!-- TOMBOL LIVE LOCATION BARU -->
+                        <button id="btn-toggle-live-loc" onclick="toggleLiveLocationSharing()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/50 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2">
+                            <span id="live-indicator-dot" class="h-2.5 w-2.5 rounded-full bg-gray-400"></span>
+                            <span id="btn-live-text">Live Location</span>
+                        </button>
+                        
+                        <!-- Tombol Tambah yang sudah ada -->
                         <button onclick="bukaModalPosisi()" class="btn-gradient text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg">+ Tambah / Update Lokasi</button>
                     </div>
                 </div>
@@ -1329,6 +1359,10 @@
         let mapModalPosisiInstance = null;
         let markerModalPosisiInstance = null;
 
+        let isLiveLocActive = false;
+        let watchIdLiveLoc = null;
+        let liveMarkerInstance = null;
+
         // Variabel penyimpan data harian sementara untuk ditampilkan ke modal
         let cacheDataHarianDetail = {
             rincianPerTanggal: [],
@@ -1353,6 +1387,75 @@
                 passwordInput.type = 'text';
             } else {
                 passwordInput.type = 'password';
+            }
+        }
+
+        function toggleLiveLocationSharing() {
+            const btnText = document.getElementById('btn-live-text');
+            const dotEl = document.getElementById('live-indicator-dot');
+            const btnEl = document.getElementById('btn-toggle-live-loc');
+            const currentUser = auth.currentUser;
+
+            if (!currentUser) {
+                return alert("Silakan login terlebih dahulu!");
+            }
+
+            if (!isLiveLocActive) {
+                // AKTIFKAN LIVE LOCATION
+                if (!navigator.geolocation) {
+                    return alert("Geolocation tidak didukung oleh browser Anda.");
+                }
+
+                isLiveLocActive = true;
+                btnText.innerText = "Not Live Location";
+                dotEl.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping";
+                btnEl.className = "bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
+
+                // Gunakan watchPosition untuk melacak pergerakan secara real-time
+                watchIdLiveLoc = navigator.geolocation.watchPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const koordinatStr = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    const namaUser = document.getElementById('user-display-name')?.innerText || 'Saya';
+
+                    // Simpan / Update otomatis posisi live ke Firestore
+                    db.collection("live_posisi").doc("live_" + currentUser.uid).set({
+                        nama: `📍 [Live] ${namaUser}`,
+                        koordinat: koordinatStr,
+                        keterangan: 'Live Location Aktif (Real-time)',
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdBy: namaUser,
+                        isLive: true
+                    }, { merge: true }).catch(err => console.error("Gagal update live loc:", err));
+
+                }, (err) => {
+                    alert("Gagal mendeteksi lokasi GPS: " + err.message);
+                    toggleLiveLocationSharing(); // Matikan jika error
+                }, {
+                    enableHighAccuracy: true,
+                    maximumAge: 0,
+                    timeout: 10000
+                });
+
+                alert("Live Location diaktifkan! Posisi Anda akan terus diperbarui secara real-time di peta.");
+
+            } else {
+                // MATIKAN LIVE LOCATION
+                isLiveLocActive = false;
+                btnText.innerText = "Live Location";
+                dotEl.className = "h-2.5 w-2.5 rounded-full bg-gray-400";
+                btnEl.className = "bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/50 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
+
+                if (watchIdLiveLoc !== null) {
+                    navigator.geolocation.clearWatch(watchIdLiveLoc);
+                    watchIdLiveLoc = null;
+                }
+
+                // Hapus data live posisi dari Firestore saat dimatikan
+                db.collection("live_posisi").doc("live_" + currentUser.uid).delete().catch(() => {});
+                
+                alert("Live Location dimatikan.");
+                muatDataLivePosisi();
             }
         }
 
@@ -4195,7 +4298,6 @@
             const tbody = document.getElementById('tabel-live-posisi');
             if (!tbody) return;
 
-            // 1. Inisialisasi Peta SEKALI SAJA
             if (!mapLiveInstance) {
                 mapLiveInstance = L.map('map-live-posisi').setView([-7.2575, 112.7521], 12);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -4204,7 +4306,6 @@
                 }).addTo(mapLiveInstance);
             }
 
-            // PENTING: Paksa Leaflet untuk merender ulang ukuran kotak agar tidak abu-abu/lemot
             setTimeout(() => {
                 mapLiveInstance.invalidateSize();
             }, 300);
@@ -4233,8 +4334,21 @@
                     const waktuStr = data.updatedAt ? formatWaktu(data.updatedAt) : 'Baru saja';
 
                     if (mapLiveInstance) {
-                        const marker = L.marker([lat, lng]).addTo(mapLiveInstance)
-                            .bindPopup(`<b>${data.nama}</b><br>${data.keterangan || ''}<br><a href="${gmapUrl}" target="_blank" style="color:blue;font-weight:bold;">Buka di GMap ↗</a>`);
+                        let marker;
+                        // Jika ini adalah Live Location aktif, gunakan custom icon dengan animasi radar hijau
+                        if (data.isLive) {
+                            const radarIcon = L.divIcon({
+                                className: 'custom-radar-icon',
+                                html: '<div class="live-marker-radar" style="width: 24px; height: 24px;"></div>',
+                                iconSize: [24, 24],
+                                iconAnchor: [12, 12]
+                            });
+                            marker = L.marker([lat, lng], { icon: radarIcon }).addTo(mapLiveInstance);
+                        } else {
+                            marker = L.marker([lat, lng]).addTo(mapLiveInstance);
+                        }
+
+                        marker.bindPopup(`<b>${data.nama}</b><br>${data.keterangan || ''}<br><a href="${gmapUrl}" target="_blank" style="color:blue;font-weight:bold;">Buka di GMap ↗</a>`);
                         markersLiveArray.push(marker);
                     }
 
@@ -4242,21 +4356,23 @@
                     let safeKoordinat = (data.koordinat || '').replace(/'/g, "\\'");
                     let safeKet = (data.keterangan || '').replace(/'/g, "\\'");
 
+                    let aksiTombol = data.isLive 
+                        ? `<span class="bg-emerald-950 text-emerald-300 px-3 py-1.5 rounded-xl text-[11px] font-bold border border-emerald-800">📡 Live Sharing</span>`
+                        : `<div class="flex justify-center items-center gap-1.5">
+                            <a href="${gmapUrl}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">🗺️ GMap</a>
+                            <button onclick="bukaModalPosisi('${id}', '${safeNama}', '${safeKoordinat}', '${safeKet}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Edit</button>
+                            <button onclick="hapusLivePosisi('${id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Hapus</button>
+                        </div>`;
+
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-700/30 transition">
                             <td class="p-4 font-semibold text-white">
-                                🏠 ${data.nama}<br>
+                                ${data.isLive ? '🟢' : '🏠'} ${data.nama}<br>
                                 <span class="text-[10px] text-slate-400 font-normal">${data.keterangan || ''}</span>
                             </td>
                             <td class="p-4 text-xs font-mono text-slate-300">${data.koordinat}</td>
                             <td class="p-4 text-xs text-slate-400">${waktuStr}</td>
-                            <td class="p-4 text-center">
-                                <div class="flex justify-center items-center gap-1.5">
-                                    <a href="${gmapUrl}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm" title="Buka langsung ke Google Maps">🗺️ GMap</a>
-                                    <button onclick="bukaModalPosisi('${id}', '${safeNama}', '${safeKoordinat}', '${safeKet}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Edit</button>
-                                    <button onclick="hapusLivePosisi('${id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Hapus</button>
-                                </div>
-                            </td>
+                            <td class="p-4 text-center">${aksiTombol}</td>
                         </tr>
                     `;
                 });
