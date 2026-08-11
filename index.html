@@ -124,12 +124,12 @@
         
     </style>
 </head>
-<body id="body-root" class="bg-gray-100 text-gray-900 dark:bg-slate-900 dark:text-gray-100 font-sans pb-20 transition-colors duration-300"></body>
+<body id="body-root" class="bg-gray-100 text-gray-900 dark:bg-slate-900 dark:text-gray-100 font-sans transition-colors duration-300">
 
     <!-- Loader Screen -->
     <div id="loader" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid mb-4"></div>
-        <p class="text-blue-400 font-bold text-lg animate-pulse">Memuat Sistem Fund Family...</p>
+        <p class="text-blue-400 font-bold text-lg animate-pulse">Memuat Fund & Family...</p>
     </div>
 
     <!-- ================= SECTION LOGIN ================= -->
@@ -159,9 +159,8 @@
                 </div>
                 <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3.5 rounded-xl text-sm transition shadow-lg shadow-blue-600/30">Masuk</button>
                 <button onclick="bukaModalRegisterFamily()" class="w-full mt-2 bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/50 font-bold p-3.5 rounded-xl text-xs transition shadow">Daftar Kepala Keluarga Baru</button>
-                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">&copy; 2026 Fund & Family</p>
-                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">By Mochamad Fuad Asyhary - All rights reserved.</p>
-                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">Sistem Manajemen Keuangan & Keluarga Versi 2</p>
+                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">&copy; 2026 Fund & Family Version 2</p>
+                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">By Mochamad Fuad Asyhary - All rights reserved</p>
             </div>
         </div>
     </div>
@@ -826,6 +825,27 @@
                                 </tr>
                             </thead>
                             <tbody id="tabel-list-user-manajemen" class="text-xs divide-y dark:divide-slate-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bagian Khusus List Master Keluarga (Hanya muncul untuk family_id: mochamad_fuad_asyhary) -->
+                <div id-section="master-family-wrapper" id="master-family-container" class="mt-6 pt-4 border-t border-slate-700 hidden">
+                    <h4 class="font-bold text-sm text-cyan-400 mb-2">🛡️ Daftar Seluruh Kepala Keluarga & Family ID (Super Admin)</h4>
+                    <p class="text-[11px] text-gray-400 mb-3">Panel khusus untuk memantau seluruh ID Keluarga yang aktif di sistem.</p>
+                    
+                    <div class="overflow-x-auto max-h-48 overflow-y-auto rounded-xl border border-slate-700">
+                        <table class="w-full text-left text-xs text-white">
+                            <thead class="bg-slate-900 text-gray-400 uppercase text-[10px]">
+                                <tr>
+                                    <th class="p-2.5">Nama Kepala Keluarga</th>
+                                    <th class="p-2.5">Family ID</th>
+                                    <th class="p-2.5">Email</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabel-list-master-family" class="divide-y divide-slate-700">
+                                <!-- Data akan dimasukkan otomatis lewat JavaScript -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -1869,6 +1889,71 @@
                     `;
                 });
             });
+
+            // 3. LOGIKA KHUSUS: Tampilkan list master kepala keluarga HANYA JIKA family_id === 'mochamad_fuad_asyhary'
+            const containerMaster = document.getElementById('master-family-container');
+            if (containerMaster) {
+                if (myFamilyId === 'mochamad_fuad_asyhary') {
+                    containerMaster.classList.remove('hidden');
+                    
+                    // Load data semua kepala keluarga
+                    const tbodyMaster = document.getElementById('tabel-list-master-family');
+                    if (tbodyMaster) {
+                        tbodyMaster.innerHTML = '';
+                        db.collection("users").where("jenisAkun", "==", "Ayah").get()
+                            .then((snapshotMaster) => {
+                                snapshotMaster.forEach((doc) => {
+                                    const mData = doc.data();
+                                    tbodyMaster.innerHTML += `
+                                        <tr class="hover:bg-slate-700/50">
+                                            <td class="p-2.5 font-bold">${mData.nama || '-'}</td>
+                                            <td class="p-2.5 font-mono text-cyan-300">${mData.family_id || '-'}</td>
+                                            <td class="p-2.5 text-gray-400">${mData.email || '-'}</td>
+                                        </tr>
+                                    `;
+                                });
+                            });
+                    }
+                } else {
+                    containerMaster.classList.add('hidden');
+                }
+            }
+        }
+
+        function cekDanMuatMasterKeluarga() {
+            const containerMaster = document.getElementById('master-family-container');
+            
+            // Pastikan variabel penyimpan data user login Anda sesuai (misal: currentUserData)
+            if (!currentUserData || currentUserData.family_id !== 'mochamad_fuad_asyhary') {
+                // Jika bukan mochamad_fuad_asyhary, sembunyikan panel
+                if(containerMaster) containerMaster.classList.add('hidden');
+                return;
+            }
+
+            // Jika ya, tampilkan panelnya
+            if(containerMaster) containerMaster.classList.remove('hidden');
+
+            const tbodyMaster = document.getElementById('tabel-list-master-family');
+            if(!tbodyMaster) return;
+            tbodyMaster.innerHTML = '';
+
+            // Ambil semua user yang memiliki jenisAkun 'Ayah' atau dokumen unik per family_id
+            db.collection("users").where("jenisAkun", "==", "Ayah").get()
+                .then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        tbodyMaster.innerHTML += `
+                            <tr class="hover:bg-slate-700/50">
+                                <td class="p-2.5 font-bold">${data.nama || '-'}</td>
+                                <td class="p-2.5 font-mono text-cyan-300">${data.family_id || '-'}</td>
+                                <td class="p-2.5 text-gray-400">${data.email || '-'}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch((error) => {
+                    console.error("Gagal memuat master keluarga: ", error);
+                });
         }
 
         function hapusUserKeluarga(uid, nama) {
@@ -5755,8 +5840,8 @@
     <!-- Footer Web -->
     <footer class="mt-12 py-6 border-t border-gray-200 dark:border-slate-700 text-center text-xs text-gray-500 dark:text-gray-400 transition-colors">
         <div class="max-w-7xl mx-auto px-4 space-y-1">
-            <p>&copy; 2026 Fund & Family By Mochamad Fuad Asyhary - All rights reserved.</p>
-            <p>Sistem Manajemen Keuangan & Keluarga Versi 2</p>
+            <p>&copy; 2026 Fund & Family Version 2</p>
+            <p>By Mochamad Fuad Asyhary - All rights reserved</p>
         </div>
     </footer>
 </body>
