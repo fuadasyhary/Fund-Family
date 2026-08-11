@@ -1399,12 +1399,15 @@
             totalPengeluaranBulanIni: 0
         };
 
-        let currentUserFamilyId = ''; 
-
         window.addEventListener('DOMContentLoaded', () => {            
+            inisialisasiRealtimeAset();
             setTanggalHariIni();
             setDefaultFilterBulan();
-            
+            muatDataTransaksi();
+            muatDataHutang();
+            muatFamilyDocuments(); 
+            muatFamilyTree();
+            muatDataLivePosisi();
         });
 
         function togglePasswordVisibility() {
@@ -1591,7 +1594,6 @@
                     const nama = data.nama || user.email.split('@')[0];
                     const jenisAkun = data.jenisAkun || 'Keluarga';
                     currentUserJenisAkun = jenisAkun;
-                    currentUserFamilyId = data.family_id;
 
                     const formAreaEl = document.getElementById('form-area');
                     const debtSectionEl = document.getElementById('debt-section-wrapper');
@@ -1643,12 +1645,7 @@
                         muatDataTabungan();
                         muatDataCrypto();
                         muatDataHutangKeluarga();
-                        muatDataChat();
-                        muatFamilyDocuments();
-                        muatFamilyTree();
-                        muatDataLivePosisi();
-                        inisialisasiRealtimeAset();
-                        
+                        muatDataChat(); 
                         if (jenisAkun !== 'Anak') {
                             muatDataHutang();
                         }
@@ -2099,7 +2096,6 @@
             } else {
                 // PROSES TAMBAH BARU KE FIRESTORE
                 db.collection("transaksi").add({
-                    family_id: currentUserFamilyId, // <-- Tambahkan ini
                     tanggal: tanggalTimestamp,
                     kategoriKas: kategoriKas,
                     jenisArusKas: jenisArusKas,
@@ -2137,7 +2133,7 @@
             
             const currentBulanKey = getCurrentMonthKey();
 
-            unsubscribeTransaksi = db.collection("transaksi").where("family_id", "==", currentUserFamilyId).orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
+            unsubscribeTransaksi = db.collection("transaksi").orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
                 const tabel = document.getElementById('tabel-transaksi');
                 if(!tabel) return;
                 tabel.innerHTML = ''; 
@@ -2355,7 +2351,6 @@
             if (!nominal || nominal <= 0 || !keterangan) return alert("Nominal dan keterangan harus diisi dengan benar!");
 
             db.collection("hutang_keluarga").add({
-                family_id: currentUserFamilyId, // <-- Tambahkan ini
                 jenisPinjam: jenisPinjam,
                 pemberi: pemberi,
                 penerima: penerima,
@@ -2411,7 +2406,7 @@
             const container = document.getElementById('list-family-debt');
             if (!container) return;
 
-            unsubscribeHutangKeluarga = db.collection("hutang_keluarga").where("family_id", "==", currentUserFamilyId).orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            unsubscribeHutangKeluarga = db.collection("hutang_keluarga").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
                 container.innerHTML = '';
                 let count = 0;
                 let sumTotalHutang = 0;
@@ -2612,7 +2607,6 @@
             const jenisPinjam = document.getElementById('hutang-jenis-eksternal') ? document.getElementById('hutang-jenis-eksternal').value : 'Hutang';
 
             db.collection("hutang").add({ 
-                family_id: currentUserFamilyId, // <-- Tambahkan ini
                 authUid: authUid || '',
                 jenisPinjam: jenisPinjam,
                 nama: nama, 
@@ -2857,7 +2851,7 @@
 
             const filterStatus = document.getElementById('filter-status-hutang') ? document.getElementById('filter-status-hutang').value : 'semua';
 
-            unsubscribeHutang = db.collection("hutang").where("family_id", "==", currentUserFamilyId).orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+            unsubscribeHutang = db.collection("hutang").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('list-hutang');
                 if(!container) return;
                 container.innerHTML = ''; 
@@ -3152,7 +3146,6 @@
             const defaultImage = "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=500&auto=format&fit=crop&q=80";
 
             db.collection("tabungan").add({ 
-                family_id: currentUserFamilyId, // <-- Tambahkan ini
                 pemilik: pemilik || 'Keluarga Bersama',
                 nama: nama, 
                 target: target, 
@@ -3219,7 +3212,7 @@
 
             const filterUser = document.getElementById('filter-user-tabungan') ? document.getElementById('filter-user-tabungan').value : 'Semua';
 
-            unsubscribeTabungan = db.collection("tabungan").where("family_id", "==", currentUserFamilyId).orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+            unsubscribeTabungan = db.collection("tabungan").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('list-tabungan');
                 if(!container) return;
 
@@ -3557,7 +3550,6 @@
             }
 
             db.collection("crypto").add({ 
-                family_id: currentUserFamilyId, // <-- Tambahkan ini
                 pemilik: pemilik,
                 koin: koin, 
                 jumlahKoin: jumlahKoin, 
@@ -3635,7 +3627,7 @@
 
             const filterUser = document.getElementById('filter-user-crypto').value;
 
-            unsubscribeCrypto = db.collection("crypto").where("family_id", "==", currentUserFamilyId).orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+            unsubscribeCrypto = db.collection("crypto").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
                 const container = document.getElementById('list-crypto');
                 if(!container) return;
                 container.innerHTML = ''; 
@@ -3888,7 +3880,6 @@
                 if (!base64FamilyDocImage) return alert("Mohon sertakan / upload gambar dokumen!");
 
                 db.collection("family_documents").add({
-                    family_id: currentUserFamilyId, // <-- Tambahkan ini
                     namaKeluarga: namaKeluarga,
                     jenisAkun: jenisAkun,
                     namaDokumen: namaDokumen,
@@ -3916,7 +3907,7 @@
             // Ambil nilai pilihan filter saat ini
             const filterJenisVal = filterJenisEl ? filterJenisEl.value : '';
 
-            unsubscribeDokumen = db.collection("family_documents").where("family_id", "==", currentUserFamilyId).orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            unsubscribeDokumen = db.collection("family_documents").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
                 container.innerHTML = '';
                 let count = 0;
                 let setJenisAkunUnik = new Set(); // Untuk mengumpulkan opsi filter otomatis
@@ -4033,7 +4024,6 @@
                 }).catch(e => alert("Gagal mengupdate silsilah: " + e.message));
             } else {
                 db.collection("family_tree").add({
-                    family_id: currentUserFamilyId, // <-- Tambahkan ini
                     nama: nama,
                     peran: peran,
                     keterangan: keterangan,
@@ -4054,7 +4044,7 @@
             const container = document.getElementById('visual-family-tree');
             if (!container) return;
 
-            unsubscribeTree = db.collection("family_tree").where("family_id", "==", currentUserFamilyId).orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+            unsubscribeTree = db.collection("family_tree").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
                 let kakekSuami = [], ortuSuami = [], saudaraSuami = [];
                 let kakekIstri = [], ortuIstri = [], saudaraIstri = [];
                 let pasanganList = [];
@@ -4324,7 +4314,6 @@
             }
 
             const dataPayload = {
-                family_id: currentUserFamilyId, // <-- Tambahkan ini
                 nama: nama,
                 koordinat: koordinat,
                 keterangan: keterangan || 'Rumah / Lokasi Keluarga',
@@ -4368,7 +4357,7 @@
                 mapLiveInstance.invalidateSize();
             }, 300);
 
-            unsubscribeLivePosisi = db.collection("live_posisi").where("family_id", "==", currentUserFamilyId).orderBy("updatedAt", "desc").onSnapshot((snapshot) => {
+            unsubscribeLivePosisi = db.collection("live_posisi").orderBy("updatedAt", "desc").onSnapshot((snapshot) => {
                 tbody.innerHTML = '';
                 let count = 0;
                 let listLokasiPeta = [];
@@ -4696,7 +4685,6 @@
             e.preventDefault();
             const id = document.getElementById('aset-id').value;
             const dataAset = {
-                family_id: currentUserFamilyId, // <-- Tambahkan ini
                 nama: document.getElementById('aset-nama').value,
                 kategori: document.getElementById('aset-kategori').value,
                 kepemilikan: document.getElementById('aset-kepemilikan').value,
@@ -4723,7 +4711,7 @@
                 unsubscribeAset = null;
             }
 
-            unsubscribeAset = db.collection("aset_keluarga").where("family_id", "==", currentUserFamilyId).orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+            unsubscribeAset = db.collection("aset_keluarga").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
                 const tbody = document.getElementById('tabel-aset-body');
                 if(!tbody) return;
                 tbody.innerHTML = '';
@@ -5181,7 +5169,6 @@
 
             if (activeChatTarget === 'group') {
                 db.collection("chats").add({
-                    family_id: currentUserFamilyId, // <-- Tambahkan ini
                     sender: senderName,
                     email: senderEmail,
                     senderId: currentUser.uid,
@@ -5196,7 +5183,6 @@
             } else {
                 const chatId = [currentUser.uid, activeChatTarget].sort().join('_');
                 db.collection("private_chats").add({
-                    family_id: currentUserFamilyId, // <-- Tambahkan ini
                     chatId: chatId,
                     senderId: currentUser.uid,
                     senderName: senderName,
