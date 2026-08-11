@@ -368,6 +368,35 @@
                             <span>Total Masuk Filter: <strong id="filter-masuk" class="text-green-400 text-sm">Rp 0</strong></span>
                             <span>Total Keluar Filter: <strong id="filter-keluar" class="text-red-400 text-sm">Rp 0</strong></span>
                         </div>
+                        <!-- Filter Tambahan Sesuai Gambar -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
+                            <div>
+                                <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Tanggal</label>
+                                <input type="date" id="filter-tgl-mulai" onchange="muatDataTransaksi()" class="w-full modern-input p-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Keterangan</label>
+                                <input type="text" id="filter-ket" oninput="muatDataTransaksi()" placeholder="Cari keterangan..." class="w-full modern-input p-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Jenis Arus Kas</label>
+                                <select id="filter-arus-kas" onchange="muatDataTransaksi()" class="w-full modern-input p-2 text-xs text-white">
+                                    <option value="" class="bg-slate-900">Semua Arus</option>
+                                    <option value="kebutuhan" class="bg-slate-900">Kebutuhan</option>
+                                    <option value="harian" class="bg-slate-900">Harian</option>
+                                    <option value="tagihan" class="bg-slate-900">Tagihan</option>
+                                    <option value="pemasukan" class="bg-slate-900">Pemasukan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Jenis</label>
+                                <select id="filter-jenis-transaksi" onchange="muatDataTransaksi()" class="w-full modern-input p-2 text-xs text-white">
+                                    <option value="" class="bg-slate-900">Semua Jenis</option>
+                                    <option value="masuk" class="bg-slate-900">Masuk</option>
+                                    <option value="keluar" class="bg-slate-900">Keluar</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="overflow-x-auto max-h-[450px] overflow-y-auto pr-1">
                             <table class="w-full text-left border-collapse table-modern">
                                 <thead>
@@ -1946,7 +1975,15 @@
         }
 
         function resetFilter() {
-            document.getElementById('filter-bulan').value = '';
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            
+            document.getElementById('filter-bulan').value = `${yyyy}-${mm}`;
+            document.getElementById('filter-tgl-mulai').value = '';
+            document.getElementById('filter-ket').value = '';
+            document.getElementById('filter-arus-kas').value = '';
+            document.getElementById('filter-jenis-transaksi').value = '';
             muatDataTransaksi();
         }
 
@@ -2087,7 +2124,13 @@
                 unsubscribeTransaksi = null;
             }
 
-            const filterValue = document.getElementById('filter-bulan')?.value || ''; 
+            // Mengambil nilai filter bulan (default ke bulan sekarang jika kosong)[cite: 1]
+            const filterValue = document.getElementById('filter-bulan')?.value || getCurrentMonthKey(); 
+            const filterTglMulai = document.getElementById('filter-tgl-mulai')?.value || '';
+            const filterKet = document.getElementById('filter-ket')?.value.toLowerCase() || '';
+            const filterArusKas = document.getElementById('filter-arus-kas')?.value.toLowerCase() || '';
+            const filterJenisTrx = document.getElementById('filter-jenis-transaksi')?.value.toLowerCase() || '';
+            
             const currentBulanKey = getCurrentMonthKey();
 
             unsubscribeTransaksi = db.collection("transaksi").orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
@@ -2112,6 +2155,7 @@
                     const yyyyTrans = waktuTransaksiObj.getFullYear();
                     const mmTrans = String(waktuTransaksiObj.getMonth() + 1).padStart(2, '0');
                     const bulanTahunTransaksi = `${yyyyTrans}-${mmTrans}`;
+                    const tglFormatYMD = waktuTransaksiObj.toISOString().split('T')[0];
 
                     if (kategori === 'permanen') {
                         if(data.jenis === 'masuk') totalKeluargaMasuk += (data.jumlah || 0);
@@ -2125,46 +2169,49 @@
                         }
                     }
 
-                    if (filterValue === '' || filterValue === bulanTahunTransaksi) {
-                        rowCount++;
-                        if(data.jenis === 'masuk') filterTabelMasuk += (data.jumlah || 0);
-                        if(data.jenis === 'keluar') filterTabelKeluar += (data.jumlah || 0);
+                    // Penerapan Filter Sesuai Gambar Referensi & Bulan Aktif[cite: 1]
+                    if (filterValue && bulanTahunTransaksi !== filterValue) return;
+                    if (filterTglMulai && tglFormatYMD !== filterTglMulai) return;
+                    if (filterKet && !(data.keterangan || '').toLowerCase().includes(filterKet)) return;
+                    if (filterArusKas && jenisArusKas !== filterArusKas) return;
+                    if (filterJenisTrx && data.jenis !== filterJenisTrx) return;
 
-                        let statusBadge = data.status === 'Diupdate' && data.updatedAt 
-                            ? `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)}</div>`
-                            : `<div class="mt-1 inline-block bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)}</div>`;
+                    rowCount++;
+                    if(data.jenis === 'masuk') filterTabelMasuk += (data.jumlah || 0);
+                    if(data.jenis === 'keluar') filterTabelKeluar += (data.jumlah || 0);
 
-                        const textColor = data.jenis === 'masuk' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
-                        const simbol = data.jenis === 'masuk' ? '+' : '-';
-                        const ketAman = data.keterangan ? data.keterangan.replace(/'/g, "\\'") : '';
-                        const badgeKategori = kategori === 'permanen' 
-                            ? `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟢 Kas Keluarga</span>` 
-                            : `<span class="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟣 Limit Bulanan</span>`;
+                    let statusBadge = data.status === 'Diupdate' && data.updatedAt 
+                        ? `<div class="mt-1 inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">🔄 Diupdate: ${formatWaktu(data.updatedAt)}</div>`
+                        : `<div class="mt-1 inline-block bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">✨ Baru: ${formatWaktu(data.createdAt || data.tanggal)}</div>`;
 
-                        const badgeJenisArusKas = jenisArusKas 
-                            ? `<span class="bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize">${jenisArusKas}</span>` 
-                            : `<span class="text-gray-500 italic text-[10px]">-</span>`;
+                    const textColor = data.jenis === 'masuk' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+                    const simbol = data.jenis === 'masuk' ? '+' : '-';
+                    const ketAman = data.keterangan ? data.keterangan.replace(/'/g, "\\'") : '';
+                    const badgeKategori = kategori === 'permanen' 
+                        ? `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟢 Kas Keluarga</span>` 
+                        : `<span class="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold block mt-1 w-max">🟣 Limit Bulanan</span>`;
 
-                        const tglFormatYMD = waktuTransaksiObj.toISOString().split('T')[0];
+                    const badgeJenisArusKas = jenisArusKas 
+                        ? `<span class="bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize">${jenisArusKas}</span>` 
+                        : `<span class="text-gray-500 italic text-[10px]">-</span>`;
 
-                        let actionButtonsHtml = currentUserJenisAkun !== 'Anak' 
-                            ? `<div class="flex justify-center space-x-2">
-                                    <button onclick="siapkanEdit('${docId}', '${kategori}', '${data.jenis}', ${data.jumlah || 0}, '${ketAman}', '${tglFormatYMD}', '${jenisArusKas}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Edit</button>
-                                    <button onclick="hapusTransaksi('${docId}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Hapus</button>
-                            </div>`
-                            : `<span class="text-xs text-gray-400 italic">Hanya Baca</span>`;
+                    let actionButtonsHtml = currentUserJenisAkun !== 'Anak' 
+                        ? `<div class="flex justify-center space-x-2">
+                                <button onclick="siapkanEdit('${docId}', '${kategori}', '${data.jenis}', ${data.jumlah || 0}, '${ketAman}', '${tglFormatYMD}', '${jenisArusKas}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Edit</button>
+                                <button onclick="hapusTransaksi('${docId}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Hapus</button>
+                        </div>`
+                        : `<span class="text-xs text-gray-400 italic">Hanya Baca</span>`;
 
-                        tabel.innerHTML += `
-                            <tr class="border-b dark:border-slate-700 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
-                                <td class="p-4 text-sm text-gray-700 dark:text-gray-300 font-medium">${formatWaktu(data.tanggal).split(',')[0]}${badgeKategori}</td>
-                                <td class="p-4 text-gray-900 dark:text-gray-200"><span class="font-bold">${data.keterangan || '-'}</span><br>${statusBadge}</td>
-                                <td class="p-4">${badgeJenisArusKas}</td>
-                                <td class="p-4 capitalize text-sm font-semibold">${data.jenis}</td>
-                                <td class="p-4 font-bold ${textColor} text-base">${simbol} Rp ${(data.jumlah || 0).toLocaleString('id-ID')}</td>
-                                <td class="p-4 text-center">${actionButtonsHtml}</td>
-                            </tr>
-                        `;
-                    }
+                    tabel.innerHTML += `
+                        <tr class="border-b dark:border-slate-700 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td class="p-4 text-sm text-gray-700 dark:text-gray-300 font-medium">${formatWaktu(data.tanggal).split(',')[0]}${badgeKategori}</td>
+                            <td class="p-4 text-gray-900 dark:text-gray-200"><span class="font-bold">${data.keterangan || '-'}</span><br>${statusBadge}</td>
+                            <td class="p-4">${badgeJenisArusKas}</td>
+                            <td class="p-4 capitalize text-sm font-semibold">${data.jenis}</td>
+                            <td class="p-4 font-bold ${textColor} text-base">${simbol} Rp ${(data.jumlah || 0).toLocaleString('id-ID')}</td>
+                            <td class="p-4 text-center">${actionButtonsHtml}</td>
+                        </tr>
+                    `;
                 });
 
                 if (rowCount === 0) {
@@ -2286,7 +2333,7 @@
                 console.error("Error mengambil data transaksi:", error);
             });
         }
-
+        
         function hapusTransaksi(id) {
             if (confirm("Hapus transaksi ini?")) {
                 db.collection("transaksi").doc(id).delete().catch(e => alert("Gagal menghapus: " + e.message));
