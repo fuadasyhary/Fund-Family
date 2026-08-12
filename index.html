@@ -1480,7 +1480,6 @@
             }
 
             if (!isLiveLocActive) {
-                // AKTIFKAN LIVE LOCATION
                 if (!navigator.geolocation) {
                     return alert("Geolocation tidak didukung oleh browser Anda.");
                 }
@@ -1490,36 +1489,38 @@
                 dotEl.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping";
                 btnEl.className = "bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
 
-                // Gunakan watchPosition untuk melacak pergerakan secara real-time
+                // Gunakan ID khusus berawalan 'live_' + UID agar terpisah dari lokasi rumah/manual
+                const liveDocId = "live_" + currentUser.uid;
+
                 watchIdLiveLoc = navigator.geolocation.watchPosition((position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     const koordinatStr = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                     const namaUser = document.getElementById('user-display-name')?.innerText || 'Saya';
 
-                    // Simpan / Update otomatis posisi live ke Firestore
-                    db.collection("live_posisi").doc("live_" + currentUser.uid).set({
+                    // Simpan otomatis ke Firestore dengan penanda isLive: true
+                    db.collection("live_posisi").doc(liveDocId).set({
+                        family_id: currentUserFamilyId,
                         nama: `📍 [Live] ${namaUser}`,
                         koordinat: koordinatStr,
                         keterangan: 'Live Location Aktif (Real-time)',
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                         createdBy: namaUser,
-                        isLive: true
+                        isLive: true // Penanda penting agar dianggap live location
                     }, { merge: true }).catch(err => console.error("Gagal update live loc:", err));
 
                 }, (err) => {
                     alert("Gagal mendeteksi lokasi GPS: " + err.message);
-                    toggleLiveLocationSharing(); // Matikan jika error
+                    toggleLiveLocationSharing();
                 }, {
                     enableHighAccuracy: true,
                     maximumAge: 0,
                     timeout: 10000
                 });
 
-                alert("Live Location diaktifkan! Posisi Anda akan terus diperbarui secara real-time di peta.");
+                alert("Live Location diaktifkan! Posisi Anda akan muncul di peta & list.");
 
             } else {
-                // MATIKAN LIVE LOCATION
                 isLiveLocActive = false;
                 btnText.innerText = "Live Location";
                 dotEl.className = "h-2.5 w-2.5 rounded-full bg-gray-400";
@@ -1530,11 +1531,15 @@
                     watchIdLiveLoc = null;
                 }
 
-                // Hapus data live posisi dari Firestore saat dimatikan
-                db.collection("live_posisi").doc("live_" + currentUser.uid).delete().catch(() => {});
+                // HAPUS OTOMATIS DARI DATABASE KETIKA DIMATIKAN
+                const liveDocId = "live_" + currentUser.uid;
+                db.collection("live_posisi").doc(liveDocId).delete().then(() => {
+                    console.log("Live location berhasil dihapus dari database.");
+                }).catch((err) => {
+                    console.error("Gagal menghapus live location:", err);
+                });
                 
-                alert("Live Location dimatikan.");
-                muatDataLivePosisi();
+                alert("Live Location dimatikan dan dihapus dari peta.");
             }
         }
 
@@ -3416,18 +3421,32 @@
                     if (pemilik === 'Keluarga Bersama') ownerBadgeColor = 'bg-purple-900 text-purple-200';
 
                     // Buat list riwayat penambahan saldo
-                    // Buat list riwayat penambahan saldo dengan tombol edit/hapus
                     let riwayatListHtml = '';
                     if (data.riwayatTabungan && data.riwayatTabungan.length > 0) {
-                        data.riwayatTabungan.forEach((log, index) => {
+                        
+                        // === TAMBAHKAN KODE SORTING DI SINI ===
+                        // Mengurutkan dari tanggal terbaru ke terlama
+                        const sortedRiwayat = [...data.riwayatTabungan].sort((a, b) => {
+                            return new Date(b.tanggal) - new Date(a.tanggal);
+                        });
+
+                        // Gunakan sortedRiwayat untuk looping
+                        sortedRiwayat.forEach((log, index) => {
+                            // Karena array sudah di-sort, kita perlu mencari index asli 
+                            // agar tombol Edit/Hapus tetap mengarah ke index yang benar di Firestore
+                            const originalIndex = data.riwayatTabungan.findIndex(item => 
+                                item.tanggal === log.tanggal && item.nominal === log.nominal
+                            );
+
                             let tglFormat = log.tanggal ? new Date(log.tanggal).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}) : '-';
+                            
                             riwayatListHtml += `
                                 <div class="flex justify-between items-center text-[10px] bg-gray-50 dark:bg-slate-900 p-2 rounded-xl border border-gray-100 dark:border-slate-700 mb-1 gap-2">
                                     <span class="text-gray-500 dark:text-gray-400 truncate">📅 ${tglFormat}</span>
                                     <div class="flex items-center gap-2">
                                         <strong class="text-emerald-600 dark:text-emerald-400">+ Rp ${log.nominal.toLocaleString('id-ID')}</strong>
-                                        <button onclick="bukaModalEditRiwayatTabungan('${docId}', ${index}, '${log.tanggal || ''}', ${log.nominal})" class="text-yellow-500 hover:underline font-bold" title="Edit Riwayat">✏️</button>
-                                        <button onclick="hapusRiwayatTabungan('${docId}', ${index})" class="text-red-500 hover:underline font-bold" title="Hapus Riwayat">✖</button>
+                                        <button onclick="bukaModalEditRiwayatTabungan('${docId}', ${originalIndex}, '${log.tanggal || ''}', ${log.nominal})" class="text-yellow-500 hover:underline font-bold" title="Edit Riwayat">✏️</button>
+                                        <button onclick="hapusRiwayatTabungan('${docId}', ${originalIndex})" class="text-red-500 hover:underline font-bold" title="Hapus Riwayat">✖</button>
                                     </div>
                                 </div>
                             `;
