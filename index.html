@@ -1479,17 +1479,28 @@
                 return alert("Silakan login terlebih dahulu!");
             }
 
+            // Pastikan family_id ada
+            if (!currentUserFamilyId) {
+                return alert("Error: Family ID belum dimuat. Coba refresh halaman!");
+            }
+
             if (!isLiveLocActive) {
                 if (!navigator.geolocation) {
                     return alert("Geolocation tidak didukung oleh browser Anda.");
                 }
 
-                isLiveLocActive = true;
-                btnText.innerText = "Not Live Location";
-                dotEl.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping";
-                btnEl.className = "bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
+                // Cek izin GPS secara eksplisit
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    console.log("GPS Aktif:", pos.coords.latitude, pos.coords.longitude);
+                }, (err) => {
+                    alert("Akses GPS ditolak / bermasalah: " + err.message);
+                }, { enableHighAccuracy: true });
 
-                // Gunakan ID khusus berawalan 'live_' + UID agar terpisah dari lokasi rumah/manual
+                isLiveLocActive = true;
+                if(btnText) btnText.innerText = "Not Live Location";
+                if(dotEl) dotEl.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping";
+                if(btnEl) btnEl.className = "bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
+
                 const liveDocId = "live_" + currentUser.uid;
 
                 watchIdLiveLoc = navigator.geolocation.watchPosition((position) => {
@@ -1498,7 +1509,7 @@
                     const koordinatStr = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                     const namaUser = document.getElementById('user-display-name')?.innerText || 'Saya';
 
-                    // Simpan otomatis ke Firestore dengan penanda isLive: true
+                    // Kirim data ke Firestore
                     db.collection("live_posisi").doc(liveDocId).set({
                         family_id: currentUserFamilyId,
                         nama: `📍 [Live] ${namaUser}`,
@@ -1506,11 +1517,17 @@
                         keterangan: 'Live Location Aktif (Real-time)',
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                         createdBy: namaUser,
-                        isLive: true // Penanda penting agar dianggap live location
-                    }, { merge: true }).catch(err => console.error("Gagal update live loc:", err));
+                        isLive: true
+                    }, { merge: true })
+                    .then(() => {
+                        console.log("Live loc sukses dikirim:", koordinatStr);
+                    })
+                    .catch(err => {
+                        console.error("Gagal kirim live loc ke database:", err);
+                    });
 
                 }, (err) => {
-                    alert("Gagal mendeteksi lokasi GPS: " + err.message);
+                    alert("Gagal melacak posisi GPS: " + err.message);
                     toggleLiveLocationSharing();
                 }, {
                     enableHighAccuracy: true,
@@ -1518,20 +1535,19 @@
                     timeout: 10000
                 });
 
-                alert("Live Location diaktifkan! Posisi Anda akan muncul di peta & list.");
+                alert("Live Location diaktifkan!");
 
             } else {
                 isLiveLocActive = false;
-                btnText.innerText = "Live Location";
-                dotEl.className = "h-2.5 w-2.5 rounded-full bg-gray-400";
-                btnEl.className = "bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/50 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
+                if(btnText) btnText.innerText = "Live Location";
+                if(dotEl) dotEl.className = "h-2.5 w-2.5 rounded-full bg-gray-400";
+                if(btnEl) btnEl.className = "bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/50 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
 
                 if (watchIdLiveLoc !== null) {
                     navigator.geolocation.clearWatch(watchIdLiveLoc);
                     watchIdLiveLoc = null;
                 }
 
-                // HAPUS OTOMATIS DARI DATABASE KETIKA DIMATIKAN
                 const liveDocId = "live_" + currentUser.uid;
                 db.collection("live_posisi").doc(liveDocId).delete().then(() => {
                     console.log("Live location berhasil dihapus dari database.");
@@ -1539,7 +1555,7 @@
                     console.error("Gagal menghapus live location:", err);
                 });
                 
-                alert("Live Location dimatikan dan dihapus dari peta.");
+                alert("Live Location dimatikan.");
             }
         }
 
