@@ -4842,6 +4842,66 @@
             }, 200);
         }
 
+        // Tangkap kondisi saat user menutup tab, minimize, atau keluar halaman
+        window.addEventListener('beforeunload', () => {
+            matikanLiveLocationDarurat();
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Opsional: Jika HP di-minimize, tentukan apakah mau dihentikan atau dibiarkan berjalan dengan interval aman
+                // Contoh jika ingin dihentikan otomatis saat minimize:
+                // matikanLiveLocationDarurat();
+            }
+        });
+
+        function matikanLiveLocationDarurat() {
+            if (window.watchIdLive) {
+                navigator.geolocation.clearWatch(window.watchIdLive);
+                window.watchIdLive = null;
+            }
+            // Update ke database bahwa user ini sudah tidak live
+            if (currentUserUid && currentUserFamilyId) {
+                db.collection("live_posisi").doc(currentUserUid).update({
+                    isLive: false,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(err => console.log(err));
+            }
+        }
+
+        function muatLivePetaKeluarga() {
+            // Pastikan difilter berdasarkan family_id agar keluarga lain bisa melihat
+            db.collection("live_posisi")
+            .where("family_id", "==", currentUserFamilyId)
+            .where("isLive", "==", true) // Hanya ambil yang benar-benar sedang live
+            .onSnapshot((snapshot) => {
+                // Bersihkan marker lama di peta Leaflet Anda
+                // Lalu loop data di bawah ini untuk menampilkan marker anggota keluarga lain
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const lat = data.latitude;
+                    const lng = data.longitude;
+                    const namaUser = data.nama || 'Anggota Keluarga';
+
+                    // Tambahkan marker ke peta Leaflet di sini
+                    console.log(`Posisi ${namaUser}: ${lat}, ${lng}`);
+                });
+            });
+        }
+
+        function mulaiLiveLocation(lat, lng) {
+            db.collection("live_posisi").doc(currentUserUid).set({
+                uid: currentUserUid,
+                nama: currentUserName,
+                family_id: currentUserFamilyId, // <--- INI KUNCI AGAR KELUARGA LAIN BISA BACA
+                latitude: lat,
+                longitude: lng,
+                isLive: true,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
+
         function renderCryptoProfitChart(pnlData) {
             const canvasEl = document.getElementById('cryptoProfitChart');
             if (!canvasEl) return;
