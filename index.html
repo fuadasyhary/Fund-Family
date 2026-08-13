@@ -2496,10 +2496,11 @@
                 }
 
                 // Kalkulasi Kas Keluarga & Akumulasi Sisa Limit
+                // 1. Akumulasi seluruh sisa limit bulanan dari semua bulan (total masuk - total keluar dari kategori limit_bulanan di semua bulan)
                 let totalAkumulasiSisaLimitBulanan = 0;
                 let rincianAkumulasiBulan = [];
                 let semuaBulanSet = new Set([...Object.keys(limitMasukPerBulan), ...Object.keys(limitKeluarPerBulan)]);
-                
+
                 semuaBulanSet.forEach(bulanKey => {
                     let msk = limitMasukPerBulan[bulanKey] || 0;
                     let klr = limitKeluarPerBulan[bulanKey] || 0;
@@ -2508,11 +2509,22 @@
                     rincianAkumulasiBulan.push({ bulan: bulanKey, sisa: sisaBulanIni });
                 });
 
+                // 2. Murni Kas Keluarga Permanen (Masuk - Keluar)
                 let murniKasKeluarga = totalKasMasuk - totalKasKeluar;
+
+                // 3. TOTAL KAS KELUARGA UTAMA (Angka besar di kiri): 
+                // Diubah menjadi: Total Kas Masuk Permanen + Akumulasi Seluruh Sisa Limit dari Semua Bulan
+                let totalKasBesarKiri = totalKasMasuk + totalAkumulasiSisaLimitBulanan; 
+
+                // 4. Sisa Kas Keluarga (Angka di kanan)
                 let sisaKasKeluargaAkhir = murniKasKeluarga + totalAkumulasiSisaLimitBulanan;
 
+                // --- TAMPILKAN KE ELEMEN HTML ---
                 const elKasPermanen = document.getElementById('total-kas-permanen');
-                if(elKasPermanen) elKasPermanen.innerText = 'Rp ' + totalKasMasuk.toLocaleString('id-ID');
+                if(elKasPermanen) {
+                    elKasPermanen.innerText = 'Rp ' + totalKasBesarKiri.toLocaleString('id-ID');
+                    elKasPermanen.className = totalKasBesarKiri >= 0 ? "text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400" : "text-xl sm:text-2xl font-bold text-red-500";
+                }
 
                 const elSisaKasKeluarga = document.getElementById('sisa-kas-keluarga-sekarang');
                 if(elSisaKasKeluarga) {
