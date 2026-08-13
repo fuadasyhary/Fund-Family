@@ -215,24 +215,33 @@
             
             <!-- HALAMAN 1: DASHBOARD -->
             <div id="page-dashboard" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="pindahHalaman('aset')">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">💎 Total Aset Keluarga (Klik untuk Detail)</p>
-                        <h3 id="total-aset-dashboard" class="text-2xl font-bold text-gray-900 dark:text-white">Rp 0</h3>
-                        <span class="text-[10px] text-gray-400 mt-1 block">Kendaraan & Gadget dihitung 50%</span>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailKasKeluarga()">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Kas Keluarga (Total / Sisa)</p>
+                        <div class="flex justify-between items-baseline">
+                            <h3 id="total-kas-permanen" class="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rp 0</h3>
+                            <div class="text-right">
+                                <span class="text-[10px] text-slate-400 block">Sisa Kas Keluarga</span>
+                                <span id="sisa-kas-keluarga-sekarang" class="text-sm sm:text-base font-extrabold text-emerald-400">Rp 0</span>
+                            </div>
+                        </div>
+                        <span id="info-kas-keluarga" class="text-[10px] text-gray-400 mt-1 block">Akumulasi kas & seluruh sisa limit (Klik untuk detail)</span>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="pindahHalaman('kas')">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Kas Keluarga Permanen</p>
-                        <h3 id="total-kas-permanen" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rp 0</h3>
-                        <span class="text-[10px] text-gray-400 mt-1 block">Saldo kas bersama masa depan</span>
+                
+                    <!-- Card Bulanan -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailBulanan()">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Bulanan (Limit / Sisa)</p>
+                        <div class="flex justify-between items-baseline">
+                            <h3 id="limit-bulanan-aktif" class="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">Rp 0</h3>
+                            <div class="text-right">
+                                <span class="text-[10px] text-slate-400 block">Sisa Limit Bulan Ini</span>
+                                <span id="sisa-limit-bulanan-sekarang" class="text-sm sm:text-base font-extrabold text-emerald-400">Rp 0</span>
+                            </div>
+                        </div>
+                        <span id="info-status-bulanan" class="text-[10px] text-gray-400 mt-1 block">Status: Hemat (Klik untuk detail)</span>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="pindahHalaman('kas')">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Sisa Limit Bulanan Aktif</p>
-                        <h3 id="total-kas-bulanan" class="text-2xl font-bold text-purple-600 dark:text-purple-400">Rp 0</h3>
-                        <span id="info-limit-bulanan" class="text-[10px] text-gray-400 mt-1 block">Batasan Limit: Rp 0</span>
-                    </div>
-                    <!-- CARD HARIAN YANG DIPERBARUI -->
-                     <!-- CARD HARIAN YANG DIPERBARUI DENGAN SISA LIMIT DI SEBELAH KANAN -->
+                
+                    <!-- Card Harian -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailHarian()">
                         <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Harian (Limit / Sisa Hari)</p>
                         <div class="flex justify-between items-baseline">
@@ -1336,6 +1345,36 @@
         </div>
     </div>
 
+    <!-- Modal Detail Kas Keluarga -->
+    <div id="modal-detail-kas-keluarga" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">💰 Rincian & Akumulasi Kas Keluarga</h3>
+                <button onclick="tutupModalDetailKasKeluarga()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
+            </div>
+            <div id="konten-detail-kas-keluarga" class="space-y-3">
+                <!-- Data rincian akan dirender di sini secara dinamis -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail & Status Bulanan (Skala Tahunan) -->
+    <div id="modal-detail-bulanan" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">🗓️ Rincian Pengeluaran & Limit Bulanan (Tahunan)</h3>
+                <button onclick="tutupModalDetailBulanan()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
+            </div>
+            <select id="filter-bulan" onchange="muatDataTransaksi()" class="bg-slate-900 border border-slate-700 text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-blue-500">
+                <option value="">Semua Bulan (Tahun Ini)</option>
+                <!-- Opsi bulan akan terisi otomatis oleh script sesuai data yang ada -->
+            </select>
+            <div id="konten-detail-bulanan" class="space-y-3">
+                <!-- Data per bulan akan dirender secara dinamis di sini -->
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Detail & Status Harian -->
     <div id="modal-detail-harian" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
@@ -2314,32 +2353,42 @@
             }
         }
         // ------------------------------------------
-
+        
         function muatDataTransaksi() {
             if (unsubscribeTransaksi) {
                 unsubscribeTransaksi();
                 unsubscribeTransaksi = null;
             }
 
-            // Mengambil nilai filter bulan (default ke bulan sekarang jika kosong)[cite: 1]
-            const filterValue = document.getElementById('filter-bulan')?.value || getCurrentMonthKey(); 
+            const filterValue = document.getElementById('filter-bulan')?.value || ''; 
             const filterTglMulai = document.getElementById('filter-tgl-mulai')?.value || '';
             const filterKet = document.getElementById('filter-ket')?.value.toLowerCase() || '';
             const filterArusKas = document.getElementById('filter-arus-kas')?.value.toLowerCase() || '';
             const filterJenisTrx = document.getElementById('filter-jenis-transaksi')?.value.toLowerCase() || '';
             
-            const currentBulanKey = getCurrentMonthKey();
+            const now = new Date();
+            const currentYear = String(now.getFullYear());
 
             unsubscribeTransaksi = db.collection("transaksi").where("family_id", "==", currentUserFamilyId).orderBy("tanggal", "desc").onSnapshot((querySnapshot) => {
                 const tabel = document.getElementById('tabel-transaksi');
                 if(!tabel) return;
                 tabel.innerHTML = ''; 
                 
-                let totalKeluargaMasuk = 0, totalKeluargaKeluar = 0;
                 let filterTabelMasuk = 0, filterTabelKeluar = 0;
                 let rowCount = 0;
                 let autoLimitMasuk = 0;
                 let autoLimitKeluar = 0;
+
+                let totalKasMasuk = 0;
+                let totalKasKeluar = 0;
+                let kasKeluargaTransaksiList = [];
+                let limitMasukPerBulan = {};
+                let limitKeluarPerBulan = {};
+
+                let availableMonthsSet = new Set();
+                let pengeluaranPerBulanMap = {};
+                let masukPerBulanMap = {};
+                let transaksiPerBulanMap = {};
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); 
@@ -2349,24 +2398,56 @@
                     const jenisArusKas = jenisArusKasRaw.toLowerCase();
                     
                     const waktuTransaksiObj = data.tanggal ? data.tanggal.toDate() : new Date();
-                    const yyyyTrans = waktuTransaksiObj.getFullYear();
+                    const yyyyTrans = String(waktuTransaksiObj.getFullYear());
                     const mmTrans = String(waktuTransaksiObj.getMonth() + 1).padStart(2, '0');
                     const bulanTahunTransaksi = `${yyyyTrans}-${mmTrans}`;
                     const tglFormatYMD = waktuTransaksiObj.toISOString().split('T')[0];
 
                     if (kategori === 'permanen') {
-                        if(data.jenis === 'masuk') totalKeluargaMasuk += (data.jumlah || 0);
-                        if(data.jenis === 'keluar') totalKeluargaKeluar += (data.jumlah || 0);
+                        if(data.jenis === 'masuk') totalKasMasuk += (data.jumlah || 0);
+                        if(data.jenis === 'keluar') totalKasKeluar += (data.jumlah || 0);
+
+                        kasKeluargaTransaksiList.push({
+                            keterangan: data.keterangan || 'Tanpa Keterangan',
+                            jenis: data.jenis,
+                            jumlah: data.jumlah || 0,
+                            tanggal: formatWaktu(data.tanggal)
+                        });
                     }
 
-                    if (kategori === 'limit_bulanan' && bulanTahunTransaksi === currentBulanKey) {
-                        if (data.jenis === 'masuk') autoLimitMasuk += (data.jumlah || 0);
-                        else if (data.jenis === 'keluar') {
-                            autoLimitKeluar += (data.jumlah || 0);
+                    if (kategori === 'limit_bulanan') {
+                        if (data.jenis === 'masuk') {
+                            limitMasukPerBulan[bulanTahunTransaksi] = (limitMasukPerBulan[bulanTahunTransaksi] || 0) + (data.jumlah || 0);
+                        } else if (data.jenis === 'keluar') {
+                            limitKeluarPerBulan[bulanTahunTransaksi] = (limitKeluarPerBulan[bulanTahunTransaksi] || 0) + (data.jumlah || 0);
                         }
                     }
 
-                    // Penerapan Filter Sesuai Gambar Referensi & Bulan Aktif[cite: 1]
+                    if (kategori === 'limit_bulanan' && yyyyTrans === currentYear) {
+                        availableMonthsSet.add(bulanTahunTransaksi);
+
+                        if (data.jenis === 'masuk') {
+                            masukPerBulanMap[bulanTahunTransaksi] = (masukPerBulanMap[bulanTahunTransaksi] || 0) + (data.jumlah || 0);
+                        } else if (data.jenis === 'keluar') {
+                            pengeluaranPerBulanMap[bulanTahunTransaksi] = (pengeluaranPerBulanMap[bulanTahunTransaksi] || 0) + (data.jumlah || 0);
+                        }
+
+                        if (!transaksiPerBulanMap[bulanTahunTransaksi]) transaksiPerBulanMap[bulanTahunTransaksi] = [];
+                        transaksiPerBulanMap[bulanTahunTransaksi].push({
+                            keterangan: data.keterangan || 'Tanpa Keterangan',
+                            jenis: data.jenis,
+                            jumlah: data.jumlah || 0,
+                            tanggal: formatWaktu(data.tanggal)
+                        });
+                    }
+
+                    if (kategori === 'limit_bulanan' && (!filterValue || bulanTahunTransaksi === filterValue)) {
+                        if (filterValue && bulanTahunTransaksi === filterValue) {
+                            if (data.jenis === 'masuk') autoLimitMasuk += (data.jumlah || 0);
+                            else if (data.jenis === 'keluar') autoLimitKeluar += (data.jumlah || 0);
+                        }
+                    }
+
                     if (filterValue && bulanTahunTransaksi !== filterValue) return;
                     if (filterTglMulai && tglFormatYMD !== filterTglMulai) return;
                     if (filterKet && !(data.keterangan || '').toLowerCase().includes(filterKet)) return;
@@ -2415,24 +2496,96 @@
                     tabel.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500 dark:text-gray-400 font-medium">Belum ada catatan transaksi pada bulan/filter ini.</td></tr>`;
                 }
 
-                const elKasPermaten = document.getElementById('total-kas-permanen');
-                if(elKasPermaten) elKasPermaten.innerText = 'Rp ' + (totalKeluargaMasuk - totalKeluargaKeluar).toLocaleString('id-ID');
+                // Kalkulasi Kas Keluarga & Akumulasi Sisa Limit
+                let totalAkumulasiSisaLimitBulanan = 0;
+                let rincianAkumulasiBulan = [];
+                let semuaBulanSet = new Set([...Object.keys(limitMasukPerBulan), ...Object.keys(limitKeluarPerBulan)]);
                 
-                const sisaLimitBulanan = autoLimitMasuk - autoLimitKeluar;
-                const elKasBulanan = document.getElementById('total-kas-bulanan');
-                if(elKasBulanan) elKasBulanan.innerText = 'Rp ' + sisaLimitBulanan.toLocaleString('id-ID');
-                
-                const infoLimitEl = document.getElementById('info-limit-bulanan');
-                if (infoLimitEl) infoLimitEl.innerText = `Limit Masuk Bulan Ini: Rp ${autoLimitMasuk.toLocaleString('id-ID')}`;
+                semuaBulanSet.forEach(bulanKey => {
+                    let msk = limitMasukPerBulan[bulanKey] || 0;
+                    let klr = limitKeluarPerBulan[bulanKey] || 0;
+                    let sisaBulanIni = msk - klr;
+                    totalAkumulasiSisaLimitBulanan += sisaBulanIni;
+                    rincianAkumulasiBulan.push({ bulan: bulanKey, sisa: sisaBulanIni });
+                });
 
-                // Kalkulasi Harian
-                const now = new Date();
-                const tahun = now.getFullYear();
-                const bulan = now.getMonth();
+                let murniKasKeluarga = totalKasMasuk - totalKasKeluar;
+                let sisaKasKeluargaAkhir = murniKasKeluarga + totalAkumulasiSisaLimitBulanan;
+
+                const elKasPermanen = document.getElementById('total-kas-permanen');
+                if(elKasPermanen) elKasPermanen.innerText = 'Rp ' + totalKasMasuk.toLocaleString('id-ID');
+
+                const elSisaKasKeluarga = document.getElementById('sisa-kas-keluarga-sekarang');
+                if(elSisaKasKeluarga) {
+                    elSisaKasKeluarga.innerText = 'Rp ' + sisaKasKeluargaAkhir.toLocaleString('id-ID');
+                    elSisaKasKeluarga.className = sisaKasKeluargaAkhir >= 0 ? "text-sm sm:text-base font-extrabold text-emerald-400" : "text-sm sm:text-base font-extrabold text-red-400";
+                }
+
+                cacheDataKasKeluargaDetail = {
+                    totalMasuk: totalKasMasuk,
+                    totalKeluar: totalKasKeluar,
+                    murniKas: murniKasKeluarga,
+                    akumulasiLimit: totalAkumulasiSisaLimitBulanan,
+                    sisaAkhir: sisaKasKeluargaAkhir,
+                    transaksiKasList: kasKeluargaTransaksiList,
+                    rincianBulan: rincianAkumulasiBulan
+                };
+
+                let targetBulanKey = filterValue || getCurrentMonthKey();
+                let totalMasukBulanIni = masukPerBulanMap[targetBulanKey] || 0;
+                let totalKeluarBulanIni = pengeluaranPerBulanMap[targetBulanKey] || 0;
+                let sisaLimitBulananAktif = totalMasukBulanIni - totalKeluarBulanIni;
+                let statusBulan = sisaLimitBulananAktif >= 0 ? "🟢 Hemat" : "🔴 Boros";
+
+                const elLimitBulananAktif = document.getElementById('limit-bulanan-aktif');
+                if (elLimitBulananAktif) elLimitBulananAktif.innerText = 'Rp ' + totalMasukBulanIni.toLocaleString('id-ID');
+
+                const elSisaLimitBulanan = document.getElementById('sisa-limit-bulanan-sekarang');
+                if (elSisaLimitBulanan) {
+                    elSisaLimitBulanan.innerText = 'Rp ' + sisaLimitBulananAktif.toLocaleString('id-ID');
+                    elSisaLimitBulanan.className = sisaLimitBulananAktif >= 0 ? "text-sm sm:text-base font-extrabold text-emerald-400" : "text-sm sm:text-base font-extrabold text-red-400";
+                }
+
+                const infoStatusBulan = document.getElementById('info-status-bulanan');
+                if (infoStatusBulan) infoStatusBulan.innerText = `Status: ${statusBulan} (Klik untuk detail)`;
+
+                let sortedMonths = Array.from(availableMonthsSet).sort().reverse();
+                let rincianBulanArray = [];
+                const namaBulanList = { "01": "Januari", "02": "Februari", "03": "Maret", "04": "April", "05": "Mei", "06": "Juni", "07": "Juli", "08": "Agustus", "09": "September", "10": "Oktober", "11": "November", "12": "Desember" };
+
+                sortedMonths.forEach(ym => {
+                    let [yr, mo] = ym.split('-');
+                    rincianBulanArray.push({
+                        bulanKey: ym,
+                        bulanNama: `${namaBulanList[mo] || mo} ${yr}`,
+                        totalMasukBulan: masukPerBulanMap[ym] || 0,
+                        totalKeluarBulan: pengeluaranPerBulanMap[ym] || 0,
+                        transaksiList: transaksiPerBulanMap[ym] || []
+                    });
+                });
+
+                cacheDataBulananDetail = {
+                    rincianPerBulan: rincianBulanArray
+                };
+
+                const selectFilterBulan = document.getElementById('filter-bulan');
+                if (selectFilterBulan) {
+                    let currentSelected = selectFilterBulan.value;
+                    selectFilterBulan.innerHTML = '<option value="">Semua Bulan (Tahun Ini)</option>';
+                    sortedMonths.forEach(ym => {
+                        let [yr, mo] = ym.split('-');
+                        let namaBulan = namaBulanList[mo] || mo;
+                        selectFilterBulan.innerHTML += `<option value="${ym}">${namaBulan} ${yr}</option>`;
+                    });
+                    selectFilterBulan.value = currentSelected;
+                }
+
+                const tahunNow = now.getFullYear();
+                const bulanNow = now.getMonth();
                 const tanggalHariIni = now.getDate();
-                const totalHariBulanIni = new Date(tahun, bulan + 1, 0).getDate();
+                const totalHariBulanIni = new Date(tahunNow, bulanNow + 1, 0).getDate();
                 const sisaHari = Math.max(1, totalHariBulanIni - tanggalHariIni + 1);
-                const nilaiHarianIdeal = sisaLimitBulanan > 0 ? Math.round(sisaLimitBulanan / sisaHari) : 0;
+                const nilaiHarianIdeal = sisaLimitBulananAktif > 0 ? Math.round(sisaLimitBulananAktif / sisaHari) : 0;
 
                 const elLimitHarian = document.getElementById('limit-harian-aktif');
                 if(elLimitHarian) elLimitHarian.innerText = 'Rp ' + nilaiHarianIdeal.toLocaleString('id-ID');
@@ -2456,10 +2609,8 @@
                         const mmStr = String(mm + 1).padStart(2, '0');
                         const keyYMD = `${yyyy}-${mmStr}-${dd}`;
 
-                        if (yyyy === tahun && mm === bulan) {
-                            if (!transaksiPerTanggalMap[keyYMD]) {
-                                transaksiPerTanggalMap[keyYMD] = [];
-                            }
+                        if (yyyy === tahunNow && mm === bulanNow) {
+                            if (!transaksiPerTanggalMap[keyYMD]) transaksiPerTanggalMap[keyYMD] = [];
 
                             transaksiPerTanggalMap[keyYMD].push({
                                 keterangan: data.keterangan || 'Tanpa Keterangan',
@@ -2468,9 +2619,7 @@
                             });
 
                             if (jenisArusKasVal === 'harian') {
-                                if (!pengeluaranMap[keyYMD]) {
-                                    pengeluaranMap[keyYMD] = 0;
-                                }
+                                if (!pengeluaranMap[keyYMD]) pengeluaranMap[keyYMD] = 0;
                                 pengeluaranMap[keyYMD] += (data.jumlah || 0);
                                 totalPengeluaranHarianBulanIni += (data.jumlah || 0);
                             }
@@ -2478,19 +2627,13 @@
                     }
                 });
 
-                // === TAMBAHAN KONDISI: PASTIKAN HARI INI TETAP ADA MESKIPUN DATA HARIANNYA NGGA ADA (NILAI 0 & HEMAT FULL) ===
-                const yyyyNow = now.getFullYear();
-                const mmNow = String(now.getMonth() + 1).padStart(2, '0');
-                const ddNow = String(now.getDate()).padStart(2, '0');
-                const keyHariIniYMD = `${yyyyNow}-${mmNow}-${ddNow}`;
+                const yyyyNowStr = now.getFullYear();
+                const mmNowStr = String(now.getMonth() + 1).padStart(2, '0');
+                const ddNowStr = String(now.getDate()).padStart(2, '0');
+                const keyHariIniYMD = `${yyyyNowStr}-${mmNowStr}-${ddNowStr}`;
 
-                if (!transaksiPerTanggalMap[keyHariIniYMD]) {
-                    transaksiPerTanggalMap[keyHariIniYMD] = [];
-                }
-                if (pengeluaranMap[keyHariIniYMD] === undefined) {
-                    pengeluaranMap[keyHariIniYMD] = 0; // Set pengeluaran hari ini menjadi 0 jika kosong
-                }
-                // =========================================================================================
+                if (!transaksiPerTanggalMap[keyHariIniYMD]) transaksiPerTanggalMap[keyHariIniYMD] = [];
+                if (pengeluaranMap[keyHariIniYMD] === undefined) pengeluaranMap[keyHariIniYMD] = 0;
 
                 let rincianArray = [];
                 for (let tglStr in transaksiPerTanggalMap) {
@@ -2505,7 +2648,6 @@
 
                 rincianArray.sort((a, b) => new Date(b.tanggalStr) - new Date(a.tanggalStr));
 
-                // Hitung sisa limit harian hari ini untuk ditampilkan langsung di dashboard
                 let pengeluaranHariIni = pengeluaranMap[keyHariIniYMD] || 0;
                 let sisaLimitHarianSekarang = nilaiHarianIdeal - pengeluaranHariIni;
                 
@@ -5665,6 +5807,196 @@
                     container.scrollTop = container.scrollHeight;
                 });
             }
+        }
+
+        let cacheDataKasKeluargaDetail = {};
+
+        function bukaModalDetailKasKeluarga() {
+            const container = document.getElementById('konten-detail-kas-keluarga');
+            if (!container) return;
+
+            const dataKas = cacheDataKasKeluargaDetail;
+            let listTransaksiHtml = '';
+
+            if (dataKas.transaksiKasList && dataKas.transaksiKasList.length > 0) {
+                dataKas.transaksiKasList.forEach(tr => {
+                    listTransaksiHtml += `
+                        <div class="flex justify-between items-center text-xs py-2 border-b border-slate-800">
+                            <div>
+                                <span class="text-slate-300 font-semibold">${tr.keterangan}</span>
+                                <p class="text-[10px] text-slate-500">${tr.tanggal}</p>
+                            </div>
+                            <span class="${tr.jenis === 'masuk' ? 'text-green-400' : 'text-red-400'} font-bold">
+                                ${tr.jenis === 'masuk' ? '+' : '-'} Rp ${tr.jumlah.toLocaleString('id-ID')}
+                            </span>
+                        </div>
+                    `;
+                });
+            } else {
+                listTransaksiHtml = `<p class="text-xs text-gray-500 italic text-center py-4">Belum ada transaksi kas keluarga.</p>`;
+            }
+
+            let rincianBulanHtml = '';
+            if (dataKas.rincianBulan && dataKas.rincianBulan.length > 0) {
+                dataKas.rincianBulan.forEach(rb => {
+                    rincianBulanHtml += `
+                        <div class="flex justify-between items-center text-xs py-1 border-b border-slate-800/40">
+                            <span class="text-slate-400">Bulan ${rb.bulan}</span>
+                            <span class="${rb.sisa >= 0 ? 'text-green-400' : 'text-red-400'} font-semibold">Rp ${rb.sisa.toLocaleString('id-ID')}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-900 border border-slate-700/80 p-3 rounded-xl text-center">
+                            <p class="text-[10px] text-slate-400 mb-1">Total Pemasukan Kas</p>
+                            <p class="text-sm sm:text-base font-bold text-green-400">Rp ${(dataKas.totalMasuk || 0).toLocaleString('id-ID')}</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-700/80 p-3 rounded-xl text-center">
+                            <p class="text-[10px] text-slate-400 mb-1">Total Pengeluaran Kas</p>
+                            <p class="text-sm sm:text-base font-bold text-red-400">Rp ${(dataKas.totalKeluar || 0).toLocaleString('id-ID')}</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-700/80 p-4 rounded-2xl space-y-2">
+                        <div class="flex justify-between text-xs py-1 border-b border-slate-800">
+                            <span class="text-slate-300">Saldo Murni Kas Keluarga (Masuk - Keluar)</span>
+                            <span class="font-bold text-white">Rp ${(dataKas.murniKas || 0).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="flex justify-between text-xs py-1 border-b border-slate-800">
+                            <span class="text-slate-300">Akumulasi Sisa Limit Bulanan (Semua Bulan)</span>
+                            <span class="font-bold ${(dataKas.akumulasiLimit || 0) >= 0 ? 'text-green-400' : 'text-red-400'}">Rp ${(dataKas.akumulasiLimit || 0).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-1">
+                            <span class="font-bold text-emerald-400">Total Sisa Kas Keluarga Keseluruhan</span>
+                            <span class="font-black text-emerald-300">Rp ${(dataKas.sisaAkhir || 0).toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/40 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-slate-300 mb-1">📅 Rincian Sisa Limit Bulanan per Bulan:</p>
+                        <div class="max-h-36 overflow-y-auto pr-1 space-y-1">
+                            ${rincianBulanHtml || '<p class="text-[11px] text-gray-500 italic">Tidak ada data limit bulanan.</p>'}
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/40 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-slate-300 mb-2">📜 Riwayat Transaksi Kas Keluarga:</p>
+                        <div class="max-h-48 overflow-y-auto pr-1 space-y-1">
+                            ${listTransaksiHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modal-detail-kas-keluarga').classList.remove('hidden');
+        }
+
+        function tutupModalDetailKasKeluarga() {
+            const modal = document.getElementById('modal-detail-kas-keluarga');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function bukaModalDetailBulanan() {
+            const container = document.getElementById('konten-detail-bulanan');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            const rincianBulan = cacheDataBulananDetail.rincianPerBulan || [];
+
+            if (rincianBulan.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-6">Belum ada data rincian bulanan pada tahun ini.</p>`;
+                document.getElementById('modal-detail-bulanan').classList.remove('hidden');
+                return;
+            }
+
+            let htmlContent = `<div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">`;
+
+            rincianBulan.forEach((item, index) => {
+                let sisaBulan = item.totalMasukBulan - item.totalKeluarBulan;
+                let statusBulanText = sisaBulan >= 0 ? "🟢 Hemat" : "🔴 Boros";
+                let statusBadgeClass = sisaBulan >= 0 ? "bg-emerald-950 text-emerald-300 border-emerald-800" : "bg-red-950 text-red-300 border-red-800";
+
+                let listTransaksiHtml = '';
+                if (item.transaksiList && item.transaksiList.length > 0) {
+                    item.transaksiList.forEach(tr => {
+                        listTransaksiHtml += `
+                            <div class="flex justify-between items-center text-xs py-1.5 border-b border-slate-800/60 last:border-0">
+                                <div>
+                                    <span class="text-slate-300">• ${tr.keterangan}</span>
+                                    <span class="text-[10px] text-slate-500 block">${tr.tanggal}</span>
+                                </div>
+                                <span class="${tr.jenis === 'masuk' ? 'text-green-400' : 'text-red-400'} font-semibold">
+                                    ${tr.jenis === 'masuk' ? '+' : '-'} Rp ${tr.jumlah.toLocaleString('id-ID')}
+                                </span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    listTransaksiHtml = `<p class="text-[11px] text-gray-500 italic">Tidak ada transaksi pada bulan ini.</p>`;
+                }
+
+                htmlContent += `
+                    <div class="bg-slate-900 border border-slate-700/80 p-4 rounded-2xl shadow-lg space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 cursor-pointer select-none hover:bg-slate-800/40 p-1.5 rounded-xl transition" onclick="toggleDetailBulan(${index})">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-white text-xs sm:text-sm">📅 ${item.bulanNama}</span>
+                                <span id="icon-bln-${index}" class="text-xs text-blue-400 font-bold transition-transform">▼ (Lihat Rincian)</span>
+                            </div>
+                            <div>
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold border ${statusBadgeClass}">${statusBulanText}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 text-center pt-1">
+                            <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                                <p class="text-[10px] text-slate-400 font-medium mb-1">Total Masuk</p>
+                                <p class="text-xs sm:text-sm font-bold text-green-400">Rp ${item.totalMasukBulan.toLocaleString('id-ID')}</p>
+                            </div>
+                            <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                                <p class="text-[10px] text-slate-400 font-medium mb-1">Total Keluar</p>
+                                <p class="text-xs sm:text-sm font-bold text-red-400">Rp ${item.totalKeluarBulan.toLocaleString('id-ID')}</p>
+                            </div>
+                            <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                                <p class="text-[10px] text-slate-400 font-medium mb-1">Sisa Bulanan</p>
+                                <p class="text-xs sm:text-sm font-bold ${sisaBulan >= 0 ? 'text-green-400' : 'text-red-500'}">Rp ${sisaBulan.toLocaleString('id-ID')}</p>
+                            </div>
+                        </div>
+
+                        <div id="detail-bln-${index}" class="hidden pt-3 border-t border-slate-800 space-y-1 bg-slate-950/40 p-3 rounded-xl">
+                            <p class="text-[10px] font-bold text-slate-400 mb-1">Rincian Transaksi:</p>
+                            ${listTransaksiHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            htmlContent += `</div>`;
+            container.innerHTML = htmlContent;
+            document.getElementById('modal-detail-bulanan').classList.remove('hidden');
+        }
+
+        function toggleDetailBulan(index) {
+            const detailEl = document.getElementById(`detail-bln-${index}`);
+            const iconEl = document.getElementById(`icon-bln-${index}`);
+            
+            if (!detailEl) return;
+
+            if (detailEl.classList.contains('hidden')) {
+                detailEl.classList.remove('hidden');
+                if (iconEl) iconEl.innerText = '▲ (Tutup)';
+            } else {
+                detailEl.classList.add('hidden');
+                if (iconEl) iconEl.innerText = '▼ (Lihat Rincian)';
+            }
+        }
+
+        function tutupModalDetailBulanan() {
+            const modal = document.getElementById('modal-detail-bulanan');
+            if (modal) modal.classList.add('hidden');
         }
         
         // Fungsi untuk membuka modal detail harian
