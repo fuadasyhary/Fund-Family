@@ -4870,37 +4870,52 @@
         }
 
         function muatLivePetaKeluarga() {
-            // Pastikan difilter berdasarkan family_id agar keluarga lain bisa melihat
+            const AMBANG_BATAS_DETIK = 60; // Anggap offline jika tidak update selama 60 detik
+
             db.collection("live_posisi")
             .where("family_id", "==", currentUserFamilyId)
-            .where("isLive", "==", true) // Hanya ambil yang benar-benar sedang live
+            .where("isLive", "==", true)
             .onSnapshot((snapshot) => {
-                // Bersihkan marker lama di peta Leaflet Anda
-                // Lalu loop data di bawah ini untuk menampilkan marker anggota keluarga lain
-                
+                // Bersihkan marker lama
+                markersLiveArray.forEach(m => mapLiveInstance.removeLayer(m));
+                markersLiveArray = [];
+
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    const lat = data.latitude;
-                    const lng = data.longitude;
-                    const namaUser = data.nama || 'Anggota Keluarga';
+                    const now = new Date().getTime();
+                    // Cek waktu terakhir update
+                    const lastUpdate = data.updatedAt ? data.updatedAt.toDate().getTime() : 0;
+                    const selisihDetik = (now - lastUpdate) / 1000;
 
-                    // Tambahkan marker ke peta Leaflet di sini
-                    console.log(`Posisi ${namaUser}: ${lat}, ${lng}`);
+                    // JIKA selisih > 60 detik, kita anggap dia sudah tutup aplikasi (meskipun statusnya isLive: true)
+                    if (selisihDetik < AMBANG_BATAS_DETIK) {
+                        // Tampilkan marker
+                        const lat = data.latitude;
+                        const lng = data.longitude;
+                        // ... logic tambah marker ke leaflet ...
+                    } else {
+                        console.log(`${data.nama} sudah tidak aktif (karena tidak ada update)`);
+                    }
                 });
             });
         }
 
+        // Pastikan fungsi ini jalan terus saat aplikasi dibuka
         function mulaiLiveLocation(lat, lng) {
             db.collection("live_posisi").doc(currentUserUid).set({
-                uid: currentUserUid,
-                nama: currentUserName,
-                family_id: currentUserFamilyId, // <--- INI KUNCI AGAR KELUARGA LAIN BISA BACA
-                latitude: lat,
-                longitude: lng,
+                // ... field lainnya
                 isLive: true,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp() // Ini kuncinya
             }, { merge: true });
         }
+
+        // Interval (misal panggil tiap 10 detik)
+        setInterval(() => {
+            if (isLiveLocActive) {
+                // Update terus updatedAt
+                mulaiLiveLocation(currentLat, currentLng);
+            }
+        }, 10000);
 
         function renderCryptoProfitChart(pnlData) {
             const canvasEl = document.getElementById('cryptoProfitChart');
