@@ -1518,37 +1518,37 @@
                 return alert("Silakan login terlebih dahulu!");
             }
 
-            // Pastikan family_id ada
             if (!currentUserFamilyId) {
                 return alert("Error: Family ID belum dimuat. Coba refresh halaman!");
             }
+
+            const liveDocId = "live_" + currentUser.uid;
 
             if (!isLiveLocActive) {
                 if (!navigator.geolocation) {
                     return alert("Geolocation tidak didukung oleh browser Anda.");
                 }
 
-                // Cek izin GPS secara eksplisit
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    console.log("GPS Aktif:", pos.coords.latitude, pos.coords.longitude);
-                }, (err) => {
-                    alert("Akses GPS ditolak / bermasalah: " + err.message);
-                }, { enableHighAccuracy: true });
+                // PENTING: Bersihkan watch lama terlebih dahulu jika ada yang tersisa
+                if (watchIdLiveLoc !== null) {
+                    navigator.geolocation.clearWatch(watchIdLiveLoc);
+                    watchIdLiveLoc = null;
+                }
 
                 isLiveLocActive = true;
                 if(btnText) btnText.innerText = "Not Live Location";
                 if(dotEl) dotEl.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping";
                 if(btnEl) btnEl.className = "bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
 
-                const liveDocId = "live_" + currentUser.uid;
-
                 watchIdLiveLoc = navigator.geolocation.watchPosition((position) => {
+                    // Abaikan jika status live sudah dimatikan
+                    if (!isLiveLocActive) return;
+
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     const koordinatStr = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                     const namaUser = document.getElementById('user-display-name')?.innerText || 'Saya';
 
-                    // Kirim data ke Firestore
                     db.collection("live_posisi").doc(liveDocId).set({
                         family_id: currentUserFamilyId,
                         nama: `📍 [Live] ${namaUser}`,
@@ -1557,12 +1557,8 @@
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                         createdBy: namaUser,
                         isLive: true
-                    }, { merge: true })
-                    .then(() => {
-                        console.log("Live loc sukses dikirim:", koordinatStr);
-                    })
-                    .catch(err => {
-                        console.error("Gagal kirim live loc ke database:", err);
+                    }, { merge: true }).catch(err => {
+                        console.error("Gagal kirim live loc:", err);
                     });
 
                 }, (err) => {
@@ -1577,21 +1573,24 @@
                 alert("Live Location diaktifkan!");
 
             } else {
+                // Matikan status terlebih dahulu
                 isLiveLocActive = false;
+
                 if(btnText) btnText.innerText = "Live Location";
                 if(dotEl) dotEl.className = "h-2.5 w-2.5 rounded-full bg-gray-400";
                 if(btnEl) btnEl.className = "bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/50 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2";
 
+                // Hentikan semua proses watch GPS
                 if (watchIdLiveLoc !== null) {
                     navigator.geolocation.clearWatch(watchIdLiveLoc);
                     watchIdLiveLoc = null;
                 }
 
-                const liveDocId = "live_" + currentUser.uid;
+                // Hapus dokumen dari Firestore
                 db.collection("live_posisi").doc(liveDocId).delete().then(() => {
-                    console.log("Live location berhasil dihapus dari database.");
+                    console.log("Live location berhasil dihapus permanen.");
                 }).catch((err) => {
-                    console.error("Gagal menghapus live location:", err);
+                    console.error("Gagal menghapus:", err);
                 });
                 
                 alert("Live Location dimatikan.");
@@ -4696,6 +4695,50 @@
             }
         }
 
+        // Fungsi untuk tombol Hapus Live Streaming
+        function handleHapusLiveStreaming() {
+            const currentUser = firebase.auth().currentUser;
+
+            if (!currentUser) {
+                alert("Sesi pengguna tidak ditemukan.");
+                return;
+            }
+
+            // 1. Hentikan proses pelacakan lokasi GPS yang sedang berjalan
+            if (window.liveWatchId !== undefined && window.liveWatchId !== null) {
+                navigator.geolocation.clearWatch(window.liveWatchId);
+                window.liveWatchId = null;
+            }
+
+            // 2. Hapus dokumen live posisi dari Firestore secara permanen
+            db.collection("live_posisi").doc("live_" + currentUser.uid).delete()
+                .then(() => {
+                    console.log("Live streaming berhasil dihapus dari database.");
+                    
+                    // 3. Sesuaikan perubahan tampilan UI aplikasi Anda di sini
+                    resetUIAfterDelete();
+                })
+                .catch((error) => {
+                    console.error("Gagal menghapus live streaming: ", error);
+                    alert("Terjadi kesalahan saat menghapus live streaming.");
+                });
+        }
+
+        // Contoh fungsi pendukung untuk mereset tampilan UI setelah dihapus
+        function resetUIAfterDelete() {
+            // Ubah teks/status tombol kembali ke kondisi awal (misal: "Mulai Live")
+            const btnLive = document.getElementById("btnLiveStreaming");
+            if (btnLive) {
+                btnLive.innerText = "Mulai Live Streaming";
+                btnLive.classList.remove("active-live");
+            }
+
+            // Sembunyikan indikator atau marker di peta jika ada
+            if (typeof removeMapMarker === "function") {
+                removeMapMarker();
+            }
+        }
+
         function muatDataLivePosisi() {
             if (unsubscribeLivePosisi) {
                 unsubscribeLivePosisi();
@@ -4763,24 +4806,31 @@
                     let safeKoordinat = (data.koordinat || '').replace(/'/g, "\\'");
                     let safeKet = (data.keterangan || '').replace(/'/g, "\\'");
 
-                    let aksiTombol = data.isLive 
-                        ? `<span class="bg-emerald-950 text-emerald-300 px-3 py-1.5 rounded-xl text-[11px] font-bold border border-emerald-800">📡 Live Sharing</span>`
-                        : `<div class="flex justify-center items-center gap-1.5">
-                            <a href="${gmapUrl}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">🗺️ GMap</a>
-                            <button onclick="bukaModalPosisi('${id}', '${safeNama}', '${safeKoordinat}', '${safeKet}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Edit</button>
-                            <button onclick="hapusLivePosisi('${id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Hapus</button>
-                        </div>`;
+                    let aksiTombol = '';
+                    if (data.isLive) {
+                        if (doc.id === "live_" + auth.currentUser.uid) {
+                            aksiTombol = `<button onclick="handleHapusLiveStreaming()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Hapus Live</button>`;
+                        } else {
+                            aksiTombol = `<span class="bg-emerald-950 text-emerald-300 px-3 py-1.5 rounded-xl text-[11px] font-bold border border-emerald-800">📡 Sedang Live</span>`;
+                        }
+                    } else {
+                        aksiTombol = `<div class="flex justify-center items-center gap-1.5">
+                        <a href="${gmapUrl}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">🗺️ GMap</a>
+                        <button onclick="bukaModalPosisi('${id}', '${safeNama}', '${safeKoordinat}', '${safeKet}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Edit</button>
+                        <button onclick="hapusLivePosisi('${id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Hapus</button>
+                    </div>`;
+                    }
 
-                        tbody.innerHTML += `
-                        <tr onclick="pindahPeta(${lat}, ${lng})" class="hover:bg-slate-700/30 transition cursor-pointer">
-                            <td class="p-4 font-semibold text-white">
-                                ${data.isLive ? '🟢' : '🏠'} ${data.nama}<br>
-                                <span class="text-[10px] text-slate-400 font-normal">${data.keterangan || ''}</span>
-                            </td>
-                            <td class="p-4 text-xs font-mono text-slate-300">${data.koordinat}</td>
-                            <td class="p-4 text-xs text-slate-400">${waktuStr}</td>
-                            <td class="p-4 text-center">${aksiTombol}</td>
-                        </tr>
+                    tbody.innerHTML += `
+                    <tr onclick="pindahPeta(${lat}, ${lng})" class="hover:bg-slate-700/30 transition cursor-pointer">
+                        <td class="p-4 font-semibold text-white">
+                            ${data.isLive ? '🟢' : '🏠'} ${data.nama}<br>
+                            <span class="text-[10px] text-slate-400 font-normal">${data.keterangan || ''}</span>
+                        </td>
+                        <td class="p-4 text-xs font-mono text-slate-300">${data.koordinat}</td>
+                        <td class="p-4 text-xs text-slate-400">${waktuStr}</td>
+                        <td class="p-4 text-center">${aksiTombol}</td>
+                    </tr>
                     `;
                     
                 });
