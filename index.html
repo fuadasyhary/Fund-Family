@@ -4771,8 +4771,8 @@
                             <button onclick="hapusLivePosisi('${id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition shadow-sm">Hapus</button>
                         </div>`;
 
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-700/30 transition">
+                        tbody.innerHTML += `
+                        <tr onclick="pindahPeta(${lat}, ${lng})" class="hover:bg-slate-700/30 transition cursor-pointer">
                             <td class="p-4 font-semibold text-white">
                                 ${data.isLive ? '🟢' : '🏠'} ${data.nama}<br>
                                 <span class="text-[10px] text-slate-400 font-normal">${data.keterangan || ''}</span>
@@ -4782,6 +4782,7 @@
                             <td class="p-4 text-center">${aksiTombol}</td>
                         </tr>
                     `;
+                    
                 });
 
                 document.getElementById('posisi-count-badge').innerText = `${count} Lokasi`;
@@ -4916,6 +4917,13 @@
                 mulaiLiveLocation(currentLat, currentLng);
             }
         }, 10000);
+
+        function pindahPeta(lat, lng) {
+            if (mapLiveInstance) {
+                // Efek terbang halus ke lokasi
+                mapLiveInstance.flyTo([lat, lng], 16, { animate: true, duration: 1.5 });
+            }
+        }
 
         function renderCryptoProfitChart(pnlData) {
             const canvasEl = document.getElementById('cryptoProfitChart');
