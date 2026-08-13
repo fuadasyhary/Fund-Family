@@ -217,41 +217,53 @@
             <div id="page-dashboard" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailKasKeluarga()">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Kas Keluarga (Total / Sisa)</p>
-                        <div class="flex justify-between items-baseline">
-                            <h3 id="total-kas-permanen" class="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rp 0</h3>
-                            <div class="text-right">
-                                <span class="text-[10px] text-slate-400 block">Sisa Kas Keluarga</span>
-                                <span id="sisa-kas-keluarga-sekarang" class="text-sm sm:text-base font-extrabold text-emerald-400">Rp 0</span>
-                            </div>
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs text-gray-400">Kas Keluarga (Sisa / Total)</span>
+                            <span class="text-xs text-emerald-400">Akumulasi kas & seluruh sisa limit</span>
                         </div>
-                        <span id="info-kas-keluarga" class="text-[10px] text-gray-400 mt-1 block">Akumulasi kas & seluruh sisa limit (Klik untuk detail)</span>
+                        <div class="flex justify-between items-baseline mt-2">
+                            <!-- Angka Besar di Kiri (Sekarang menampilkan Sisa) -->
+                            <div id="sisa-kas-keluarga-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
+                            <!-- Teks Kecil di Kanan (Sekarang menampilkan Total) -->
+                            <div class="text-right">
+                                <span class="text-[10px] text-gray-400 block">Total Kas</span>
+                                <span id="total-kas-permanen" class="text-sm font-semibold text-gray-200">Rp 0</span>
+                            </div>
+                        </div>                        
                     </div>
                 
                     <!-- Card Bulanan -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailBulanan()">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Bulanan (Limit / Sisa)</p>
-                        <div class="flex justify-between items-baseline">
-                            <h3 id="limit-bulanan-aktif" class="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">Rp 0</h3>
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs text-gray-400">Bulanan (Sisa / Limit)</span>
+                            <span id="info-status-bulanan" class="text-xs text-emerald-400">Status: 🟢 Hemat</span>
+                        </div>
+                        <div class="flex justify-between items-baseline mt-2">
+                            <!-- Angka Besar di Kiri (Sekarang menampilkan Sisa) -->
+                            <div id="sisa-limit-bulanan-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
+                            <!-- Teks Kecil di Kanan (Sekarang menampilkan Limit) -->
                             <div class="text-right">
-                                <span class="text-[10px] text-slate-400 block">Sisa Limit Bulan Ini</span>
-                                <span id="sisa-limit-bulanan-sekarang" class="text-sm sm:text-base font-extrabold text-emerald-400">Rp 0</span>
+                                <span class="text-[10px] text-gray-400 block">Limit Bulan Ini</span>
+                                <span id="limit-bulanan-aktif" class="text-sm font-semibold text-gray-200">Rp 0</span>
                             </div>
                         </div>
-                        <span id="info-status-bulanan" class="text-[10px] text-gray-400 mt-1 block">Status: Hemat (Klik untuk detail)</span>
                     </div>
                 
                     <!-- Card Harian -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailHarian()">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Harian (Limit / Sisa Hari)</p>
-                        <div class="flex justify-between items-baseline">
-                            <h3 id="limit-harian-aktif" class="text-xl sm:text-2xl font-bold text-cyan-600 dark:text-cyan-400">Rp 0</h3>
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs text-gray-400">Harian (Sisa / Limit Hari)</span>
+                            <span id="info-sisa-hari" class="text-xs text-gray-400">Sisa hari</span>
+                        </div>
+                        <div class="flex justify-between items-baseline mt-2">
+                            <!-- Angka Besar di Kiri (Sekarang menampilkan Sisa) -->
+                            <div id="sisa-limit-harian-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
+                            <!-- Teks Kecil di Kanan (Sekarang menampilkan Limit Harian) -->
                             <div class="text-right">
-                                <span class="text-[10px] text-slate-400 block">Sisa Limit Sekarang</span>
-                                <span id="sisa-limit-harian-sekarang" class="text-sm sm:text-base font-extrabold text-emerald-400">Rp 0</span>
+                                <span class="text-[10px] text-gray-400 block">Limit Harian Ideal</span>
+                                <span id="limit-harian-aktif" class="text-sm font-semibold text-gray-200">Rp 0</span>
                             </div>
                         </div>
-                        <span id="info-sisa-hari" class="text-[10px] text-gray-400 mt-1 block">Sisa hari bulan ini: 0 hari (Klik untuk detail)</span>
                     </div>
                 </div>
 
@@ -2523,13 +2535,13 @@
                 const elKasPermanen = document.getElementById('total-kas-permanen');
                 if(elKasPermanen) {
                     elKasPermanen.innerText = 'Rp ' + totalKasBesarKiri.toLocaleString('id-ID');
-                    elKasPermanen.className = totalKasBesarKiri >= 0 ? "text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400" : "text-xl sm:text-2xl font-bold text-red-500";
+                    elKasPermanen.className = totalKasBesarKiri >= 0 ? "text-sm sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400" : "text-sm sm:text-2xl font-bold text-red-500";
                 }
 
                 const elSisaKasKeluarga = document.getElementById('sisa-kas-keluarga-sekarang');
                 if(elSisaKasKeluarga) {
                     elSisaKasKeluarga.innerText = 'Rp ' + sisaKasKeluargaAkhir.toLocaleString('id-ID');
-                    elSisaKasKeluarga.className = sisaKasKeluargaAkhir >= 0 ? "text-sm sm:text-base font-extrabold text-emerald-400" : "text-sm sm:text-base font-extrabold text-red-400";
+                    elSisaKasKeluarga.className = sisaKasKeluargaAkhir >= 0 ? "text-xl sm:text-base font-extrabold text-emerald-400" : "text-xl sm:text-base font-extrabold text-red-400";
                 }
 
                 cacheDataKasKeluargaDetail = {
@@ -2554,7 +2566,7 @@
                 const elSisaLimitBulanan = document.getElementById('sisa-limit-bulanan-sekarang');
                 if (elSisaLimitBulanan) {
                     elSisaLimitBulanan.innerText = 'Rp ' + sisaLimitBulananAktif.toLocaleString('id-ID');
-                    elSisaLimitBulanan.className = sisaLimitBulananAktif >= 0 ? "text-sm sm:text-base font-extrabold text-emerald-400" : "text-sm sm:text-base font-extrabold text-red-400";
+                    elSisaLimitBulanan.className = sisaLimitBulananAktif >= 0 ? "text-xl sm:text-base font-extrabold text-emerald-400" : "text-xl sm:text-base font-extrabold text-red-400";
                 }
 
                 const infoStatusBulan = document.getElementById('info-status-bulanan');
@@ -2665,7 +2677,7 @@
                 const elSisaLimitSekarang = document.getElementById('sisa-limit-harian-sekarang');
                 if (elSisaLimitSekarang) {
                     elSisaLimitSekarang.innerText = 'Rp ' + sisaLimitHarianSekarang.toLocaleString('id-ID');
-                    elSisaLimitSekarang.className = sisaLimitHarianSekarang >= 0 ? "text-sm sm:text-base font-extrabold text-emerald-400" : "text-sm sm:text-base font-extrabold text-red-400";
+                    elSisaLimitSekarang.className = sisaLimitHarianSekarang >= 0 ? "text-xl sm:text-base font-extrabold text-emerald-400" : "text-xl sm:text-base font-extrabold text-red-400";
                 }
 
                 cacheDataHarianDetail = {
