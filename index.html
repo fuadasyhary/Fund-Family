@@ -618,61 +618,155 @@
                 </div>
             </div>
 
-            <!-- HALAMAN 8: SILSILAH KELUARGA -->
+            <!-- HALAMAN 8: KELUARGA (SILSILAH & RIWAYAT / CV) -->
             <div id="page-silsilah" class="space-y-6 hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="glass-card p-6 space-y-6 lg:col-span-3">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <!-- Header dengan Tab Pemilih -->
+                <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
+                    <div>
+                        <h3 class="font-bold text-base text-white flex items-center gap-2">👨‍👩‍👧‍👦 <span>Manajemen Keluarga, Silsilah & CV</span></h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Kelola silsilah, riwayat pendidikan, pekerjaan, serta cetak CV anggota keluarga.</p>
+                    </div>
+                    <!-- Tombol Tab Pilihan -->
+                    <div class="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-700">
+                        <button id="tab-btn-silsilah" onclick="gantiTabKeluarga('silsilah')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-amber-500 text-slate-950 shadow">🌳 Silsilah</button>
+                        <button id="tab-btn-riwayat" onclick="gantiTabKeluarga('riwayat')" class="px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white">📄 Riwayat & CV</button>
+                    </div>
+                </div>
+
+                <!-- SUB-HALAMAN 1: SILSILAH (Kode lama Anda yang disesuaikan) -->
+                <div id="subpage-silsilah" class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="glass-card p-5 space-y-4 lg:col-span-1">
+                            <h4 id="form-title-tree" class="font-bold text-sm text-white">➕ Tambah Anggota Silsilah</h4>
+                            <input type="hidden" id="edit-tree-id" value="">
                             <div>
-                                <h3 class="font-bold text-base text-white flex items-center gap-2">🌳 <span>Silsilah Keluarga (Family Tree)</span></h3>
-                                <p class="text-xs text-slate-400 mt-0.5">Kelola hirarki anggota keluarga dari kakek/nenek hingga keturunan.</p>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Nama Lengkap</label>
+                                <input type="text" id="tree-nama" placeholder="Contoh: H. Ahmad Sutisna" class="w-full modern-input p-3 text-xs text-white">
                             </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Posisi / Hubungan Keluarga</label>
+                                <select id="tree-peran" class="w-full modern-input p-3 text-xs text-white">
+                                    <option value="Pasangan Utama">💑 Saya & Istri (Pasangan Inti)</option>
+                                    <option value="Anak">👶 Anak / Keturunan Inti</option>
+                                    <option value="Ortu Suami">👨 Orang Tua (Pihak Suami)</option>
+                                    <option value="Ortu Istri">👩 Orang Tua (Pihak Istri)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Keterangan (Opsional)</label>
+                                <input type="text" id="tree-keterangan" placeholder="Contoh: Anak pertama" class="w-full modern-input p-3 text-xs text-white">
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button onclick="simpanFamilyTree()" id="btn-simpan-tree" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg">Simpan Anggota</button>
+                                <button onclick="batalEditFamilyTree()" id="btn-batal-tree" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl text-xs transition hidden">Batal</button>
+                            </div>
+                        </div>
+                        <div class="glass-card p-5 lg:col-span-2 space-y-6 overflow-x-auto">
+                            <h4 class="font-bold text-sm text-white">📊 Bagan Hirarki Silsilah</h4>
+                            <div id="visual-family-tree" class="space-y-6 min-w-[300px]"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="glass-card p-5 space-y-4 lg:col-span-1">
-                        <h4 id="form-title-tree" class="font-bold text-sm text-white">➕ Tambah Anggota Silsilah</h4>
-                        <input type="hidden" id="edit-tree-id" value="">
+                <!-- SUB-HALAMAN 2: RIWAYAT PENDIDIKAN, KERJA & GENERATOR CV -->
+                <div id="subpage-riwayat" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Form Input Riwayat -->
+                        <div class="glass-card p-5 space-y-4 lg:col-span-1">
+                            <h4 class="font-bold text-sm text-white">➕ Tambah Riwayat (Pendidikan/Kerja)</h4>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Pilih Anggota Keluarga</label>
+                                <select id="cv-pilih-anggota" onchange="muatDataRiwayatAnggota()" class="w-full modern-input p-3 text-xs text-white">
+                                    <!-- Opsi anggota dimuat otomatis lewat JS dari collection family_tree -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Kategori Riwayat / Bagian CV</label>
+                                <select id="cv-kategori" class="w-full modern-input p-3 text-xs text-white">
+                                    <option value="Pendidikan">🎓 Pendidikan</option>
+                                    <option value="Pekerjaan">💼 Pekerjaan / Karier</option>
+                                    <option value="Keahlian">⚡ Keahlian (Skills)</option>
+                                    <option value="Portofolio">🚀 Portofolio / Proyek</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Judul / Institusi / Perusahaan</label>
+                                <input type="text" id="cv-judul" placeholder="Contoh: Universitas Indonesia / PT Telkom" class="w-full modern-input p-3 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Posisi / Jurusan / Gelar</label>
+                                <input type="text" id="cv-subjudul" placeholder="Contoh: S1 Teknik Informatika / Software Engineer" class="w-full modern-input p-3 text-xs text-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Tahun Mulai</label>
+                                    <input type="text" id="cv-tahun-mulai" placeholder="2018" class="w-full modern-input p-3 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Tahun Selesai / Sekarang</label>
+                                    <input type="text" id="cv-tahun-selesai" placeholder="2022 / Sekarang" class="w-full modern-input p-3 text-xs text-white">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Deskripsi / Pencapaian</label>
+                                <textarea id="cv-deskripsi" rows="2" placeholder="Deskripsi singkat tanggung jawab atau hasil..." class="w-full modern-input p-3 text-xs text-white"></textarea>
+                            </div>
+                            <button onclick="simpanRiwayatCV()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg">Simpan Riwayat</button>
+                        </div>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Nama Lengkap</label>
-                            <input type="text" id="tree-nama" placeholder="Contoh: H. Ahmad Sutisna" class="w-full modern-input p-3 text-xs text-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Posisi / Hubungan Keluarga</label>
-                            <select id="tree-peran" class="w-full modern-input p-3 text-xs text-white">
-                                <optgroup label="Pihak Suami (Keluarga Saya)" class="bg-slate-900">
-                                    <option value="Kakek/Nenek Suami">👴 Kakek / Nenek (Pihak Suami)</option>
-                                    <option value="Ortu Suami">👨 Orang Tua / Ayah & Ibu (Pihak Suami)</option>
-                                    <option value="Saudara Suami">👥 Saudara Kandung / Ipar / Keponakan (Pihak Suami)</option>
-                                </optgroup>
-                                <optgroup label="Pihak Istri (Keluarga Istri)" class="bg-slate-900">
-                                    <option value="Kakek/Nenek Istri">👵 Kakek / Nenek (Pihak Istri)</option>
-                                    <option value="Ortu Istri">👩 Orang Tua / Ayah & Ibu (Pihak Istri)</option>
-                                    <option value="Saudara Istri">👥 Saudara Kandung / Ipar / Keponakan (Pihak Istri)</option>
-                                </optgroup>
-                                <optgroup label="Keluarga Inti & Keturunan" class="bg-slate-900">
-                                    <option value="Pasangan Utama">💑 Saya & Istri (Pasangan Inti)</option>
-                                    <option value="Anak">👶 Anak / Keturunan Inti</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Keterangan (Opsional)</label>
-                            <input type="text" id="tree-keterangan" placeholder="Contoh: Orang tua dari Ayah / Anak pertama" class="w-full modern-input p-3 text-xs text-white">
-                        </div>
+                        <!-- Preview & Tombol Download CV PDF -->
+                        <div class="glass-card p-6 lg:col-span-2 space-y-4">
+                            <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
+                                <h4 class="font-bold text-sm text-white">📄 Preview Curricullum Vitae (CV)</h4>
+                                <button onclick="downloadCVன்PDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2">
+                                    📥 Download CV PDF
+                                </button>
+                            </div>
 
-                        <div class="flex gap-2 pt-2">
-                            <button onclick="simpanFamilyTree()" id="btn-simpan-tree" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg">Simpan Anggota</button>
-                            <button onclick="batalEditFamilyTree()" id="btn-batal-tree" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl text-xs transition hidden">Batal</button>
-                        </div>
-                    </div>
+                            <!-- Area Kertas CV yang akan diconvert ke PDF -->
+                            <div id="area-cv-preview" class="bg-white text-slate-900 p-8 rounded-2xl shadow-xl space-y-6 text-xs min-h-[450px]">
+                                <div class="border-b border-slate-200 pb-4 flex justify-between items-start">
+                                    <div>
+                                        <h2 id="cv-preview-nama" class="text-xl font-bold text-slate-900">Nama Anggota Keluarga</h2>
+                                    </div>
+                                    <div class="text-right text-slate-500 text-[10px]">
+                                        <p>Curriculum Vitae & Portofolio</p>
+                                    </div>
+                                </div>
 
-                    <div class="glass-card p-5 lg:col-span-2 space-y-6 overflow-x-auto">
-                        <h4 class="font-bold text-sm text-white">📊 Bagan Hirarki Silsilah</h4>
-                        <div id="visual-family-tree" class="space-y-6 min-w-[300px]"></div>
+                                <!-- Pendidikan -->
+                                <div>
+                                    <h3 class="font-bold text-sm text-blue-800 uppercase tracking-wider border-b border-blue-200 pb-1 mb-3">🎓 Riwayat Pendidikan</h3>
+                                    <div id="cv-preview-pendidikan-list" class="space-y-3">
+                                        <p class="text-slate-400 italic">Belum ada data pendidikan.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Pekerjaan -->
+                                <div>
+                                    <h3 class="font-bold text-sm text-blue-800 uppercase tracking-wider border-b border-blue-200 pb-1 mb-3">💼 Riwayat Pekerjaan / Karier</h3>
+                                    <div id="cv-preview-pekerjaan-list" class="space-y-3">
+                                        <p class="text-slate-400 italic">Belum ada data pekerjaan.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Keahlian -->
+                                <div>
+                                    <h3 class="font-bold text-sm text-blue-800 uppercase tracking-wider border-b border-blue-200 pb-1 mb-3">⚡ Keahlian (Skills)</h3>
+                                    <div id="cv-preview-keahlian-list" class="flex flex-wrap gap-2">
+                                        <p class="text-slate-400 italic">Belum ada data keahlian.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Portofolio -->
+                                <div>
+                                    <h3 class="font-bold text-sm text-blue-800 uppercase tracking-wider border-b border-blue-200 pb-1 mb-3">🚀 Portofolio & Proyek</h3>
+                                    <div id="cv-preview-portofolio-list" class="space-y-3">
+                                        <p class="text-slate-400 italic">Belum ada data portofolio.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1507,6 +1601,9 @@
     <script src="https://www.gstatic.com/firebasejs/12.17.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.17.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore-compat.js"></script>
+
+    <!-- html2pdf library untuk cetak CV PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <script>
         const firebaseConfig = {
@@ -4910,6 +5007,182 @@
             if (confirm("Yakin ingin menghapus anggota keluarga ini dari silsilah?")) {
                 db.collection("family_tree").doc(id).delete().then(() => alert("Berhasil dihapus!")).catch(e => alert("Gagal menghapus: " + e.message));
             }
+        }
+
+        // Fungsi untuk ganti tab Silsilah / Riwayat & CV di menu Keluarga
+        function gantiTabKeluarga(tab) {
+            const subSilsilah = document.getElementById('subpage-silsilah');
+            const subRiwayat = document.getElementById('subpage-riwayat');
+            const btnSilsilah = document.getElementById('tab-btn-silsilah');
+            const btnRiwayat = document.getElementById('tab-btn-riwayat');
+
+            if (tab === 'silsilah') {
+                subSilsilah.classList.remove('hidden');
+                subRiwayat.classList.add('hidden');
+                btnSilsilah.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-amber-500 text-slate-950 shadow";
+                btnRiwayat.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white";
+            } else {
+                subSilsilah.classList.add('hidden');
+                subRiwayat.classList.remove('hidden');
+                btnRiwayat.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
+                btnSilsilah.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white";
+                muatOpsiAnggotaCV();
+            }
+        }
+
+        function muatOpsiAnggotaCV() {
+            const selectEl = document.getElementById('cv-pilih-anggota');
+            if (!selectEl) return;
+
+            db.collection("family_tree").where("family_id", "==", currentUserFamilyId).get().then(snapshot => {
+                selectEl.innerHTML = '';
+                let listAnggota = [];
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.peran === 'Pasangan Utama' || data.peran === 'Anak') {
+                        listAnggota.push({ id: doc.id, ...data });
+                    }
+                });
+
+                // URUTKAN: "Pasangan Utama" didahulukan, kemudian "Anak"
+                listAnggota.sort((a, b) => {
+                    if (a.peran === 'Pasangan Utama' && b.peran !== 'Pasangan Utama') return -1;
+                    if (a.peran !== 'Pasangan Utama' && b.peran === 'Pasangan Utama') return 1;
+                    return 0;
+                });
+
+                if (listAnggota.length === 0) {
+                    selectEl.innerHTML = `<option value="">Tidak ada Pasangan Utama / Anak di Silsilah</option>`;
+                    return;
+                }
+
+                // Render ke elemen select dropdown
+                listAnggota.forEach(item => {
+                    selectEl.innerHTML += `<option value="${item.id}" data-nama="${item.nama}" data-peran="${item.peran}">${item.nama} (${item.peran})</option>`;
+                });
+
+                muatDataRiwayatAnggota();
+            });
+        }
+
+        // Simpan data riwayat pendidikan/pekerjaan ke sub-koleksi atau dokumen terpisah
+        function simpanRiwayatCV() {
+            const selectEl = document.getElementById('cv-pilih-anggota');
+            const anggotaId = selectEl.value;
+            if (!anggotaId) return alert("Pilih anggota keluarga terlebih dahulu!");
+
+            const kategori = document.getElementById('cv-kategori').value;
+            const judul = document.getElementById('cv-judul').value.trim();
+            const subjudul = document.getElementById('cv-subjudul').value.trim();
+            const mulai = document.getElementById('cv-tahun-mulai').value.trim();
+            const selesai = document.getElementById('cv-tahun-selesai').value.trim();
+            const deskripsi = document.getElementById('cv-deskripsi').value.trim();
+
+            if (!judul || !mulai) return alert("Judul dan Tahun Mulai wajib diisi!");
+
+            db.collection("family_cv_riwayat").add({
+                family_id: currentUserFamilyId,
+                anggotaId: anggotaId,
+                kategori: kategori,
+                judul: judul,
+                subjudul: subjudul,
+                mulai: mulai,
+                selesai: selesai || 'Sekarang',
+                deskripsi: deskripsi,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("Riwayat berhasil ditambahkan!");
+                document.getElementById('cv-judul').value = '';
+                document.getElementById('cv-subjudul').value = '';
+                document.getElementById('cv-tahun-mulai').value = '';
+                document.getElementById('cv-tahun-selesai').value = '';
+                document.getElementById('cv-deskripsi').value = '';
+                muatDataRiwayatAnggota();
+            }).catch(err => alert("Gagal menyimpan: " + err.message));
+        }
+
+        // Menampilkan data riwayat ke dalam preview CV
+        function muatDataRiwayatAnggota() {
+            const selectEl = document.getElementById('cv-pilih-anggota');
+            const selectedOption = selectEl.options[selectEl.selectedIndex];
+            if (!selectedOption) return;
+
+            const nama = selectedOption.getAttribute('data-nama') || 'Nama';
+            const anggotaId = selectEl.value;
+
+            document.getElementById('cv-preview-nama').innerText = nama;
+
+            const eduContainer = document.getElementById('cv-preview-pendidikan-list');
+            const workContainer = document.getElementById('cv-preview-pekerjaan-list');
+            const skillContainer = document.getElementById('cv-preview-keahlian-list');
+            const portContainer = document.getElementById('cv-preview-portofolio-list');
+
+            db.collection("family_cv_riwayat")
+            .where("family_id", "==", currentUserFamilyId)
+            .where("anggotaId", "==", anggotaId)
+            .onSnapshot(snapshot => {
+                let eduHtml = '';
+                let workHtml = '';
+                let skillHtml = '';
+                let portHtml = '';
+
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    
+                    if (d.kategori === 'Pendidikan') {
+                        eduHtml += `
+                            <div class="flex justify-between items-start border-l-2 border-blue-600 pl-3 py-1">
+                                <div>
+                                    <p class="font-bold text-slate-800 text-xs">${d.judul} <span class="font-normal text-slate-600">- ${d.subjudul}</span></p>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">${d.deskripsi || ''}</p>
+                                </div>
+                                <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${d.mulai} - ${d.selesai}</span>
+                            </div>
+                        `;
+                    } else if (d.kategori === 'Pekerjaan') {
+                        workHtml += `
+                            <div class="flex justify-between items-start border-l-2 border-blue-600 pl-3 py-1">
+                                <div>
+                                    <p class="font-bold text-slate-800 text-xs">${d.judul} <span class="font-normal text-slate-600">- ${d.subjudul}</span></p>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">${d.deskripsi || ''}</p>
+                                </div>
+                                <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${d.mulai} - ${d.selesai}</span>
+                            </div>
+                        `;
+                    } else if (d.kategori === 'Keahlian') {
+                        skillHtml += `<span class="bg-blue-100 text-blue-800 font-semibold px-3 py-1 rounded-full text-[11px]">${d.judul} (${d.subjudul})</span>`;
+                    } else if (d.kategori === 'Portofolio') {
+                        portHtml += `
+                            <div class="border-l-2 border-emerald-600 pl-3 py-1">
+                                <p class="font-bold text-slate-800 text-xs">${d.judul} <span class="text-blue-600">(${d.subjudul})</span></p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">${d.deskripsi || ''}</p>
+                            </div>
+                        `;
+                    }
+                });
+
+                eduContainer.innerHTML = eduHtml || '<p class="text-slate-400 italic">Belum ada data pendidikan.</p>';
+                workContainer.innerHTML = workHtml || '<p class="text-slate-400 italic">Belum ada data pekerjaan.</p>';
+                skillContainer.innerHTML = skillHtml || '<p class="text-slate-400 italic">Belum ada data keahlian.</p>';
+                portContainer.innerHTML = portHtml || '<p class="text-slate-400 italic">Belum ada data portofolio.</p>';
+            });
+        }
+
+        // Fungsi Download CV menjadi PDF menggunakan html2pdf
+        function downloadCVPDF() {
+            const element = document.getElementById('area-cv-preview');
+            const namaAnggota = document.getElementById('cv-preview-nama').innerText.replace(/\s+/g, '_');
+            
+            const opt = {
+                margin:       10,
+                filename:     `CV_${namaAnggota}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(opt).save();
         }
 
         // Fungsi untuk membuka modal tambah/edit posisi
