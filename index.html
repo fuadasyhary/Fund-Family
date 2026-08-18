@@ -195,7 +195,7 @@
                     <button id="menu-kas" onclick="pindahHalaman('kas')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">💰 Kas</button>
                     <button id="menu-hutang" onclick="pindahHalaman('hutang')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">💳 Hutang</button>
                     <button id="menu-tabungan" onclick="pindahHalaman('tabungan')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🎯 Tabungan</button>
-                    <button id="menu-invest" onclick="pindahHalaman('invest')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🚀 Crypto</button>
+                    <button id="menu-invest" onclick="pindahHalaman('invest')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📈 Investasi</button>
                     <button id="menu-dokumen" onclick="pindahHalaman('dokumen')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">📁 Dokumen</button>
                     <button id="menu-silsilah" onclick="pindahHalaman('silsilah')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">👨‍👩‍👧‍👦 Keluarga</button>
                     <button id="menu-posisi" onclick="pindahHalaman('posisi')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition text-gray-600 dark:text-gray-300 hover:text-white whitespace-nowrap">🏠 Rumah</button>
@@ -216,52 +216,62 @@
             <!-- HALAMAN 1: DASHBOARD -->
             <div id="page-dashboard" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailKasKeluarga()">
-                        <div class="flex justify-between items-start">
+                    <!-- Card Kas Keluarga -->
+                    <div class="bg-white dark:bg-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition flex flex-col justify-between" onclick="bukaModalDetailKasKeluarga()">
+                        <div class="flex justify-between items-start gap-1">
                             <span class="text-xs text-gray-400">Kas Keluarga (Sisa / Total)</span>
-                            <span class="text-xs text-emerald-400">Akumulasi kas & seluruh sisa limit</span>
+                            <span class="text-[11px] text-emerald-400 font-medium">Akumulasi sisa limit</span>
                         </div>
-                        <div class="flex justify-between items-baseline mt-2">
-                            <!-- Angka Besar di Kiri (Sekarang menampilkan Sisa) -->
-                            <div id="sisa-kas-keluarga-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
-                            <!-- Teks Kecil di Kanan (Sekarang menampilkan Total) -->
+                        <div class="flex items-end justify-between mt-3">
+                            <!-- Angka Besar di Kiri (Sisa) -->
+                            <div>
+                                <span class="text-[10px] text-gray-400 block sm:hidden">Sisa Kas</span>
+                                <div id="sisa-kas-keluarga-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
+                            </div>
+                            <!-- Teks Kecil di Kanan (Total) -->
                             <div class="text-right">
                                 <span class="text-[10px] text-gray-400 block">Total Kas</span>
-                                <span id="total-kas-permanen" class="text-sm font-semibold text-gray-200">Rp 0</span>
+                                <span id="total-kas-permanen" class="text-xs sm:text-sm font-semibold text-gray-200">Rp 0</span>
                             </div>
                         </div>                        
                     </div>
-                
+                 
                     <!-- Card Bulanan -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailBulanan()">
-                        <div class="flex justify-between items-start">
+                    <div class="bg-white dark:bg-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition flex flex-col justify-between" onclick="bukaModalDetailBulanan()">
+                        <div class="flex justify-between items-start gap-1">
                             <span class="text-xs text-gray-400">Bulanan (Sisa / Limit)</span>
-                            <span id="info-status-bulanan" class="text-xs text-emerald-400">Status: 🟢 Hemat</span>
+                            <span id="info-status-bulanan" class="text-[11px] text-emerald-400 font-medium">Status: 🟢 Hemat</span>
                         </div>
-                        <div class="flex justify-between items-baseline mt-2">
-                            <!-- Angka Besar di Kiri (Sekarang menampilkan Sisa) -->
-                            <div id="sisa-limit-bulanan-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
-                            <!-- Teks Kecil di Kanan (Sekarang menampilkan Limit) -->
+                        <div class="flex items-end justify-between mt-3">
+                            <!-- Angka Besar di Kiri (Sisa) -->
+                            <div>
+                                <span class="text-[10px] text-gray-400 block sm:hidden">Sisa Limit</span>
+                                <div id="sisa-limit-bulanan-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
+                            </div>
+                            <!-- Teks Kecil di Kanan (Limit) -->
                             <div class="text-right">
                                 <span class="text-[10px] text-gray-400 block">Limit Bulan Ini</span>
-                                <span id="limit-bulanan-aktif" class="text-sm font-semibold text-gray-200">Rp 0</span>
+                                <span id="limit-bulanan-aktif" class="text-xs sm:text-sm font-semibold text-gray-200">Rp 0</span>
                             </div>
                         </div>
                     </div>
-                
+                 
                     <!-- Card Harian -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition" onclick="bukaModalDetailHarian()">
-                        <div class="flex justify-between items-start">
+                    <div class="bg-white dark:bg-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 cursor-pointer hover:border-blue-500 transition flex flex-col justify-between" onclick="bukaModalDetailHarian()">
+                        <div class="flex justify-between items-start gap-1">
                             <span class="text-xs text-gray-400">Harian (Sisa / Limit Hari)</span>
-                            <span id="info-sisa-hari" class="text-xs text-gray-400">Sisa hari</span>
+                            <span id="info-sisa-hari" class="text-[11px] text-gray-400 font-medium">Sisa hari</span>
                         </div>
-                        <div class="flex justify-between items-baseline mt-2">
-                            <!-- Angka Besar di Kiri (Sekarang menampilkan Sisa) -->
-                            <div id="sisa-limit-harian-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
-                            <!-- Teks Kecil di Kanan (Sekarang menampilkan Limit Harian) -->
+                        <div class="flex items-end justify-between mt-3">
+                            <!-- Angka Besar di Kiri (Sisa) -->
+                            <div>
+                                <span class="text-[10px] text-gray-400 block sm:hidden">Sisa Harian</span>
+                                <div id="sisa-limit-harian-sekarang" class="text-xl sm:text-2xl font-bold text-emerald-400">Rp 0</div>
+                            </div>
+                            <!-- Teks Kecil di Kanan (Limit Harian) -->
                             <div class="text-right">
                                 <span class="text-[10px] text-gray-400 block">Limit Harian Ideal</span>
-                                <span id="limit-harian-aktif" class="text-sm font-semibold text-gray-200">Rp 0</span>
+                                <span id="limit-harian-aktif" class="text-xs sm:text-sm font-semibold text-gray-200">Rp 0</span>
                             </div>
                         </div>
                     </div>
@@ -269,8 +279,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
-                        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-4">📈 Performa PnL Crypto per Anggota</h4>
-                        <div class="h-64"><canvas id="cryptoProfitChart"></canvas></div>
+                        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-4">📈 Performa Investasi (Crypto & Saham) per Anggota</h4>
+                        <div class="h-64"><canvas id="investasiPerformaChart"></canvas></div>
                     </div>
                     <div id="debt-chart-card" class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
                         <div class="flex justify-between items-center mb-4">
@@ -347,8 +357,8 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">Jenis Arus Kas</label>
                             <select id="jenis-arus-kas" class="w-full modern-input p-3 text-xs">
-                                <option value="Kebutuhan" class="bg-slate-900">Kebutuhan</option>
                                 <option value="Harian" class="bg-slate-900">Harian</option>
+                                <option value="Kebutuhan" class="bg-slate-900">Kebutuhan</option>
                                 <option value="Tagihan" class="bg-slate-900">Tagihan</option>
                                 <option value="Pemasukan" class="bg-slate-900">Pemasukan</option>
                             </select>
@@ -357,11 +367,11 @@
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">Tanggal Transaksi</label>
                             <input type="date" id="tanggal" class="w-full modern-input p-3 text-xs text-white">
                         </div>
-                        <div>
+                        <div class="hidden">
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">Jenis</label>
                             <select id="jenis" class="w-full modern-input p-3 text-xs">
-                                <option value="keluar" class="bg-slate-900">Keluar (-) Penghasilan/Belanja</option>
-                                <option value="masuk" class="bg-slate-900">Masuk (+) Pemasukan</option>
+                                <option value="keluar" class="bg-slate-900">🔴 Pengeluaran (Minus)</option>
+                                <option value="masuk" class="bg-slate-900">🟢 Pemasukan (Plus)</option>
                             </select>
                         </div>
                         <div>
@@ -494,25 +504,62 @@
                 <div id="list-tabungan" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
             
-            <!-- HALAMAN 6: CRYPTO INVESTOR -->
+            <!-- HALAMAN 6: INVESTASI (CRYPTO & SAHAM) -->
             <div id="page-invest" class="space-y-6 hidden">
+                <!-- Header Utama Investasi -->
                 <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
                     <div>
-                        <h3 class="text-lg font-bold text-white tracking-wide">Portofolio Crypto Keluarga</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Pantau PnL real-time aset kripto seluruh anggota.</p>
+                        <h3 class="text-lg font-bold text-white tracking-wide">Portofolio Investasi Keluarga</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Pantau aset Crypto dan Saham seluruh anggota keluarga.</p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div id="total-crypto-pnl-badge" class="bg-slate-800/80 text-white px-4 py-2 rounded-xl text-xs font-bold shadow border border-slate-700">Total PnL: Rp 0 (0%)</div>
-                        <select id="filter-user-crypto" onchange="muatDataCrypto()" class="modern-input p-2.5 text-xs text-white">
-                            <option value="Semua" class="bg-slate-900">Semua Anggota</option>
-                            <option value="Ayah" class="bg-slate-900">Ayah</option>
-                            <option value="Bunda" class="bg-slate-900">Bunda</option>
-                            <option value="Anak" class="bg-slate-900">Anak</option>
-                        </select>
-                        <button onclick="bukaModalCrypto()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-lg">+ Tambah Koin</button>
+                    <!-- Tombol Tab Pilihan -->
+                    <div class="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-700">
+                        <button id="tab-btn-crypto" onclick="gantiTabInvestasi('crypto')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow">🚀 Crypto</button>
+                        <button id="tab-btn-saham" onclick="gantiTabInvestasi('saham')" class="px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white">📊 Saham</button>
                     </div>
                 </div>
-                <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+                <!-- KONTEN TAB 1: CRYPTO (KODE LAMA ANDA, TIDAK DIUBAH) -->
+                <div id="subpage-crypto" class="space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
+                        <div>
+                            <h3 class="text-base font-bold text-white tracking-wide">Portofolio Crypto Keluarga</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Pantau PnL real-time aset kripto seluruh anggota.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div id="total-crypto-pnl-badge" class="bg-slate-800/80 text-white px-4 py-2 rounded-xl text-xs font-bold shadow border border-slate-700">Total PnL: Rp 0 (0%)</div>
+                            <select id="filter-user-crypto" onchange="muatDataCrypto()" class="modern-input p-2.5 text-xs text-white">
+                                <option value="Semua" class="bg-slate-900">Semua Anggota</option>
+                                <option value="Ayah" class="bg-slate-900">Ayah</option>
+                                <option value="Bunda" class="bg-slate-900">Bunda</option>
+                                <option value="Anak" class="bg-slate-900">Anak</option>
+                            </select>
+                            <button onclick="bukaModalCrypto()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-lg">+ Tambah Koin</button>
+                        </div>
+                    </div>
+                    <div id="list-crypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- KONTEN TAB 2: SAHAM (STRUKTUR SERUPA DENGAN CRYPTO) -->
+                <div id="subpage-saham" class="space-y-6 hidden">
+                    <div class="flex flex-wrap justify-between items-center gap-4 glass-card p-6">
+                        <div>
+                            <h3 class="text-base font-bold text-white tracking-wide">Portofolio Saham Keluarga</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Pantau kinerja investasi saham seluruh anggota.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div id="total-saham-pnl-badge" class="bg-slate-800/80 text-white px-4 py-2 rounded-xl text-xs font-bold shadow border border-slate-700">Total PnL: Rp 0 (0%)</div>
+                            <select id="filter-user-saham" onchange="muatDataSaham()" class="modern-input p-2.5 text-xs text-white">
+                                <option value="Semua" class="bg-slate-900">Semua Anggota</option>
+                                <option value="Ayah" class="bg-slate-900">Ayah</option>
+                                <option value="Bunda" class="bg-slate-900">Bunda</option>
+                                <option value="Anak" class="bg-slate-900">Anak</option>
+                            </select>
+                            <button onclick="bukaModalSaham()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-lg">+ Tambah Saham</button>
+                        </div>
+                    </div>
+                    <div id="list-saham" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
             </div>
 
             <!-- HALAMAN 7: DOKUMEN KELUARGA -->
@@ -1357,6 +1404,54 @@
         </div>
     </div>
 
+    <!-- Modal Saham Portofolio -->
+    <div id="modal-saham" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold text-base text-white">📈 Catat Investasi Saham</h3>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-300">Pemilik Portofolio</label>
+                <select id="pemilik-saham" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+                    <option value="Ayah">Ayah</option>
+                    <option value="Bunda">Bunda</option>
+                    <option value="Anak">Anak</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-300">Kode / Nama Emiten Saham</label>
+                <input type="text" id="kode-saham" placeholder="Contoh: BBCA, BBRI, TLKM" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white uppercase">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-300">Jumlah Lembar Saham</label>
+                <input type="text" id="jumlah-lot-saham" oninput="formatInputRupiah(this)" placeholder="Misal: 1000 (lembar)" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-300">Harga Beli Rata-Rata per Lembar (Rp)</label>
+                <input type="text" id="harga-beli-saham" oninput="formatInputRupiah(this)" placeholder="Misal: 7.250" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-300">Harga Pasar Saat Ini per Lembar (Rp)</label>
+                <input type="text" id="harga-sekarang-saham" oninput="formatInputRupiah(this)" placeholder="Misal: 7.500" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="simpanSaham()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition">Simpan Saham</button>
+                <button onclick="tutupModalSaham()" class="flex-1 bg-gray-500 text-white font-bold py-3 rounded-xl text-xs transition">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Popup Detail Investasi per Anggota -->
+    <div id="modal-detail-investasi" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 id="modal-investasi-title" class="font-bold text-base flex items-center gap-2">📈 Rincian Detail Investasi</h3>
+                <button onclick="tutupModalDetailInvestasi()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
+            </div>
+            <div id="konten-detail-investasi" class="space-y-4">
+                <!-- Rincian detail aset crypto & saham akan dimuat secara dinamis di sini -->
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Detail Kas Keluarga -->
     <div id="modal-detail-kas-keluarga" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
@@ -1457,9 +1552,15 @@
         let cacheDataAset = [];
 
         let latestPnlByUser = { 
-            'Ayah': { pnl: 0, modal: 0 }, 
-            'Bunda': { pnl: 0, modal: 0 }, 
-            'Anak': { pnl: 0, modal: 0 } 
+            'Ayah': { holdingModal: 0, holdingPnl: 0, soldModal: 0, soldPnl: 0 }, 
+            'Bunda': { holdingModal: 0, holdingPnl: 0, soldModal: 0, soldPnl: 0 }, 
+            'Anak': { holdingModal: 0, holdingPnl: 0, soldModal: 0, soldPnl: 0 } 
+        };
+
+        let latestPnlSahamByUser = { 
+            'Ayah': { modal: 0, pnl: 0 }, 
+            'Bunda': { modal: 0, pnl: 0 }, 
+            'Anak': { modal: 0, pnl: 0 } 
         };
         let latestDebtSummary = { totalHutang: 0, totalTerbayar: 0, sisaHutang: 0, debtors: [] };
         let latestFamilyDebtSummary = { totalHutang: 0, totalTerbayar: 0, sisaHutang: 0, debtors: [] };
@@ -1495,6 +1596,10 @@
         let isLiveLocActive = false;
         let watchIdLiveLoc = null;
         let liveMarkerInstance = null;
+        
+        let investasiPerformaChartInstance = null;
+        let globalCryptoList = [];
+        let globalSahamList = [];
 
         // Variabel penyimpan data harian sementara untuk ditampilkan ke modal
         let cacheDataHarianDetail = {
@@ -1829,7 +1934,7 @@
                         }
 
                         setTimeout(() => {
-                            renderCryptoProfitChart(latestPnlByUser);
+                            renderInvestasiPerformaChart(latestPnlByUser, latestPnlSahamByUser);
                             if (jenisAkun !== 'Anak') {
                                 renderDebtPelunasanChart(latestDebtSummary);
                             }
@@ -2306,7 +2411,7 @@
             const tanggalVal = document.getElementById('tanggal').value;
             const kategoriKas = document.getElementById('kategori-kas').value;
             const jenisArusKas = document.getElementById('jenis-arus-kas').value;
-            const jenis = document.getElementById('jenis').value;
+            const jenis = (jenisArusKas === 'Pemasukan') ? 'masuk' : 'keluar';
             const keterangan = document.getElementById('keterangan').value.trim();
             
             const rawJumlah = document.getElementById('jumlah').value.replace(/\./g, '').replace(/,/g, '');
@@ -4023,10 +4128,12 @@
                     'Anak': { holdingModal: 0, holdingPnl: 0, soldModal: 0, soldPnl: 0, modal: 0, pnl: 0 } 
                 };
 
+                globalCryptoList = [];
                 querySnapshot.forEach((doc) => {
                     const data = doc.data(); const docId = doc.id;
                     const pemilik = data.pemilik || 'Ayah';
                     const isHold = (!data.status || data.status === 'Hold');
+                    globalCryptoList.push(data);
 
                     const totalModal = data.jumlahKoin * data.hargaBeli;
                     const totalSekarang = data.jumlahKoin * data.hargaSekarang;
@@ -4150,8 +4257,175 @@
                     }
                 }
 
-                renderCryptoProfitChart(latestPnlByUser);
+                renderInvestasiPerformaChart(latestPnlByUser, latestPnlSahamByUser);
             });
+        }
+
+        // Fungsi untuk mengganti tampilan tab antara Crypto dan Saham
+        function gantiTabInvestasi(tab) {
+            const subCrypto = document.getElementById('subpage-crypto');
+            const subSaham = document.getElementById('subpage-saham');
+            const btnCrypto = document.getElementById('tab-btn-crypto');
+            const btnSaham = document.getElementById('tab-btn-saham');
+
+            if (tab === 'crypto') {
+                subCrypto.classList.remove('hidden');
+                subSaham.classList.add('hidden');
+                btnCrypto.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
+                btnSaham.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white";
+            } else {
+                subCrypto.classList.add('hidden');
+                subSaham.classList.remove('hidden');
+                btnSaham.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow";
+                btnCrypto.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white";
+                muatDataSaham(); // Muat data saham saat tab dibuka
+            }
+        }
+
+        // Modal Saham
+        function bukaModalSaham() {
+            document.getElementById('modal-saham').classList.remove('hidden');
+        }
+        function tutupModalSaham() {
+            document.getElementById('modal-saham').classList.add('hidden');
+        }
+
+        // Simpan Data Saham ke Firestore
+        function simpanSaham() {
+            const pemilik = document.getElementById('pemilik-saham').value;
+            const emiten = document.getElementById('kode-saham').value.trim().toUpperCase();
+            const jumlahLembar = unformatRupiah(document.getElementById('jumlah-lot-saham').value);
+            const hargaBeli = unformatRupiah(document.getElementById('harga-beli-saham').value);
+            const hargaSekarang = unformatRupiah(document.getElementById('harga-sekarang-saham').value);
+
+            if (!emiten || jumlahLembar <= 0 || hargaBeli <= 0 || hargaSekarang <= 0) {
+                return alert("Mohon lengkapi data saham dengan benar!");
+            }
+
+            db.collection("saham").add({
+                family_id: currentUserFamilyId,
+                pemilik: pemilik,
+                emiten: emiten,
+                jumlahLembar: jumlahLembar,
+                hargaBeli: hargaBeli,
+                hargaSekarang: hargaSekarang,
+                status: 'Hold',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("Portofolio saham berhasil dicatat!");
+                document.getElementById('kode-saham').value = '';
+                document.getElementById('jumlah-lot-saham').value = '';
+                document.getElementById('harga-beli-saham').value = '';
+                document.getElementById('harga-sekarang-saham').value = '';
+                tutupModalSaham();
+            }).catch(e => alert("Gagal menyimpan: " + e.message));
+        }
+
+        let unsubscribeSaham = null;
+
+        // Muat dan Render Data Saham dari Firestore
+        function muatDataSaham() {
+            if (unsubscribeSaham) {
+                unsubscribeSaham();
+                unsubscribeSaham = null;
+            }
+
+            const filterUser = document.getElementById('filter-user-saham').value;
+
+            unsubscribeSaham = db.collection("saham").where("family_id", "==", currentUserFamilyId).orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+                const container = document.getElementById('list-saham');
+                if (!container) return;
+                container.innerHTML = '';
+
+                let grandTotalPnlRp = 0;
+                let grandTotalModal = 0;
+                let dataCount = 0;
+
+                globalSahamList = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const docId = doc.id;
+                    const pemilik = data.pemilik || 'Ayah';
+                    const isHold = (!data.status || data.status === 'Hold');
+                    globalSahamList.push(data);
+
+                    const totalModal = data.jumlahLembar * data.hargaBeli;
+                    const totalSekarang = data.jumlahLembar * data.hargaSekarang;
+                    const pnlRp = totalSekarang - totalModal;
+
+                    if (filterUser === 'Semua' || filterUser === pemilik) {
+                        dataCount++;
+                        const pnlPersen = totalModal > 0 ? (pnlRp / totalModal) * 100 : 0;
+                        
+                        grandTotalPnlRp += pnlRp;
+                        grandTotalModal += totalModal;
+
+                        const isProfit = pnlRp >= 0;
+                        const pnlColor = isProfit ? 'text-green-400' : 'text-red-400';
+                        const pnlSimbol = isProfit ? '+' : '';
+
+                        let ownerBadgeColor = 'bg-blue-900 text-blue-200';
+                        if (pemilik === 'Bunda') ownerBadgeColor = 'bg-pink-900 text-pink-200';
+                        if (pemilik === 'Anak') ownerBadgeColor = 'bg-emerald-900 text-emerald-200';
+
+                        container.innerHTML += `
+                            <div class="glass-card p-5 sm:p-6 flex flex-col justify-between hover:shadow-2xl transition relative overflow-hidden">
+                                <div class="relative z-10">
+                                    <div class="flex flex-wrap justify-between items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${ownerBadgeColor}">👤 ${pemilik}</span>
+                                            <h4 class="font-bold text-emerald-400 text-sm sm:text-base">📊 ${data.emiten}</h4>
+                                        </div>
+                                        <button onclick="hapusSaham('${docId}')" class="text-slate-400 hover:text-red-400 transition text-sm bg-slate-900 rounded-full h-7 w-7 flex items-center justify-center font-bold shadow border border-slate-700">✖</button>
+                                    </div>
+                                    
+                                    <div class="text-xs sm:text-sm text-slate-300 bg-slate-900/80 p-3 rounded-2xl border border-slate-700/60 mb-4 flex justify-between items-center">
+                                        <span>Jumlah Lembar:</span>
+                                        <strong class="text-white">${data.jumlahLembar.toLocaleString('id-ID')} Lembar</strong>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm mb-4">
+                                        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-700/60">
+                                            <p class="text-slate-400 text-[11px]">Modal Saham</p>
+                                            <p class="font-semibold text-white truncate">Rp ${totalModal.toLocaleString('id-ID')}</p>
+                                        </div>
+                                        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-700/60">
+                                            <p class="text-slate-400 text-[11px]">Nilai Saat Ini</p>
+                                            <p class="font-semibold text-white truncate">Rp ${totalSekarang.toLocaleString('id-ID')}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4 p-3.5 rounded-2xl bg-slate-950/90 border border-slate-800 text-center">
+                                        <p class="text-slate-400 text-xs mb-1">Profit / Loss (PnL)</p>
+                                        <div class="flex flex-wrap justify-center items-center gap-1.5">
+                                            <span class="${pnlColor} font-extrabold text-sm sm:text-base tracking-wide">${pnlSimbol} Rp ${Math.abs(pnlRp).toLocaleString('id-ID')}</span>
+                                            <span class="${pnlColor} text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800">(${pnlSimbol}${pnlPersen.toFixed(2)}%)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                const badgeEl = document.getElementById('total-saham-pnl-badge');
+                if (badgeEl) {
+                    const grandTotalPersen = grandTotalModal > 0 ? (grandTotalPnlRp / grandTotalModal) * 100 : 0;
+                    const isGrandProfit = grandTotalPnlRp >= 0;
+                    const grandSymbol = isGrandProfit ? '+' : '';
+                    badgeEl.innerText = `Total PnL: ${grandSymbol}Rp ${Math.abs(grandTotalPnlRp).toLocaleString('id-ID')} (${grandSymbol}${grandTotalPersen.toFixed(2)}%)`;
+                }
+
+                if (dataCount === 0) {
+                    container.innerHTML = `<p class="text-gray-400 text-sm md:col-span-2 text-center p-8 bg-slate-800 rounded-2xl border border-dashed border-slate-700">Belum ada portofolio investasi saham untuk anggota ini.</p>`;
+                }
+            });
+        }
+
+        function hapusSaham(id) {
+            if (confirm("Hapus portofolio saham ini?")) {
+                db.collection("saham").doc(id).delete().then(() => alert("Berhasil dihapus!"));
+            }
         }
 
         function compressImage(file, maxMb = 1, quality = 0.7, callback) {
@@ -4999,46 +5273,44 @@
             }
         }
 
-        function renderCryptoProfitChart(pnlData) {
-            const canvasEl = document.getElementById('cryptoProfitChart');
+        function renderInvestasiPerformaChart(pnlCryptoData, pnlSahamData) {
+            const canvasEl = document.getElementById('investasiPerformaChart');
             if (!canvasEl) return;
             const ctx = canvasEl.getContext('2d');
-            if (cryptoProfitChartInstance) cryptoProfitChartInstance.destroy();
+            if (investasiPerformaChartInstance) investasiPerformaChartInstance.destroy();
 
-            const labels = Object.keys(pnlData); // ['Ayah', 'Bunda', 'Anak']
+            const labels = ['Ayah', 'Bunda', 'Anak'];
             
-            // Data Performa Hold (%)
-            const holdValues = labels.map(user => {
-                const d = pnlData[user];
-                return d.holdingModal > 0 ? (d.holdingPnl / d.holdingModal) * 100 : 0;
+            const cryptoValues = labels.map(user => {
+                const d = pnlCryptoData[user];
+                const totalMod = (d?.holdingModal || 0) + (d?.soldModal || 0);
+                const totalPnl = (d?.holdingPnl || 0) + (d?.soldPnl || 0);
+                return totalMod > 0 ? (totalPnl / totalMod) * 100 : 0;
             });
 
-            // Data Performa Sold (%)
-            const soldValues = labels.map(user => {
-                const d = pnlData[user];
-                return d.soldModal > 0 ? (d.soldPnl / d.soldModal) * 100 : 0;
+            const sahamValues = labels.map(user => {
+                const d = pnlSahamData[user];
+                const totalMod = (d?.modal || 0);
+                const totalPnl = (d?.pnl || 0);
+                return totalMod > 0 ? (totalPnl / totalMod) * 100 : 0;
             });
 
-            // Warna batang berdasarkan profit/loss
-            const holdColors = holdValues.map(val => val >= 0 ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)'); // Hijau / Merah
-            const soldColors = soldValues.map(val => val >= 0 ? 'rgba(59, 130, 246, 0.8)' : 'rgba(249, 115, 22, 0.8)'); // Biru / Orange
-
-            cryptoProfitChartInstance = new Chart(ctx, {
+            investasiPerformaChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Hold (%)',
-                            data: holdValues,
-                            backgroundColor: holdColors,
+                            label: 'Crypto (%)',
+                            data: cryptoValues,
+                            backgroundColor: 'rgba(245, 158, 11, 0.8)',
                             borderWidth: 1,
                             borderRadius: 4
                         },
                         {
-                            label: 'Sold (%)',
-                            data: soldValues,
-                            backgroundColor: soldColors,
+                            label: 'Saham (%)',
+                            data: sahamValues,
+                            backgroundColor: 'rgba(16, 185, 129, 0.8)',
                             borderWidth: 1,
                             borderRadius: 4
                         }
@@ -5047,6 +5319,14 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    // FITUR KLIK PADA BATANG GRAFIK
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const clickedIndex = elements[0].index;
+                            const selectedMember = labels[clickedIndex];
+                            bukaDetailInvestasiAnggota(selectedMember);
+                        }
+                    },
                     plugins: { 
                         legend: { 
                             display: true, 
@@ -5056,35 +5336,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    const index = context.dataIndex;
-                                    const user = labels[index];
-                                    const d = pnlData[user];
-                                    const datasetLabel = context.dataset.label;
-                                    
-                                    // Perhitungan Total (Modal + PnL)
-                                    const totalHoldVal = d.holdingModal + d.holdingPnl;
-                                    const totalSoldVal = d.soldModal + d.soldPnl;
-                                    const totalModalAll = d.holdingModal + d.soldModal;
-                                    const totalPnlAll = d.holdingPnl + d.soldPnl;
-                                    const totalAllVal = totalHoldVal + totalSoldVal;
-
-                                    if (datasetLabel.includes('Hold')) {
-                                        return [
-                                            `--- TOKEN HOLD (Aktif) ---`,
-                                            ` Modal Hold: Rp ${d.holdingModal.toLocaleString('id-ID')}`,
-                                            ` PnL Hold: Rp ${d.holdingPnl.toLocaleString('id-ID')}`,
-                                            ` Total (Modal + PnL): Rp ${totalHoldVal.toLocaleString('id-ID')}`,
-                                            ` Performa Hold: ${context.raw.toFixed(2)}%`,
-                                        ];
-                                    } else {
-                                        return [
-                                            `--- TOKEN SOLD (Terjual) ---`,
-                                            ` Modal Sold: Rp ${d.soldModal.toLocaleString('id-ID')}`,
-                                            ` PnL Sold: Rp ${d.soldPnl.toLocaleString('id-ID')}`,
-                                            ` Total (Modal + PnL): Rp ${totalSoldVal.toLocaleString('id-ID')}`,
-                                            ` Performa Sold: ${context.raw.toFixed(2)}%`,
-                                        ];
-                                    }
+                                    return ` ${context.dataset.label}: ${context.raw.toFixed(2)}% (Klik batang untuk detail)`;
                                 }
                             }
                         }
@@ -5095,15 +5347,107 @@
                             ticks: { 
                                 color: '#94a3b8', 
                                 font: { size: 10 },
-                                callback: function(value) {
-                                    return value + '%';
-                                }
+                                callback: function(value) { return value + '%'; }
                             } 
                         },
                         x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } }
                     }
                 }
             });
+        }
+
+        function bukaDetailInvestasiAnggota(namaAnggota) {
+            const modalTitle = document.getElementById('modal-investasi-title');
+            const container = document.getElementById('konten-detail-investasi');
+            if (!modalTitle || !container) return;
+
+            modalTitle.innerText = `📈 Rincian Detail Investasi: ${namaAnggota}`;
+
+            const cryptoMilikAnggota = globalCryptoList.filter(item => item.pemilik === namaAnggota);
+            const sahamMilikAnggota = globalSahamList.filter(item => item.pemilik === namaAnggota);
+
+            let cryptoHtml = '';
+            if (cryptoMilikAnggota.length > 0) {
+                cryptoMilikAnggota.forEach(c => {
+                    const modal = c.jumlahKoin * c.hargaBeli;
+                    const nilai = c.jumlahKoin * c.hargaSekarang;
+                    const pnl = nilai - modal;
+                    // Hitung persentase PnL
+                    const pnlPersen = modal > 0 ? (pnl / modal) * 100 : 0;
+                    const isProf = pnl >= 0;
+                    const sign = isProf ? '+' : '';
+
+                    cryptoHtml += `
+                        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                            <div>
+                                <strong class="text-amber-400">🚀 ${c.koin}</strong> <span class="text-slate-400">(${c.jumlahKoin.toLocaleString('id-ID')} Koin)</span><br>
+                                <span class="text-slate-400">Modal: Rp ${modal.toLocaleString('id-ID')} | Nilai: Rp ${nilai.toLocaleString('id-ID')}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="${isProf ? 'text-green-400' : 'text-red-400'} font-bold block">
+                                    ${sign}Rp ${Math.abs(pnl).toLocaleString('id-ID')}
+                                </span>
+                                <span class="${isProf ? 'text-green-400' : 'text-red-400'} text-[10px] font-semibold">
+                                    (${sign}${pnlPersen.toFixed(2)}%)
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                cryptoHtml = `<p class="text-xs text-slate-500 italic">Tidak ada portofolio Crypto.</p>`;
+            }
+
+            let sahamHtml = '';
+            if (sahamMilikAnggota.length > 0) {
+                sahamMilikAnggota.forEach(s => {
+                    const modal = s.jumlahLembar * s.hargaBeli;
+                    const nilai = s.jumlahLembar * s.hargaSekarang;
+                    const pnl = nilai - modal;
+                    // Hitung persentase PnL Saham
+                    const pnlPersen = modal > 0 ? (pnl / modal) * 100 : 0;
+                    const isProf = pnl >= 0;
+                    const sign = isProf ? '+' : '';
+
+                    sahamHtml += `
+                        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                            <div>
+                                <strong class="text-emerald-400">📊 ${s.emiten}</strong> <span class="text-slate-400">(${s.jumlahLembar.toLocaleString('id-ID')} Lembar)</span><br>
+                                <span class="text-slate-400">Modal: Rp ${modal.toLocaleString('id-ID')} | Nilai: Rp ${nilai.toLocaleString('id-ID')}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="${isProf ? 'text-green-400' : 'text-red-400'} font-bold block">
+                                    ${sign}Rp ${Math.abs(pnl).toLocaleString('id-ID')}
+                                </span>
+                                <span class="${isProf ? 'text-green-400' : 'text-red-400'} text-[10px] font-semibold">
+                                    (${sign}${pnlPersen.toFixed(2)}%)
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                sahamHtml = `<p class="text-xs text-slate-500 italic">Tidak ada portofolio Saham.</p>`;
+            }
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-xs text-amber-400 uppercase mb-2">🚀 Aset Crypto</h4>
+                        <div class="space-y-2 max-h-44 overflow-y-auto pr-1">${cryptoHtml}</div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-800">
+                        <h4 class="font-bold text-xs text-emerald-400 uppercase mb-2">📊 Aset Saham</h4>
+                        <div class="space-y-2 max-h-44 overflow-y-auto pr-1">${sahamHtml}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modal-detail-investasi').classList.remove('hidden');
+        }
+
+        function tutupModalDetailInvestasi() {
+            document.getElementById('modal-detail-investasi').classList.add('hidden');
         }
         
         function renderDebtPelunasanChart(debtSummary) {
