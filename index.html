@@ -733,6 +733,7 @@
 
                             <!-- Area Kertas CV yang akan diconvert ke PDF -->
                             <div id="area-cv-preview" class="bg-white text-slate-900 p-8 rounded-2xl shadow-xl space-y-6 text-xs min-h-[450px]">
+                                <!-- Contoh bagian Header Preview CV -->
                                 <div class="border-b border-slate-200 pb-4 flex justify-between items-start">
                                     <div>
                                         <h2 id="cv-preview-nama" class="text-xl font-bold text-slate-900">Nama Anggota Keluarga</h2>
@@ -740,6 +741,7 @@
                                     <div class="text-right text-slate-500 text-[10px]">
                                         <p>Curriculum Vitae & Portofolio</p>
                                     </div>
+                                    
                                 </div>
 
                                 <!-- Pendidikan -->
@@ -5189,14 +5191,26 @@
             .where("family_id", "==", currentUserFamilyId)
             .where("anggotaId", "==", anggotaId)
             .onSnapshot(snapshot => {
+                let dataList = [];
+                snapshot.forEach(doc => {
+                    dataList.push({ id: doc.id, ...doc.data() });
+                });
+
+                // URUTKAN DARI TAHUN TERBESAR KE TERKECIL (Terbaru di atas)
+                dataList.sort((a, b) => {
+                    let tahunA = parseInt(a.mulai) || 0;
+                    let tahunB = parseInt(b.mulai) || 0;
+                    return tahunB - tahunA; // Urutan descending (terbesar ke terkecil)
+                });
+
                 let eduHtml = '';
                 let workHtml = '';
                 let skillHtml = '';
                 let portHtml = '';
 
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    const docId = doc.id;
+                // PERBAIKAN: Gunakan dataList.forEach, bukan snapshot.forEach
+                dataList.forEach(d => {
+                    const docId = d.id;
 
                     const safeJudul = (d.judul || '').replace(/'/g, "\\'");
                     const safeSub = (d.subjudul || '').replace(/'/g, "\\'");
@@ -5301,11 +5315,9 @@
         // 7. Fungsi untuk menghapus data riwayat dari Firestore
         function hapusRiwayat(id) {
             if (confirm("Apakah Anda yakin ingin menghapus riwayat ini?")) {
-                db.collection("riwayat_cv").doc(id).delete().then(() => {
+                // Ubah dari "riwayat_cv" menjadi "family_cv_riwayat"
+                db.collection("family_cv_riwayat").doc(id).delete().then(() => {
                     alert("Riwayat berhasil dihapus!");
-                    if (typeof muatDataRiwayat === 'function') {
-                        muatDataRiwayat();
-                    }
                 }).catch(e => alert("Gagal menghapus: " + e.message));
             }
         }
@@ -5313,21 +5325,20 @@
         function siapkanEditRiwayat(id, anggota, kategori, judul, posisi, tahunMulai, tahunSelesai, deskripsi, foto) {
             editIdRiwayat = id;
             
-            // Perbaikan ID: sesuaikan dengan ID di HTML Anda ('cv-pilih-anggota')
-            const selectAnggota = document.getElementById('cv-pilih-anggota') || document.getElementById('cv-anggota');
+            const selectAnggota = document.getElementById('cv-pilih-anggota');
             if (selectAnggota) selectAnggota.value = anggota;
 
-            // Pastikan ID elemen form di bawah ini sama persis dengan yang ada di HTML Anda
+            // Fungsi helper aman agar tidak error jika ID tidak ditemukan
             const setVal = (idEl, val) => {
                 const el = document.getElementById(idEl);
-                if (el) el.value = val !== undefined ? val : '';
+                if (el) el.value = val !== undefined && val !== null ? val : '';
             };
 
             setVal('cv-kategori', kategori);
             setVal('cv-judul', judul);
-            setVal('cv-posisi', posisi);       // Jika di HTML namanya cv-subjudul, ubah jadi 'cv-subjudul'
-            setVal('cv-tahun-mulai', tahunMulai); // Jika di HTML namanya cv-mulai, ubah jadi 'cv-mulai'
-            setVal('cv-tahun-selesai', tahunSelesai); // Jika di HTML namanya cv-selesai, ubah jadi 'cv-selesai'
+            setVal('cv-subjudul', posisi);       // Sesuaikan dengan ID di HTML (cv-subjudul)
+            setVal('cv-tahun-mulai', tahunMulai); 
+            setVal('cv-tahun-selesai', tahunSelesai); 
             setVal('cv-deskripsi', deskripsi);
 
             base64CvFoto = foto || '';
@@ -5340,7 +5351,8 @@
                 previewContainer.classList.add('hidden');
             }
 
-            const btnSimpan = document.getElementById('btn-simpan-riwayat');
+            // Ubah teks tombol simpan menjadi update
+            const btnSimpan = document.getElementById('btn-simpan-riwayat') || document.querySelector("button[onclick='simpanRiwayat()']");
             if (btnSimpan) btnSimpan.innerText = 'Update Riwayat';
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -5350,9 +5362,9 @@
             editIdRiwayat = null;
             base64CvFoto = '';
             document.getElementById('cv-judul').value = '';
-            document.getElementById('cv-posisi').value = '';
-            document.getElementById('cv-mulai').value = '';
-            document.getElementById('cv-selesai').value = '';
+            document.getElementById('cv-subjudul').value = '';
+            document.getElementById('cv-tahun-mulai').value = '';
+            document.getElementById('cv-tahun-selesai').value = '';
             document.getElementById('cv-deskripsi').value = '';
             if (typeof batalCvFoto === 'function') batalCvFoto();
             
