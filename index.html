@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fund & Family</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%%22 y=%2254%%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2280%22>🏡</text></svg>">
-    <!-- Tailwind CSS v4.3.3 -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
     
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,7 +15,8 @@
     <!-- Leaflet CSS & JS untuk Peta -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
+    <!-- Tailwind CSS v4.3.3 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
     <style>
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -680,6 +679,15 @@
                                     <!-- Opsi anggota dimuat otomatis lewat JS dari collection family_tree -->
                                 </select>
                             </div>
+                            <!-- TAMBAHKAN INPUT FOTO DI SINI -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Foto Profil CV (Opsional)</label>
+                                <input type="file" id="cv-foto-input" accept="image/*" onchange="previewCvFoto(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-amber-300">
+                                <div id="cv-foto-preview-container" class="mt-2 hidden relative w-16 h-16">
+                                    <img id="cv-foto-preview-img" class="w-full h-full object-cover rounded-full border border-slate-700 shadow-sm">
+                                    <button type="button" onclick="batalCvFoto()" class="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center">✕</button>
+                                </div>
+                            </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 mb-1.5">Kategori Riwayat / Bagian CV</label>
                                 <select id="cv-kategori" class="w-full modern-input p-3 text-xs text-white">
@@ -711,14 +719,14 @@
                                 <label class="block text-xs font-semibold text-slate-400 mb-1.5">Deskripsi / Pencapaian</label>
                                 <textarea id="cv-deskripsi" rows="2" placeholder="Deskripsi singkat tanggung jawab atau hasil..." class="w-full modern-input p-3 text-xs text-white"></textarea>
                             </div>
-                            <button onclick="simpanRiwayatCV()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg">Simpan Riwayat</button>
+                            <button onclick="simpanRiwayat()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg">Simpan Riwayat</button>
                         </div>
 
                         <!-- Preview & Tombol Download CV PDF -->
                         <div class="glass-card p-6 lg:col-span-2 space-y-4">
                             <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
                                 <h4 class="font-bold text-sm text-white">📄 Preview Curricullum Vitae (CV)</h4>
-                                <button onclick="downloadCVன்PDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2">
+                                <button onclick="downloadCVPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2">
                                     📥 Download CV PDF
                                 </button>
                             </div>
@@ -1698,6 +1706,9 @@
         let globalCryptoList = [];
         let globalSahamList = [];
 
+        let base64CvFoto = '';
+        let editIdRiwayat = null; // Penanda ID jika sedang mode edit
+
         // Variabel penyimpan data harian sementara untuk ditampilkan ke modal
         let cacheDataHarianDetail = {
             rincianPerTanggal: [],
@@ -2460,10 +2471,25 @@
             document.getElementById('tanggal').value = tanggalStr || new Date().toISOString().split('T')[0];
             document.getElementById('kategori-kas').value = kategori;
             
-            // Set nilai Jenis Arus Kas
+            // Set nilai Jenis Arus Kas secara paksa dan aman
             const selectJenisArus = document.getElementById('jenis-arus-kas');
             if(selectJenisArus) {
-                selectJenisArus.value = jenisArusKas && jenisArusKas !== 'undefined' ? jenisArusKas : 'kebutuhan';
+                let targetVal = jenisArusKas ? jenisArusKas.trim().toLowerCase() : 'harian';
+                
+                // Cari option yang cocok secara case-insensitive (abaikan besar kecil huruf)
+                let matched = false;
+                for (let i = 0; i < selectJenisArus.options.length; i++) {
+                    if (selectJenisArus.options[i].value.toLowerCase() === targetVal) {
+                        selectJenisArus.selectedIndex = i;
+                        matched = true;
+                        break;
+                    }
+                }
+                
+                // Jika tidak ketemu yang cocok, default-kan ke pilihan pertama (Harian)
+                if (!matched) {
+                    selectJenisArus.selectedIndex = 0; 
+                }
             }
             
             // Set nilai Jenis (Masuk / Keluar) dan pastikan bisa diubah
@@ -5030,6 +5056,33 @@
             }
         }
 
+        function previewCvFoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64CvFoto = e.target.result;
+                    const imgEl = document.getElementById('cv-foto-preview-img');
+                    const containerEl = document.getElementById('cv-foto-preview-container');
+                    if(imgEl && containerEl) {
+                        imgEl.src = base64CvFoto;
+                        containerEl.classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function batalCvFoto() {
+            base64CvFoto = '';
+            const imgEl = document.getElementById('cv-foto-preview-img');
+            const containerEl = document.getElementById('cv-foto-preview-container');
+            const inputEl = document.getElementById('cv-foto-input');
+            if(imgEl) imgEl.src = '';
+            if(containerEl) containerEl.classList.add('hidden');
+            if(inputEl) inputEl.value = '';
+        }
+
         function muatOpsiAnggotaCV() {
             const selectEl = document.getElementById('cv-pilih-anggota');
             if (!selectEl) return;
@@ -5067,42 +5120,56 @@
         }
 
         // Simpan data riwayat pendidikan/pekerjaan ke sub-koleksi atau dokumen terpisah
-        function simpanRiwayatCV() {
+        function simpanRiwayat() {
             const selectEl = document.getElementById('cv-pilih-anggota');
-            const anggotaId = selectEl.value;
-            if (!anggotaId) return alert("Pilih anggota keluarga terlebih dahulu!");
+            const anggotaId = selectEl ? selectEl.value : '';
+            const selectedOption = selectEl ? selectEl.options[selectEl.selectedIndex] : null;
+            const namaAnggota = selectedOption ? selectedOption.getAttribute('data-nama') : '';
 
             const kategori = document.getElementById('cv-kategori').value;
             const judul = document.getElementById('cv-judul').value.trim();
-            const subjudul = document.getElementById('cv-subjudul').value.trim();
+            const subjudul = document.getElementById('cv-subjudul').value.trim(); // Ambil dari input posisi
             const mulai = document.getElementById('cv-tahun-mulai').value.trim();
             const selesai = document.getElementById('cv-tahun-selesai').value.trim();
             const deskripsi = document.getElementById('cv-deskripsi').value.trim();
 
-            if (!judul || !mulai) return alert("Judul dan Tahun Mulai wajib diisi!");
+            if (!judul) return alert("Judul / Institusi wajib diisi!");
 
-            db.collection("family_cv_riwayat").add({
-                family_id: currentUserFamilyId,
+            const payload = {
                 anggotaId: anggotaId,
+                namaAnggota: namaAnggota,
                 kategori: kategori,
                 judul: judul,
-                subjudul: subjudul,
+                subjudul: subjudul, // Disimpan ke field subjudul
                 mulai: mulai,
-                selesai: selesai || 'Sekarang',
+                selesai: selesai,
                 deskripsi: deskripsi,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("Riwayat berhasil ditambahkan!");
-                document.getElementById('cv-judul').value = '';
-                document.getElementById('cv-subjudul').value = '';
-                document.getElementById('cv-tahun-mulai').value = '';
-                document.getElementById('cv-tahun-selesai').value = '';
-                document.getElementById('cv-deskripsi').value = '';
-                muatDataRiwayatAnggota();
-            }).catch(err => alert("Gagal menyimpan: " + err.message));
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (base64CvFoto) {
+                payload.foto = base64CvFoto;
+            }
+
+            if (editIdRiwayat !== null && editIdRiwayat !== '') {
+                // PROSES UPDATE DATA LAMA
+                db.collection("family_cv_riwayat").doc(editIdRiwayat).update(payload).then(() => {
+                    alert("Riwayat berhasil diperbarui!"); // Notifikasi Sukses Update
+                    resetFormRiwayat();
+                }).catch(e => alert("Gagal memperbarui: " + e.message));
+            } else {
+                // PROSES TAMBAH BARU
+                payload.family_id = currentUserFamilyId;
+                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                payload.foto = base64CvFoto || '';
+
+                db.collection("family_cv_riwayat").add(payload).then(() => {
+                    alert("Riwayat berhasil ditambahkan!"); // Notifikasi Sukses Tambah
+                    resetFormRiwayat();
+                }).catch(e => alert("Gagal menyimpan: " + e.message));
+            }
         }
 
-        // Menampilkan data riwayat ke dalam preview CV
         function muatDataRiwayatAnggota() {
             const selectEl = document.getElementById('cv-pilih-anggota');
             const selectedOption = selectEl.options[selectEl.selectedIndex];
@@ -5129,45 +5196,173 @@
 
                 snapshot.forEach(doc => {
                     const d = doc.data();
+                    const docId = doc.id;
+
+                    const safeJudul = (d.judul || '').replace(/'/g, "\\'");
+                    const safeSub = (d.subjudul || '').replace(/'/g, "\\'");
+                    const safeDesc = (d.deskripsi || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
+
+                    // Tombol Edit & Hapus dengan warna teks yang jelas
+                    const actionButtons = `
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button onclick="siapkanEditRiwayat('${docId}', '${d.anggotaId || anggotaId}', '${d.kategori}', '${safeJudul}', '${safeSub}', '${d.mulai || ''}', '${d.selesai || ''}', '${safeDesc}', '${d.foto || ''}')" 
+                                class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition shadow">
+                                Edit
+                            </button>
+                            <button onclick="hapusRiwayat('${docId}')" 
+                                class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition shadow">
+                                Hapus
+                            </button>
+                        </div>
+                    `;
                     
                     if (d.kategori === 'Pendidikan') {
                         eduHtml += `
-                            <div class="flex justify-between items-start border-l-2 border-blue-600 pl-3 py-1">
-                                <div>
-                                    <p class="font-bold text-slate-800 text-xs">${d.judul} <span class="font-normal text-slate-600">- ${d.subjudul}</span></p>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">${d.deskripsi || ''}</p>
+                            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="space-y-1">
+                                    <p class="font-bold text-white text-sm">${d.judul} <span class="font-normal text-slate-300">- ${d.subjudul}</span></p>
+                                    ${d.deskripsi ? `<p class="text-xs text-slate-300">${d.deskripsi}</p>` : ''}
+                                    <span class="inline-block text-xs font-semibold text-amber-400 mt-1">${d.mulai} - ${d.selesai}</span>
                                 </div>
-                                <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${d.mulai} - ${d.selesai}</span>
+                                ${actionButtons}
                             </div>
                         `;
                     } else if (d.kategori === 'Pekerjaan') {
                         workHtml += `
-                            <div class="flex justify-between items-start border-l-2 border-blue-600 pl-3 py-1">
-                                <div>
-                                    <p class="font-bold text-slate-800 text-xs">${d.judul} <span class="font-normal text-slate-600">- ${d.subjudul}</span></p>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">${d.deskripsi || ''}</p>
+                            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="space-y-1">
+                                    <p class="font-bold text-white text-sm">${d.judul} <span class="font-normal text-slate-300">- ${d.subjudul}</span></p>
+                                    ${d.deskripsi ? `<p class="text-xs text-slate-300">${d.deskripsi}</p>` : ''}
+                                    <span class="inline-block text-xs font-semibold text-amber-400 mt-1">${d.mulai} - ${d.selesai}</span>
                                 </div>
-                                <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${d.mulai} - ${d.selesai}</span>
+                                ${actionButtons}
                             </div>
                         `;
                     } else if (d.kategori === 'Keahlian') {
-                        skillHtml += `<span class="bg-blue-100 text-blue-800 font-semibold px-3 py-1 rounded-full text-[11px]">${d.judul} (${d.subjudul})</span>`;
+                        skillHtml += `
+                            <div class="flex items-center justify-between bg-slate-900/90 px-4 py-2.5 rounded-2xl border border-slate-700 text-xs">
+                                <span class="text-white font-semibold">${d.judul} <span class="text-slate-300 font-normal">(${d.subjudul})</span></span>
+                                ${actionButtons}
+                            </div>
+                        `;
                     } else if (d.kategori === 'Portofolio') {
                         portHtml += `
-                            <div class="border-l-2 border-emerald-600 pl-3 py-1">
-                                <p class="font-bold text-slate-800 text-xs">${d.judul} <span class="text-blue-600">(${d.subjudul})</span></p>
-                                <p class="text-[11px] text-slate-500 mt-0.5">${d.deskripsi || ''}</p>
+                            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="space-y-1">
+                                    <p class="font-bold text-white text-sm">${d.judul} <span class="text-emerald-400">(${d.subjudul})</span></p>
+                                    ${d.deskripsi ? `<p class="text-xs text-slate-300">${d.deskripsi}</p>` : ''}
+                                </div>
+                                ${actionButtons}
                             </div>
                         `;
                     }
                 });
 
-                eduContainer.innerHTML = eduHtml || '<p class="text-slate-400 italic">Belum ada data pendidikan.</p>';
-                workContainer.innerHTML = workHtml || '<p class="text-slate-400 italic">Belum ada data pekerjaan.</p>';
-                skillContainer.innerHTML = skillHtml || '<p class="text-slate-400 italic">Belum ada data keahlian.</p>';
-                portContainer.innerHTML = portHtml || '<p class="text-slate-400 italic">Belum ada data portofolio.</p>';
+                eduContainer.innerHTML = eduHtml || '<p class="text-slate-400 italic text-xs">Belum ada data pendidikan.</p>';
+                workContainer.innerHTML = workHtml || '<p class="text-slate-400 italic text-xs">Belum ada data pekerjaan.</p>';
+                skillContainer.innerHTML = skillHtml || '<p class="text-slate-400 italic text-xs">Belum ada data keahlian.</p>';
+                portContainer.innerHTML = portHtml || '<p class="text-slate-400 italic text-xs">Belum ada data portofolio.</p>';
             });
         }
+
+        // 6. Fungsi untuk merender list riwayat (Pendidikan / Pekerjaan) agar ada tombol Edit & Hapus
+        function renderItemRiwayat(docId, anggota, kategori, judul, posisi, tahunMulai, tahunSelesai, deskripsi, foto) {
+            // Escape string agar aman dimasukkan ke dalam parameter onclick
+            const safeJudul = judul.replace(/'/g, "\\'");
+            const safePosisi = (posisi || '').replace(/'/g, "\\'");
+            const safeDesc = (deskripsi || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
+            const safeFoto = foto || '';
+
+            return `
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-start gap-3 relative group">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-white">${judul}</span>
+                            ${posisi ? `<span class="text-[10px] text-amber-400 bg-slate-800 px-2 py-0.5 rounded-md">${posisi}</span>` : ''}
+                        </div>
+                        <p class="text-[11px] text-slate-400">${tahunMulai} - ${tahunSelesai || 'Sekarang'}</p>
+                        ${deskripsi ? `<p class="text-xs text-slate-300 mt-1">${deskripsi}</p>` : ''}
+                    </div>
+                    <!-- TOMBOL EDIT & HAPUS -->
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="siapkanEditRiwayat('${docId}', '${anggota}', '${kategori}', '${safeJudul}', '${safePosisi}', '${tahunMulai}', '${tahunSelesai}', '${safeDesc}', '${safeFoto}')" 
+                            class="bg-blue-600/80 hover:bg-blue-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg transition shadow">
+                            Edit
+                        </button>
+                        <button onclick="hapusRiwayat('${docId}')" 
+                            class="bg-red-600/80 hover:bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg transition shadow">
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 7. Fungsi untuk menghapus data riwayat dari Firestore
+        function hapusRiwayat(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus riwayat ini?")) {
+                db.collection("riwayat_cv").doc(id).delete().then(() => {
+                    alert("Riwayat berhasil dihapus!");
+                    if (typeof muatDataRiwayat === 'function') {
+                        muatDataRiwayat();
+                    }
+                }).catch(e => alert("Gagal menghapus: " + e.message));
+            }
+        }
+
+        function siapkanEditRiwayat(id, anggota, kategori, judul, posisi, tahunMulai, tahunSelesai, deskripsi, foto) {
+            editIdRiwayat = id;
+            
+            // Perbaikan ID: sesuaikan dengan ID di HTML Anda ('cv-pilih-anggota')
+            const selectAnggota = document.getElementById('cv-pilih-anggota') || document.getElementById('cv-anggota');
+            if (selectAnggota) selectAnggota.value = anggota;
+
+            // Pastikan ID elemen form di bawah ini sama persis dengan yang ada di HTML Anda
+            const setVal = (idEl, val) => {
+                const el = document.getElementById(idEl);
+                if (el) el.value = val !== undefined ? val : '';
+            };
+
+            setVal('cv-kategori', kategori);
+            setVal('cv-judul', judul);
+            setVal('cv-posisi', posisi);       // Jika di HTML namanya cv-subjudul, ubah jadi 'cv-subjudul'
+            setVal('cv-tahun-mulai', tahunMulai); // Jika di HTML namanya cv-mulai, ubah jadi 'cv-mulai'
+            setVal('cv-tahun-selesai', tahunSelesai); // Jika di HTML namanya cv-selesai, ubah jadi 'cv-selesai'
+            setVal('cv-deskripsi', deskripsi);
+
+            base64CvFoto = foto || '';
+            const previewImg = document.getElementById('cv-foto-preview-img');
+            const previewContainer = document.getElementById('cv-foto-preview-container');
+            if (base64CvFoto && previewImg && previewContainer) {
+                previewImg.src = base64CvFoto;
+                previewContainer.classList.remove('hidden');
+            } else if (previewContainer) {
+                previewContainer.classList.add('hidden');
+            }
+
+            const btnSimpan = document.getElementById('btn-simpan-riwayat');
+            if (btnSimpan) btnSimpan.innerText = 'Update Riwayat';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetFormRiwayat() {
+            editIdRiwayat = null;
+            base64CvFoto = '';
+            document.getElementById('cv-judul').value = '';
+            document.getElementById('cv-posisi').value = '';
+            document.getElementById('cv-mulai').value = '';
+            document.getElementById('cv-selesai').value = '';
+            document.getElementById('cv-deskripsi').value = '';
+            if (typeof batalCvFoto === 'function') batalCvFoto();
+            
+            const btnSimpan = document.getElementById('btn-simpan-riwayat');
+            if (btnSimpan) btnSimpan.innerText = 'Simpan Riwayat';
+            
+            if (typeof muatDataRiwayatAnggota === 'function') {
+                muatDataRiwayatAnggota();
+            }
+        }        
 
         // Fungsi Download CV menjadi PDF menggunakan html2pdf
         function downloadCVPDF() {
@@ -5186,21 +5381,6 @@
         }
 
         // Fungsi untuk membuka modal tambah/edit posisi
-        function bukaModalPosisi(id = '', nama = '', koordinat = '', keterangan = '') {
-            editIdLivePosisi = id || null;
-            document.getElementById('edit-posisi-id').value = id;
-            document.getElementById('posisi-nama').value = nama;
-            document.getElementById('posisi-koordinat').value = koordinat;
-            document.getElementById('posisi-keterangan').value = keterangan;
-            
-            document.getElementById('modal-posisi-title').innerText = id ? '✏️ Edit Live Posisi' : '📍 Tambah Live Posisi Baru';
-            document.getElementById('modal-posisi').classList.remove('hidden');
-        }
-
-        function tutupModalPosisi() {
-            document.getElementById('modal-posisi').classList.add('hidden');
-        }
-
         function bukaModalPosisi(id = '', nama = '', koordinat = '', keterangan = '') {
             editIdLivePosisi = id || null;
             document.getElementById('edit-posisi-id').value = id;
