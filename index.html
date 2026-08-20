@@ -651,9 +651,30 @@
                                     <option value="Ortu Istri">👩 Orang Tua (Pihak Istri)</option>
                                 </select>
                             </div>
+                            <!-- Tambahkan di dalam Form Tambah Anggota Silsilah -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Terhubung Ke (Orang Tua / Leluhur)</label>
+                                <select id="tree-parent-id" class="w-full modern-input p-3 text-xs text-white bg-slate-900">
+                                    <option value="">-- Puncak / Tanpa Parent (Kakek/Nenek Utama) --</option>
+                                    <!-- Opsi ini akan dimuat otomatis via JavaScript -->
+                                </select>
+                            </div>
+                            <!-- Ganti bagian input pasangan menjadi seperti ini -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Terhubung Ke Pasangan (Suami / Istri)</label>
+                                <select id="tree-partner-id" class="w-full modern-input p-3 text-xs text-white bg-slate-900">
+                                    <option value="">-- Tanpa Pasangan / Lajang --</option>
+                                    <!-- Opsi ini akan diisi otomatis melalui JavaScript -->
+                                </select>
+                            </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 mb-1.5">Keterangan (Opsional)</label>
                                 <input type="text" id="tree-keterangan" placeholder="Contoh: Anak pertama" class="w-full modern-input p-3 text-xs text-white">
+                            </div>
+                            <!-- Tambahkan di dalam form Modal Silsilah -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5">Link LinkedIn</label>
+                                <input type="text" id="tree-linkedin" placeholder="https://linkedin.com/in/username" class="w-full modern-input p-3 text-xs text-white">
                             </div>
                             <div class="flex gap-2 pt-2">
                                 <button onclick="simpanFamilyTree()" id="btn-simpan-tree" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg">Simpan Anggota</button>
@@ -735,11 +756,21 @@
                             <div id="area-cv-preview" class="bg-white text-slate-900 p-8 rounded-2xl shadow-xl space-y-6 text-xs min-h-[450px]">
                                 <!-- Contoh bagian Header Preview CV -->
                                 <div class="border-b border-slate-200 pb-4 flex justify-between items-start">
-                                    <div>
-                                        <h2 id="cv-preview-nama" class="text-xl font-bold text-slate-900">Nama Anggota Keluarga</h2>
+                                     <!-- Bagian Kiri (Logo / Foto Kecil + Nama & Posisi Kerja) -->
+                                    <div class="flex items-center gap-2">
+                                        <img id="cv-preview-foto" src="" class="h-20 w-20 rounded-full object-cover border border-slate-300 hidden"> 
+                                        
+                                        <div>
+                                            <h2 id="cv-preview-nama" class="text-xl font-bold text-slate-900">Nama Anggota Keluarga</h2>
+                                            <!-- TAMBAHKAN ELEMEN INI DI BAWAH NAMA -->
+                                            <p id="cv-preview-posisi" class="text-xs text-slate-500 font-medium hidden">-</p>
+                                        </div>
                                     </div>
                                     <div class="text-right text-slate-500 text-[10px]">
-                                        <p>Curriculum Vitae & Portofolio</p>
+                                        <p>Account LinkedIn</p>
+                                        <div class="mt-1 flex justify-end">
+                                            <img id="cv-qr-linkedin" src="" alt="QR LinkedIn" class="h-16 w-16 object-contain border border-slate-200 rounded p-0.5 bg-white">
+                                        </div>
                                     </div>
                                     
                                 </div>
@@ -1129,6 +1160,51 @@
         </div>
     </div>
 
+    
+
+    <!-- Modal Detail Kas Keluarga -->
+    <div id="modal-detail-kas-keluarga" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">💰 Rincian & Akumulasi Kas Keluarga</h3>
+                <button onclick="tutupModalDetailKasKeluarga()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
+            </div>
+            <div id="konten-detail-kas-keluarga" class="space-y-3">
+                <!-- Data rincian akan dirender di sini secara dinamis -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail & Status Bulanan (Skala Tahunan) -->
+    <div id="modal-detail-bulanan" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">🗓️ Rincian Pengeluaran & Limit Bulanan (Tahunan)</h3>
+                <button onclick="tutupModalDetailBulanan()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
+            </div>
+            <select id="filter-bulan" onchange="muatDataTransaksi()" class="bg-slate-900 border border-slate-700 text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-blue-500">
+                <option value="">Semua Bulan (Tahun Ini)</option>
+                <!-- Opsi bulan akan terisi otomatis oleh script sesuai data yang ada -->
+            </select>
+            <div id="konten-detail-bulanan" class="space-y-3">
+                <!-- Data per bulan akan dirender secara dinamis di sini -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail & Status Harian -->
+    <div id="modal-detail-harian" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">📅 Rincian Pengeluaran & Limit Harian</h3>
+                <button onclick="tutupModalDetailHarian()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
+            </div>
+            <div id="konten-detail-harian" class="space-y-3">
+                <!-- Data per tanggal akan dirender secara dinamis di sini -->
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Hutang Internal -->
     <div id="modal-hutang-internal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4">
@@ -1428,6 +1504,19 @@
         </div>
     </div>
 
+    <!-- Modal Detail Silsilah Interaktif / Leluhur -->
+    <div id="modal-detail-silsilah" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden animate-fade-in">
+        <div class="glass-card p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-5 text-white">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 id="modal-silsilah-title" class="font-bold text-base flex items-center gap-2">🌳 Silsilah & Leluhur</h3>
+                <button onclick="tutupModalDetailSilsilah()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
+            </div>
+            <div id="konten-detail-silsilah" class="space-y-4 text-xs">
+                <!-- Data leluhur, orang tua, dan saudara akan dimuat otomatis di sini -->
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Crypto Portofolio -->
     <div id="modal-crypto" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl w-full max-w-md border border-gray-100 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -1556,49 +1645,6 @@
         </div>
     </div>
 
-    <!-- Modal Detail Kas Keluarga -->
-    <div id="modal-detail-kas-keluarga" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 class="font-bold text-base flex items-center gap-2">💰 Rincian & Akumulasi Kas Keluarga</h3>
-                <button onclick="tutupModalDetailKasKeluarga()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
-            </div>
-            <div id="konten-detail-kas-keluarga" class="space-y-3">
-                <!-- Data rincian akan dirender di sini secara dinamis -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Detail & Status Bulanan (Skala Tahunan) -->
-    <div id="modal-detail-bulanan" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 class="font-bold text-base flex items-center gap-2">🗓️ Rincian Pengeluaran & Limit Bulanan (Tahunan)</h3>
-                <button onclick="tutupModalDetailBulanan()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
-            </div>
-            <select id="filter-bulan" onchange="muatDataTransaksi()" class="bg-slate-900 border border-slate-700 text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-blue-500">
-                <option value="">Semua Bulan (Tahun Ini)</option>
-                <!-- Opsi bulan akan terisi otomatis oleh script sesuai data yang ada -->
-            </select>
-            <div id="konten-detail-bulanan" class="space-y-3">
-                <!-- Data per bulan akan dirender secara dinamis di sini -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Detail & Status Harian -->
-    <div id="modal-detail-harian" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-card p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 class="font-bold text-base flex items-center gap-2">📅 Rincian Pengeluaran & Limit Harian</h3>
-                <button onclick="tutupModalDetailHarian()" class="font-bold text-lg hover:text-red-400 transition">✕</button>
-            </div>
-            <div id="konten-detail-harian" class="space-y-3">
-                <!-- Data per tanggal akan dirender secara dinamis di sini -->
-            </div>
-        </div>
-    </div>
-
     <!-- Modal Gambar Zoom / Preview Besar -->
     <div id="modal-gambar-besar" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden">
         <div class="relative max-w-4xl max-h-[90vh]">
@@ -1700,6 +1746,8 @@
         let mapModalPosisiInstance = null;
         let markerModalPosisiInstance = null;
 
+        let editIdFamilyTree = null;
+
         let isLiveLocActive = false;
         let watchIdLiveLoc = null;
         let liveMarkerInstance = null;
@@ -1707,6 +1755,8 @@
         let investasiPerformaChartInstance = null;
         let globalCryptoList = [];
         let globalSahamList = [];
+
+        let globalFamilyTreeData = []; // Penyimpan cache data silsilah
 
         let base64CvFoto = '';
         let editIdRiwayat = null; // Penanda ID jika sedang mode edit
@@ -4630,48 +4680,74 @@
             }
         }
 
-        function simpanFamilyDocument() {
-            const namaKeluarga = document.getElementById('doc-nama-keluarga').value.trim();
-            const jenisAkun = document.getElementById('doc-jenis-akun').value.trim();
-            const namaDokumen = document.getElementById('doc-nama-dokumen').value.trim();
+        function muatOpsiPartnerSilsilah(excludeId = null) {
+            const selectEl = document.getElementById('tree-partner-id');
+            if (!selectEl) return;
 
-            if (!namaKeluarga || !jenisAkun || !namaDokumen) {
-                return alert("Mohon lengkapi Nama Keluarga, Jenis Akun, dan Nama Dokumen!");
+            let optionsHtml = '<option value="">-- Tanpa Pasangan / Lajang --</option>';
+
+            if (globalFamilyTreeData && globalFamilyTreeData.length > 0) {
+                globalFamilyTreeData.forEach(item => {
+                    if (item.id !== excludeId) {
+                        optionsHtml += `<option value="${item.id}">${item.nama} (${item.peran})</option>`;
+                    }
+                });
             }
 
-            if (editIdFamilyDoc !== null) {
-                const updateData = {
-                    namaKeluarga: namaKeluarga,
-                    jenisAkun: jenisAkun,
-                    namaDokumen: namaDokumen,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+            selectEl.innerHTML = optionsHtml;
+        }
 
-                if (base64FamilyDocImage) updateData.fotoDokumen = base64FamilyDocImage;
+        function simpanFamilyTree() {
+            // Ambil nama (wajib ada)
+            const inputNama = document.getElementById('tree-nama');
+            if (!inputNama || !inputNama.value.trim()) {
+                alert('Nama lengkap wajib diisi!');
+                return;
+            }
+            const nama = inputNama.value.trim();
 
-                db.collection("family_documents").doc(editIdFamilyDoc).update(updateData)
-                .then(() => {
-                    alert("Dokumen keluarga berhasil diperbarui!");
-                    batalEditFamilyDocument();
-                })
-                .catch(e => alert("Gagal mengupdate dokumen: " + e.message));
+            // Ambil elemen lain dengan aman (jika tidak ada di HTML, di-set kosong/null secara otomatis)
+            const peran = document.getElementById('tree-peran') ? document.getElementById('tree-peran').value : 'Ayah / Ibu';
+            
+            // Cek elemen partner & parent secara aman agar tidak error null
+            const partnerEl = document.getElementById('tree-partner-id');
+            const partnerId = (partnerEl && partnerEl.value) ? partnerEl.value : null;
+
+            const ketEl = document.getElementById('tree-keterangan');
+            const keterangan = (ketEl && ketEl.value) ? ketEl.value.trim() : '';
+
+            const linkEl = document.getElementById('tree-linkedin');
+            const linkedin = (linkEl && linkEl.value) ? linkEl.value.trim() : '';
+
+            const parentEl = document.getElementById('tree-parent-id');
+            const parentId = (parentEl && parentEl.value) ? parentEl.value : null;
+
+            const dataPayload = {
+                family_id: currentUserFamilyId,
+                nama: nama,
+                peran: peran,
+                partnerId: partnerId,
+                keterangan: keterangan,
+                linkedin: linkedin,
+                parentId: parentId
+            };
+
+            let action;
+            if (editIdFamilyTree) {
+                action = db.collection("family_tree").doc(editIdFamilyTree).update(dataPayload);
             } else {
-                if (!base64FamilyDocImage) return alert("Mohon sertakan / upload gambar dokumen!");
-
-                db.collection("family_documents").add({
-                    family_id: currentUserFamilyId, // <-- Tambahkan ini
-                    namaKeluarga: namaKeluarga,
-                    jenisAkun: jenisAkun,
-                    namaDokumen: namaDokumen,
-                    fotoDokumen: base64FamilyDocImage,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                })
-                .then(() => {
-                    alert("Dokumen keluarga berhasil disimpan!");
-                    batalEditFamilyDocument();
-                })
-                .catch(e => alert("Gagal menyimpan dokumen: " + e.message));
+                dataPayload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                action = db.collection("family_tree").add(dataPayload);
             }
+
+            action.then(() => {
+                alert(editIdFamilyTree ? 'Data silsilah berhasil diperbarui!' : 'Data silsilah berhasil ditambahkan!');
+                batalEditFamilyTree();
+                muatFamilyTree();
+            }).catch(err => {
+                console.error("Error simpan silsilah:", err);
+                alert("Gagal menyimpan data: " + err.message);
+            });
         }
 
         function muatFamilyDocuments() {
@@ -4783,37 +4859,24 @@
             }
         }
 
-        let editIdFamilyTree = null;
+        // Fungsi pendukung untuk mereset form
+        function batalEditFamilyTree() {
+            editIdFamilyTree = null;
+            document.getElementById('tree-nama').value = '';
+            document.getElementById('tree-keterangan').value = '';
+            document.getElementById('tree-linkedin').value = '';
+            document.getElementById('tree-parent-id').value = '';
 
-        function simpanFamilyTree() {
-            const nama = document.getElementById('tree-nama').value.trim();
-            const peran = document.getElementById('tree-peran').value;
-            const keterangan = document.getElementById('tree-keterangan').value.trim();
+            const formTitle = document.getElementById('form-title-tree');
+            if (formTitle) formTitle.innerText = '➕ Tambah Anggota Silsilah';
 
-            if (!nama) return alert("Nama lengkap wajib diisi!");
+            const btnSimpan = document.getElementById('btn-simpan-tree');
+            if (btnSimpan) btnSimpan.innerText = 'Simpan Anggota';
 
-            if (editIdFamilyTree !== null) {
-                db.collection("family_tree").doc(editIdFamilyTree).update({
-                    nama: nama,
-                    peran: peran,
-                    keterangan: keterangan,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    alert("Data silsilah berhasil diperbarui!");
-                    batalEditFamilyTree();
-                }).catch(e => alert("Gagal mengupdate silsilah: " + e.message));
-            } else {
-                db.collection("family_tree").add({
-                    family_id: currentUserFamilyId, // <-- Tambahkan ini
-                    nama: nama,
-                    peran: peran,
-                    keterangan: keterangan,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    alert("Anggota silsilah berhasil ditambahkan!");
-                    batalEditFamilyTree();
-                }).catch(e => alert("Gagal menyimpan silsilah: " + e.message));
-            }
+            const btnBatal = document.getElementById('btn-batal-tree');
+            if (btnBatal) btnBatal.classList.add('hidden');
+
+            muatOpsiParentSilsilah();
         }
 
         function muatFamilyTree() {
@@ -4826,97 +4889,348 @@
             if (!container) return;
 
             unsubscribeTree = db.collection("family_tree").where("family_id", "==", currentUserFamilyId).orderBy("createdAt", "asc").onSnapshot((snapshot) => {
-                let kakekSuami = [], ortuSuami = [], saudaraSuami = [];
-                let kakekIstri = [], ortuIstri = [], saudaraIstri = [];
+                globalFamilyTreeData = [];
                 let pasanganList = [];
                 let anakList = [];
 
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    const docId = doc.id;
-                    const item = { id: docId, ...data };
+                    const item = { id: doc.id, ...data };
+                    globalFamilyTreeData.push(item);
 
-                    if (data.peran === 'Kakek/Nenek Suami') kakekSuami.push(item);
-                    else if (data.peran === 'Ortu Suami') ortuSuami.push(item);
-                    else if (data.peran === 'Saudara Suami') saudaraSuami.push(item);
-                    else if (data.peran === 'Kakek/Nenek Istri') kakekIstri.push(item);
-                    else if (data.peran === 'Ortu Istri') ortuIstri.push(item);
-                    else if (data.peran === 'Saudara Istri') saudaraIstri.push(item);
-                    else if (data.peran === 'Pasangan Utama') pasanganList.push(item);
-                    else if (data.peran === 'Anak') anakList.push(item);
+                    if (data.peran === 'Pasangan Utama') {
+                        pasanganList.push(item);
+                    } else if (data.peran === 'Anak') {
+                        anakList.push(item);
+                    }
                 });
+
+                muatOpsiParentSilsilah();
 
                 if (snapshot.empty) {
                     container.innerHTML = `<div class="text-center text-gray-400 py-8 italic text-xs">Belum ada data silsilah keluarga. Silakan tambah melalui form di samping.</div>`;
                     return;
                 }
 
-                let html = `
-                    <div class="flex flex-col items-center space-y-4 py-6 w-full overflow-x-auto">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
-                            <div class="bg-blue-50/40 dark:bg-slate-800/40 p-5 rounded-3xl border border-blue-200 dark:border-slate-700 flex flex-col items-center relative">
-                                <span class="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-4">🛡️ Keluarga Pihak Suami (Saya)</span>
-                                <div class="w-full space-y-4 flex flex-col items-center">
-                                    <div class="w-full text-center">
-                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Kakek & Nenek --</p>
-                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(kakekSuami)}</div>
-                                    </div>
-                                    <div class="w-0.5 h-4 bg-blue-300 dark:bg-slate-600"></div>
-                                    <div class="w-full text-center">
-                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Orang Tua --</p>
-                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(ortuSuami)}</div>
-                                    </div>
-                                    <div class="w-0.5 h-4 bg-blue-300 dark:bg-slate-600"></div>
-                                    <div class="w-full text-center">
-                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Saudara Kandung & Keponakan --</p>
-                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(saudaraSuami)}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-pink-50/40 dark:bg-slate-800/40 p-5 rounded-3xl border border-pink-200 dark:border-slate-700 flex flex-col items-center relative">
-                                <span class="bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-4">🌸 Keluarga Pihak Istri</span>
-                                <div class="w-full space-y-4 flex flex-col items-center">
-                                    <div class="w-full text-center">
-                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Kakek & Nenek --</p>
-                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(kakekIstri)}</div>
-                                    </div>
-                                    <div class="w-0.5 h-4 bg-pink-300 dark:bg-slate-600"></div>
-                                    <div class="w-full text-center">
-                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Orang Tua / Mertua --</p>
-                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(ortuIstri)}</div>
-                                    </div>
-                                    <div class="w-0.5 h-4 bg-pink-300 dark:bg-slate-600"></div>
-                                    <div class="w-full text-center">
-                                        <p class="text-[10px] font-bold text-gray-400 mb-2">-- Saudara Kandung & Keponakan --</p>
-                                        <div class="flex flex-wrap justify-center gap-3">${renderTreeNodeCards(saudaraIstri)}</div>
-                                    </div>
-                                </div>
+                // TAMPILAN UTAMA: Bersih & Minimalis (Hanya Pasangan Inti & Anak)
+                container.innerHTML = `
+                    <div class="flex flex-col items-center space-y-6 py-6 w-full">
+                        <!-- Kartu Pasangan Utama (Bisa Diklik untuk lihat Orang Tua/Kakek/Nenek) -->
+                        <div class="text-center">
+                            <span class="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-3 inline-block">💍 Pasangan Utama (Klik Kartu untuk Leluhur)</span>
+                            <div class="flex flex-wrap justify-center gap-4 w-full">
+                                ${pasanganList.length > 0 ? renderMainCoupleCards(pasanganList) : '<p class="text-xs text-gray-400 italic">Belum ada data pasangan utama.</p>'}
                             </div>
                         </div>
 
-                        <div class="flex flex-col items-center">
-                            <div class="w-0.5 h-8 bg-amber-400 dark:bg-amber-500"></div>
-                            <div class="w-24 h-0.5 bg-amber-400 dark:bg-amber-500"></div>
-                            <div class="w-0.5 h-4 bg-amber-400 dark:bg-amber-500"></div>
-                        </div>
+                        ${anakList.length > 0 ? '<div class="w-0.5 h-6 bg-emerald-400"></div>' : ''}
 
-                        <div class="w-full max-w-md bg-amber-50/75 dark:bg-slate-800/90 p-5 rounded-3xl border-2 border-amber-300 dark:border-amber-600 shadow-md text-center flex flex-col items-center">
-                            <span class="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-3">💍 Keluarga Inti (Saya & Istri)</span>
-                            <div class="flex flex-wrap justify-center gap-3 w-full">${renderTreeNodeCards(pasanganList)}</div>
-                        </div>
-
-                        ${anakList.length > 0 ? `<div class="flex flex-col items-center"><div class="w-0.5 h-6 bg-emerald-400 dark:bg-emerald-500"></div></div>` : ''}
-
-                        <div class="w-full max-w-2xl bg-emerald-50/50 dark:bg-slate-800/40 p-5 rounded-3xl border border-emerald-200 dark:border-slate-700 flex flex-col items-center">
-                            <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-3">👶 Generasi Penerus (Anak-anak)</span>
-                            <div class="flex flex-wrap justify-center gap-3 w-full">${renderTreeNodeCards(anakList)}</div>
+                        <!-- Daftar Anak -->
+                        <div class="w-full max-w-2xl bg-slate-900/60 p-5 rounded-3xl border border-slate-700 flex flex-col items-center">
+                            <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm mb-3">👶 Anak-anak / Keturunan Inti</span>
+                            <div class="flex flex-wrap justify-center gap-3 w-full">
+                                ${renderTreeNodeCards(anakList)}
+                            </div>
                         </div>
                     </div>
                 `;
-
-                container.innerHTML = html;
             });
+        }
+
+        function editFamilyTree(id) {
+            const anggota = globalFamilyTreeData.find(item => item.id === id);
+            if (!anggota) {
+                alert("Data tidak ditemukan!");
+                return;
+            }
+
+            muatOpsiParentSilsilah(id);
+            muatOpsiPartnerSilsilah(id); // Muat juga opsi pasangan
+            editIdFamilyTree = id;
+
+            document.getElementById('tree-nama').value = anggota.nama || '';
+            document.getElementById('tree-peran').value = anggota.peran || 'Ayah / Ibu';
+            document.getElementById('tree-partner-id').value = anggota.partnerId || ''; // Setel ID pasangan
+            document.getElementById('tree-keterangan').value = anggota.keterangan || '';
+            document.getElementById('tree-linkedin').value = anggota.linkedin || '';
+            document.getElementById('tree-parent-id').value = anggota.parentId || '';
+
+            const formTitle = document.getElementById('form-title-tree');
+            if (formTitle) formTitle.innerText = '✏️ Edit Anggota Silsilah';
+
+            const btnSimpan = document.getElementById('btn-simpan-tree');
+            if (btnSimpan) btnSimpan.innerText = 'Update Anggota';
+
+            const btnBatal = document.getElementById('btn-batal-tree');
+            if (btnBatal) btnBatal.classList.remove('hidden');
+        }
+
+        function batalEditFamilyTree() {
+            editIdFamilyTree = null;
+            document.getElementById('tree-nama').value = '';
+            document.getElementById('tree-partner-id').value = ''; // Reset dropdown pasangan
+            document.getElementById('tree-keterangan').value = '';
+            document.getElementById('tree-linkedin').value = '';
+            document.getElementById('tree-parent-id').value = '';
+
+            const formTitle = document.getElementById('form-title-tree');
+            if (formTitle) formTitle.innerText = '➕ Tambah Anggota Silsilah';
+
+            const btnSimpan = document.getElementById('btn-simpan-tree');
+            if (btnSimpan) btnSimpan.innerText = 'Simpan Anggota';
+
+            const btnBatal = document.getElementById('btn-batal-tree');
+            if (btnBatal) btnBatal.classList.add('hidden');
+
+            muatOpsiParentSilsilah();
+            muatOpsiPartnerSilsilah();
+        }
+
+        function batalEditFamilyTree() {
+            editIdFamilyTree = null;
+            document.getElementById('tree-nama').value = '';
+            document.getElementById('tree-keterangan').value = '';
+            document.getElementById('tree-linkedin').value = '';
+            document.getElementById('form-title-tree').innerText = '➕ Tambah Anggota Silsilah';
+            document.getElementById('btn-simpan-tree').innerText = 'Simpan Anggota';
+            document.getElementById('btn-batal-tree').classList.add('hidden');
+        }
+
+        function hapusFamilyTree(id) {
+            if (confirm("Yakin ingin menghapus anggota keluarga ini dari silsilah?")) {
+                db.collection("family_tree").doc(id).delete().then(() => alert("Berhasil dihapus!")).catch(e => alert("Gagal menghapus: " + e.message));
+            }
+        }
+
+        // Fungsi untuk ganti tab Silsilah / Riwayat & CV di menu Keluarga
+        function gantiTabKeluarga(tab) {
+            const subSilsilah = document.getElementById('subpage-silsilah');
+            const subRiwayat = document.getElementById('subpage-riwayat');
+            const btnSilsilah = document.getElementById('tab-btn-silsilah');
+            const btnRiwayat = document.getElementById('tab-btn-riwayat');
+
+            if (tab === 'silsilah') {
+                subSilsilah.classList.remove('hidden');
+                subRiwayat.classList.add('hidden');
+                btnSilsilah.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-amber-500 text-slate-950 shadow";
+                btnRiwayat.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white";
+            } else {
+                subSilsilah.classList.add('hidden');
+                subRiwayat.classList.remove('hidden');
+                btnRiwayat.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
+                btnSilsilah.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white";
+                muatOpsiAnggotaCV();
+            }
+        }
+
+        
+
+        // Render kartu khusus pasangan utama dengan event klik untuk buka pop-up leluhur
+        function renderMainCoupleCards(list) {
+            let cardsHtml = '';
+            list.forEach(item => {
+                let safeNama = (item.nama || '').replace(/'/g, "\\'");
+                cardsHtml += `
+                    <div onclick="bukaModalDetailSilsilah('${item.id}', '${safeNama}')" class="relative bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-amber-500/60 p-4 rounded-2xl shadow-lg flex flex-col items-center text-center transition hover:scale-105 cursor-pointer min-w-[160px] max-w-[190px] group">
+                        <div class="w-16 h-16 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-3xl shadow-md mb-2">
+                            💑
+                        </div>
+                        <div class="w-full overflow-hidden">
+                            <h5 class="font-bold text-sm text-white truncate" title="${item.nama}">${item.nama}</h5>
+                            <p class="text-[10px] text-amber-300 font-medium truncate mt-0.5">${item.keterangan || 'Pasangan Inti'}</p>
+                            <p class="text-[9px] text-blue-400 mt-1 underline">🔍 Klik lihat Silsilah Leluhur</p>
+                        </div>
+                        <div class="flex items-center justify-center gap-2 mt-3 pt-2 border-t border-slate-700 w-full" onclick="event.stopPropagation()">
+                            <button onclick="editFamilyTree('${item.id}')" class="text-[10px] text-blue-400 font-bold hover:underline">Edit</button>
+                            <span class="text-slate-600">|</span>
+                            <button onclick="hapusFamilyTree('${item.id}')" class="text-[10px] text-red-400 font-bold hover:underline">Hapus</button>
+                        </div>
+                    </div>
+                `;
+            });
+            return cardsHtml;
+        }
+
+        // Fungsi Membuka Pop-up Silsilah Leluhur (Orang Tua, Kakek, Nenek, Saudara)
+        // 1. TAMPILAN AWAL: Hanya memunculkan Kakek & Nenek (Leluhur Puncak)
+        // 1. TAMPILAN AWAL: Kakek & Nenek
+        function bukaModalDetailSilsilah(id, namaSuamiIstri) {
+            const modalTitle = document.getElementById('modal-silsilah-title');
+            const container = document.getElementById('konten-detail-silsilah');
+            if (!modalTitle || !container) return;
+
+            modalTitle.innerText = `🌳 Silsilah Keluarga & Leluhur`;
+
+            // Ambil data yang bertindak sebagai leluhur utama (tidak punya parent / parentId kosong)
+            let akarList = globalFamilyTreeData.filter(i => !i.parentId);
+
+            let html = `
+                <div class="space-y-3">
+                    <p class="text-xs text-slate-400">Pilih Pasangan Keluarga:</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            `;
+
+            let renderedIds = new Set();
+
+            if (akarList.length > 0) {
+                akarList.forEach(item => {
+                    if (renderedIds.has(item.id)) return;
+                    renderedIds.add(item.id);
+
+                    // Cari apakah dia punya pasangan yang terhubung via partnerId
+                    let pasangan = null;
+                    if (item.partnerId) {
+                        pasangan = globalFamilyTreeData.find(p => p.id === item.partnerId);
+                        if (pasangan) renderedIds.add(pasangan.id); // Tandai agar tidak dirender dua kali terpisah
+                    }
+
+                    let namaPasanganStr = pasangan ? ` & ${pasangan.nama}` : '';
+                    let safeNama = (item.nama || '').replace(/'/g, "\\'");
+
+                    html += `
+                        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between gap-3 shadow-md">
+                            <div class="cursor-pointer" onclick="bukaKeturunanSilsilah('${item.id}', '${safeNama}${namaPasanganStr}')">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-amber-400 text-lg">💑</span>
+                                    <span class="text-amber-400 font-bold text-sm">${item.nama}${namaPasanganStr}</span>
+                                </div>
+                                <span class="text-[10px] text-slate-400 block">${item.keterangan || item.peran}</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+                                <button onclick="bukaKeturunanSilsilah('${item.id}', '${safeNama}')" class="text-blue-400 font-semibold hover:underline">Lihat Anak ➔</button>
+                                <div class="space-x-2">
+                                    <button onclick="editFamilyTree('${item.id}')" class="text-yellow-400 hover:underline">Edit</button>
+                                    ${pasangan ? `<button onclick="editFamilyTree('${pasangan.id}')" class="text-yellow-400 hover:underline">Edit Pasangan</button>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<p class="text-xs text-slate-500 italic col-span-2">Belum ada data silsilah terdaftar.</p>`;
+            }
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+            document.getElementById('modal-detail-silsilah').classList.remove('hidden');
+        }
+
+        // 2. KLIK KAKEK/NENEK: Tampilkan Anak + Tombol Edit/Hapus
+        function bukaKeturunanSilsilah(parentId, parentNama) {
+            const modalTitle = document.getElementById('modal-silsilah-title');
+            const container = document.getElementById('konten-detail-silsilah');
+            if (!modalTitle || !container) return;
+
+            modalTitle.innerText = `👶 Anak / Keturunan dari: ${parentNama}`;
+
+            let anakList = globalFamilyTreeData.filter(i => i.parentId === parentId || i.peran === 'Ortu Suami' || i.peran === 'Ortu Istri');
+
+            let html = `
+                <div class="space-y-4">
+                    <button onclick="bukaModalDetailSilsilah('', 'Keluarga')" class="text-xs text-blue-400 hover:underline mb-2 flex items-center gap-1">⬅ Kembali ke Daftar Kakek/Nenek</button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            `;
+
+            if (anakList.length > 0) {
+                anakList.forEach(anak => {
+                    let safeNama = (anak.nama || '').replace(/'/g, "\\'");
+                    html += `
+                        <div class="bg-slate-900 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between gap-3">
+                            <div class="cursor-pointer" onclick="bukaCucuSilsilah('${anak.id}', '${safeNama}')">
+                                <span class="text-white font-bold text-sm">👤 ${anak.nama}</span>
+                                <span class="text-[10px] text-slate-400 block">${anak.keterangan || anak.peran}</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+                                <button onclick="bukaCucuSilsilah('${anak.id}', '${safeNama}')" class="text-emerald-400 font-semibold hover:underline">Lihat Keturunan ➔</button>
+                                <div class="space-x-2">
+                                    <button onclick="editFamilyTree('${anak.id}')" class="text-yellow-400 hover:underline">Edit</button>
+                                    <button onclick="hapusFamilyTree('${anak.id}')" class="text-red-400 hover:underline">Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<p class="text-xs text-slate-500 italic col-span-2">Belum ada data anak terdaftar untuk ${parentNama}.</p>`;
+            }
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        // 3. KLIK ANAK: Tampilkan Cucu + Tombol Edit/Hapus
+        function bukaCucuSilsilah(anakId, anakNama) {
+            const modalTitle = document.getElementById('modal-silsilah-title');
+            const container = document.getElementById('konten-detail-silsilah');
+            if (!modalTitle || !container) return;
+
+            modalTitle.innerText = `👶 Keluarga / Keturunan dari: ${anakNama}`;
+
+            let cucuList = globalFamilyTreeData.filter(i => i.parentId === anakId);
+
+            let html = `
+                <div class="space-y-4">
+                    <button onclick="bukaKeturunanSilsilah('', 'Keluarga')" class="text-xs text-blue-400 hover:underline mb-2 flex items-center gap-1">⬅ Kembali</button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            `;
+
+            if (cucuList.length > 0) {
+                cucuList.forEach(cucu => {
+                    html += `
+                        <div class="bg-slate-900 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between gap-3">
+                            <div>
+                                <span class="text-emerald-400 font-bold text-sm">👶 ${cucu.nama}</span>
+                                <span class="text-[10px] text-slate-400 block">${cucu.keterangan || cucu.peran}</span>
+                            </div>
+                            <div class="flex items-center justify-end pt-2 border-t border-slate-800 text-xs space-x-2">
+                                <button onclick="editFamilyTree('${cucu.id}')" class="text-yellow-400 hover:underline">Edit</button>
+                                <button onclick="hapusFamilyTree('${cucu.id}')" class="text-red-400 hover:underline">Hapus</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<p class="text-xs text-slate-500 italic col-span-2">Belum ada data keturunan selanjutnya untuk ${anakNama}.</p>`;
+            }
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        function tutupModalDetailSilsilah() {
+            document.getElementById('modal-detail-silsilah').classList.add('hidden');
+        }
+
+        // Fungsi untuk memuat opsi dropdown "Terhubung Ke (Orang Tua)"
+        function muatOpsiParentSilsilah(excludeId = null) {
+            const selectEl = document.getElementById('tree-parent-id');
+            if (!selectEl) return;
+
+            let optionsHtml = '<option value="">-- Puncak / Tanpa Parent (Kakek/Nenek Utama) --</option>';
+
+            // Looping data silsilah yang sudah ada untuk dijadikan pilihan parent
+            if (globalFamilyTreeData && globalFamilyTreeData.length > 0) {
+                globalFamilyTreeData.forEach(item => {
+                    // Jangan tampilkan dirinya sendiri sebagai pilihan orang tuanya (mencegah error logika)
+                    if (item.id !== excludeId) {
+                        optionsHtml += `<option value="${item.id}">${item.nama} (${item.peran})</option>`;
+                    }
+                });
+            }
+
+            selectEl.innerHTML = optionsHtml;
+        }
+
+        function renderMiniCards(list) {
+            if (list.length === 0) return '<p class="text-slate-500 italic text-[11px]">Tidak ada data.</p>';
+            let html = '';
+            list.forEach(i => {
+                html += `<div class="bg-slate-800 px-3 py-2 rounded-xl border border-slate-700 text-xs flex justify-between items-center">
+                    <div><strong>${i.nama}</strong> <span class="text-[10px] text-slate-400 block">${i.keterangan || i.peran}</span></div>
+                    <button onclick="editFamilyTree('${i.id}')" class="text-[10px] text-yellow-400 font-bold hover:underline">Edit</button>
+                </div>`;
+            });
+            return html;
         }
 
         // Contoh fungsi render silsilah dengan sistem klik interaktif (Accordion)
@@ -5006,58 +5320,6 @@
             return cardsHtml;
         }
 
-        function editFamilyTree(id) {
-            db.collection("family_tree").doc(id).get().then((doc) => {
-                if (!doc.exists) return alert("Data tidak ditemukan!");
-                const data = doc.data();
-
-                editIdFamilyTree = id;
-                document.getElementById('tree-nama').value = data.nama || '';
-                document.getElementById('tree-peran').value = data.peran || 'Ayah / Ibu';
-                document.getElementById('tree-keterangan').value = data.keterangan || '';
-
-                document.getElementById('form-title-tree').innerText = '✏️ Edit Anggota Silsilah';
-                document.getElementById('btn-simpan-tree').innerText = 'Update Anggota';
-                document.getElementById('btn-batal-tree').classList.remove('hidden');
-            }).catch(e => alert("Gagal memuat data: " + e.message));
-        }
-
-        function batalEditFamilyTree() {
-            editIdFamilyTree = null;
-            document.getElementById('tree-nama').value = '';
-            document.getElementById('tree-keterangan').value = '';
-            document.getElementById('form-title-tree').innerText = '➕ Tambah Anggota Silsilah';
-            document.getElementById('btn-simpan-tree').innerText = 'Simpan Anggota';
-            document.getElementById('btn-batal-tree').classList.add('hidden');
-        }
-
-        function hapusFamilyTree(id) {
-            if (confirm("Yakin ingin menghapus anggota keluarga ini dari silsilah?")) {
-                db.collection("family_tree").doc(id).delete().then(() => alert("Berhasil dihapus!")).catch(e => alert("Gagal menghapus: " + e.message));
-            }
-        }
-
-        // Fungsi untuk ganti tab Silsilah / Riwayat & CV di menu Keluarga
-        function gantiTabKeluarga(tab) {
-            const subSilsilah = document.getElementById('subpage-silsilah');
-            const subRiwayat = document.getElementById('subpage-riwayat');
-            const btnSilsilah = document.getElementById('tab-btn-silsilah');
-            const btnRiwayat = document.getElementById('tab-btn-riwayat');
-
-            if (tab === 'silsilah') {
-                subSilsilah.classList.remove('hidden');
-                subRiwayat.classList.add('hidden');
-                btnSilsilah.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-amber-500 text-slate-950 shadow";
-                btnRiwayat.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white";
-            } else {
-                subSilsilah.classList.add('hidden');
-                subRiwayat.classList.remove('hidden');
-                btnRiwayat.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
-                btnSilsilah.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:text-white";
-                muatOpsiAnggotaCV();
-            }
-        }
-
         function previewCvFoto(event) {
             const file = event.target.files[0];
             if (file) {
@@ -5113,8 +5375,14 @@
                 }
 
                 // Render ke elemen select dropdown
+                // Di dalam muatOpsiAnggotaCV, saat mengisi <option>:
                 listAnggota.forEach(item => {
-                    selectEl.innerHTML += `<option value="${item.id}" data-nama="${item.nama}" data-peran="${item.peran}">${item.nama} (${item.peran})</option>`;
+                    selectEl.innerHTML += `
+                        <option value="${item.id}" 
+                                data-nama="${item.nama}" 
+                                data-linkedin="${item.linkedin || ''}">
+                            ${item.nama} (${item.peran})
+                        </option>`;
                 });
 
                 muatDataRiwayatAnggota();
@@ -5171,7 +5439,7 @@
                 }).catch(e => alert("Gagal menyimpan: " + e.message));
             }
         }
-
+        
         function muatDataRiwayatAnggota() {
             const selectEl = document.getElementById('cv-pilih-anggota');
             const selectedOption = selectEl.options[selectEl.selectedIndex];
@@ -5179,28 +5447,73 @@
 
             const nama = selectedOption.getAttribute('data-nama') || 'Nama';
             const anggotaId = selectEl.value;
+            
+            // --- TAMBAHAN KODE UNTUK RENDER QR CODE LINKEDIN SECARA DINAMIS ---
+            const linkedinLink = selectedOption.getAttribute('data-linkedin') || '';
+            const qrImgEl = document.getElementById('cv-qr-linkedin');
+            if (qrImgEl) {
+                if (linkedinLink) {
+                    // Gunakan ukuran 300x300 agar tajam dan tidak pecah
+                    qrImgEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(linkedinLink)}`;
+                    qrImgEl.classList.remove('hidden');
+                } else {
+                    qrImgEl.classList.add('hidden');
+                }
+            }
+            // -----------------------------------------------------------------
 
             document.getElementById('cv-preview-nama').innerText = nama;
-
-            const eduContainer = document.getElementById('cv-preview-pendidikan-list');
-            const workContainer = document.getElementById('cv-preview-pekerjaan-list');
-            const skillContainer = document.getElementById('cv-preview-keahlian-list');
-            const portContainer = document.getElementById('cv-preview-portofolio-list');
 
             db.collection("family_cv_riwayat")
             .where("family_id", "==", currentUserFamilyId)
             .where("anggotaId", "==", anggotaId)
             .onSnapshot(snapshot => {
                 let dataList = [];
+                let fotoUser = '';
+                let posisiKerjaList = []; 
+
                 snapshot.forEach(doc => {
-                    dataList.push({ id: doc.id, ...doc.data() });
+                    const dataDoc = doc.data();
+                    dataList.push({ id: doc.id, ...dataDoc });
+                    
+                    if (dataDoc.foto && dataDoc.foto !== '') {
+                        fotoUser = dataDoc.foto;
+                    }
+
+                    if (dataDoc.kategori === 'Pekerjaan') {
+                        let teksPekerjaan = dataDoc.subjudul ? `${dataDoc.subjudul}` : dataDoc.judul;
+                        let selesaiStr = (dataDoc.selesai || '').toLowerCase();
+                        
+                        if (selesaiStr.includes('sekarang') || selesaiStr === '') {
+                            posisiKerjaList.push(teksPekerjaan);
+                        }
+                    }
                 });
 
-                // URUTKAN DARI TAHUN TERBESAR KE TERKECIL (Terbaru di atas)
+                const posisiEl = document.getElementById('cv-preview-posisi');
+                if (posisiEl) {
+                    if (posisiKerjaList.length > 0) {
+                        posisiEl.innerText = posisiKerjaList.join(' • ');
+                        posisiEl.classList.remove('hidden');
+                    } else {
+                        posisiEl.classList.add('hidden');
+                    }
+                }
+
+                const fotoPreviewImg = document.getElementById('cv-preview-foto');
+                if (fotoPreviewImg) {
+                    if (fotoUser) {
+                        fotoPreviewImg.src = fotoUser;
+                        fotoPreviewImg.classList.remove('hidden');
+                    } else {
+                        fotoPreviewImg.classList.add('hidden');
+                    }
+                }
+
                 dataList.sort((a, b) => {
                     let tahunA = parseInt(a.mulai) || 0;
                     let tahunB = parseInt(b.mulai) || 0;
-                    return tahunB - tahunA; // Urutan descending (terbesar ke terkecil)
+                    return tahunB - tahunA;
                 });
 
                 let eduHtml = '';
@@ -5208,15 +5521,12 @@
                 let skillHtml = '';
                 let portHtml = '';
 
-                // PERBAIKAN: Gunakan dataList.forEach, bukan snapshot.forEach
                 dataList.forEach(d => {
                     const docId = d.id;
-
                     const safeJudul = (d.judul || '').replace(/'/g, "\\'");
                     const safeSub = (d.subjudul || '').replace(/'/g, "\\'");
                     const safeDesc = (d.deskripsi || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
 
-                    // Tombol Edit & Hapus dengan warna teks yang jelas
                     const actionButtons = `
                         <div class="flex items-center gap-2 shrink-0">
                             <button onclick="siapkanEditRiwayat('${docId}', '${d.anggotaId || anggotaId}', '${d.kategori}', '${safeJudul}', '${safeSub}', '${d.mulai || ''}', '${d.selesai || ''}', '${safeDesc}', '${d.foto || ''}')" 
@@ -5231,10 +5541,11 @@
                     `;
                     
                     if (d.kategori === 'Pendidikan') {
+                        let subjudulHtml = d.subjudul ? ` <span class="font-normal text-slate-300">- ${d.subjudul}</span>` : '';
                         eduHtml += `
-                            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex justify-between items-center gap-4">
                                 <div class="space-y-1">
-                                    <p class="font-bold text-white text-sm">${d.judul} <span class="font-normal text-slate-300">- ${d.subjudul}</span></p>
+                                    <p class="font-bold text-white text-sm">${d.judul}${subjudulHtml}</p>
                                     ${d.deskripsi ? `<p class="text-xs text-slate-300">${d.deskripsi}</p>` : ''}
                                     <span class="inline-block text-xs font-semibold text-amber-400 mt-1">${d.mulai} - ${d.selesai}</span>
                                 </div>
@@ -5242,10 +5553,11 @@
                             </div>
                         `;
                     } else if (d.kategori === 'Pekerjaan') {
+                        let subjudulHtml = d.subjudul ? ` <span class="font-normal text-slate-300">- ${d.subjudul}</span>` : '';
                         workHtml += `
-                            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex justify-between items-center gap-4">
                                 <div class="space-y-1">
-                                    <p class="font-bold text-white text-sm">${d.judul} <span class="font-normal text-slate-300">- ${d.subjudul}</span></p>
+                                    <p class="font-bold text-white text-sm">${d.judul}${subjudulHtml}</p>
                                     ${d.deskripsi ? `<p class="text-xs text-slate-300">${d.deskripsi}</p>` : ''}
                                     <span class="inline-block text-xs font-semibold text-amber-400 mt-1">${d.mulai} - ${d.selesai}</span>
                                 </div>
@@ -5253,29 +5565,16 @@
                             </div>
                         `;
                     } else if (d.kategori === 'Keahlian') {
-                        skillHtml += `
-                            <div class="flex items-center justify-between bg-slate-900/90 px-4 py-2.5 rounded-2xl border border-slate-700 text-xs">
-                                <span class="text-white font-semibold">${d.judul} <span class="text-slate-300 font-normal">(${d.subjudul})</span></span>
-                                ${actionButtons}
-                            </div>
-                        `;
+                        skillHtml += `<div class="flex items-center justify-between bg-slate-900/90 px-4 py-2.5 rounded-2xl border border-slate-700 text-xs"><span class="text-white font-semibold">${d.judul} <span class="text-slate-300 font-normal">(${d.subjudul})</span></span>${actionButtons}</div>`;
                     } else if (d.kategori === 'Portofolio') {
-                        portHtml += `
-                            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                <div class="space-y-1">
-                                    <p class="font-bold text-white text-sm">${d.judul} <span class="text-emerald-400">(${d.subjudul})</span></p>
-                                    ${d.deskripsi ? `<p class="text-xs text-slate-300">${d.deskripsi}</p>` : ''}
-                                </div>
-                                ${actionButtons}
-                            </div>
-                        `;
+                        portHtml += `<div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 flex justify-between items-center gap-4"><div class="space-y-1"><p class="font-bold text-sm text-white">${d.judul} <span class="text-emerald-400">(${d.subjudul})</span></p>${d.deskripsi ? `<p class="text-xs text-slate-300">${d.deskripsi}</p>` : ''}</div>${actionButtons}</div>`;
                     }
                 });
 
-                eduContainer.innerHTML = eduHtml || '<p class="text-slate-400 italic text-xs">Belum ada data pendidikan.</p>';
-                workContainer.innerHTML = workHtml || '<p class="text-slate-400 italic text-xs">Belum ada data pekerjaan.</p>';
-                skillContainer.innerHTML = skillHtml || '<p class="text-slate-400 italic text-xs">Belum ada data keahlian.</p>';
-                portContainer.innerHTML = portHtml || '<p class="text-slate-400 italic text-xs">Belum ada data portofolio.</p>';
+                document.getElementById('cv-preview-pendidikan-list').innerHTML = eduHtml || '<p class="text-slate-400 italic text-xs">Belum ada data pendidikan.</p>';
+                document.getElementById('cv-preview-pekerjaan-list').innerHTML = workHtml || '<p class="text-slate-400 italic text-xs">Belum ada data pekerjaan.</p>';
+                document.getElementById('cv-preview-keahlian-list').innerHTML = skillHtml || '<p class="text-slate-400 italic text-xs">Belum ada data keahlian.</p>';
+                document.getElementById('cv-preview-portofolio-list').innerHTML = portHtml || '<p class="text-slate-400 italic text-xs">Belum ada data portofolio.</p>';
             });
         }
 
@@ -5378,18 +5677,93 @@
 
         // Fungsi Download CV menjadi PDF menggunakan html2pdf
         function downloadCVPDF() {
-            const element = document.getElementById('area-cv-preview');
-            const namaAnggota = document.getElementById('cv-preview-nama').innerText.replace(/\s+/g, '_');
+            const namaAnggota = document.getElementById('cv-preview-nama').innerText.trim();
+            const namaFile = namaAnggota.replace(/\s+/g, '_');
             
+            // Ambil elemen foto profil jika ada
+            const fotoImg = document.getElementById('cv-preview-foto');
+            const fotoSrc = (fotoImg && !fotoImg.classList.contains('hidden')) ? fotoImg.src : '';
+
+            // Ambil konten dari masing-masing daftar di dalam preview CV secara aman
+            const eduHTML = document.getElementById('cv-preview-pendidikan-list').innerHTML;
+            const workHTML = document.getElementById('cv-preview-pekerjaan-list').innerHTML;
+            const skillHTML = document.getElementById('cv-preview-keahlian-list').innerHTML;
+            const portHTML = document.getElementById('cv-preview-portofolio-list').innerHTML;
+
+            // Bersihkan tombol "Edit" dan "Hapus" dari string HTML agar tidak ikut tercetak di PDF
+            const cleanHTML = (htmlStr) => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = htmlStr;
+                // Hapus semua tombol edit/hapus
+                tempDiv.querySelectorAll('button').forEach(btn => btn.remove());
+                return tempDiv.innerHTML;
+            };
+
+            // Buat elemen kontainer bersih khusus untuk PDF menggunakan style inline murni (tanpa Tailwind/oklch)
+            const containerPdf = document.createElement('div');
+            containerPdf.style.position = 'absolute';
+            containerPdf.style.left = '-9999px';
+            containerPdf.style.top = '0';
+            containerPdf.style.width = '794px'; // Lebar A4
+            containerPdf.style.padding = '40px';
+            containerPdf.style.backgroundColor = '#ffffff';
+            containerPdf.style.color = '#1e293b';
+            containerPdf.style.fontFamily = 'Arial, sans-serif';
+
+            containerPdf.innerHTML = `
+                <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        ${fotoSrc ? `<img src="${fotoSrc}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid #cbd5e1;" />` : ''}
+                        <h1 style="font-size: 24px; font-weight: bold; color: #0f172a; margin: 0;">${namaAnggota}</h1>
+                    </div>
+                    <span style="font-size: 11px; color: #64748b;">Curriculum Vitae & Portofolio</span>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 14px; font-weight: bold; color: #1e40af; border-bottom: 1px solid #93c5fd; padding-bottom: 4px; margin-bottom: 10px; text-transform: uppercase;">🎓 Riwayat Pendidikan</h3>
+                    <div style="font-size: 12px; color: #334155;">${cleanHTML(eduHTML)}</div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 14px; font-weight: bold; color: #1e40af; border-bottom: 1px solid #93c5fd; padding-bottom: 4px; margin-bottom: 10px; text-transform: uppercase;">💼 Riwayat Pekerjaan / Karier</h3>
+                    <div style="font-size: 12px; color: #334155;">${cleanHTML(workHTML)}</div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 14px; font-weight: bold; color: #1e40af; border-bottom: 1px solid #93c5fd; padding-bottom: 4px; margin-bottom: 10px; text-transform: uppercase;">⚡ Keahlian (Skills)</h3>
+                    <div style="font-size: 12px; color: #334155;">${cleanHTML(skillHTML)}</div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 14px; font-weight: bold; color: #1e40af; border-bottom: 1px solid #93c5fd; padding-bottom: 4px; margin-bottom: 10px; text-transform: uppercase;">🚀 Portofolio & Proyek</h3>
+                    <div style="font-size: 12px; color: #334155;">${cleanHTML(portHTML)}</div>
+                </div>
+            `;
+
+            document.body.appendChild(containerPdf);
+
             const opt = {
                 margin:       10,
-                filename:     `CV_${namaAnggota}.pdf`,
+                filename:     `CV_${namaFile}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: 794
+                },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().from(element).set(opt).save();
+            html2pdf().from(containerPdf).set(opt).save().then(() => {
+                document.body.removeChild(containerPdf);
+            }).catch(err => {
+                if (document.body.contains(containerPdf)) {
+                    document.body.removeChild(containerPdf);
+                }
+                console.error("Detail Error html2pdf:", err);
+                alert("Gagal mendownload CV PDF. Error: " + (err.message || err));
+            });
         }
 
         // Fungsi untuk membuka modal tambah/edit posisi
